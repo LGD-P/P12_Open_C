@@ -4,9 +4,9 @@ from sqlalchemy import (
 )
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
-from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm import sessionmaker, relationship, column_property
 from sqlalchemy.ext.declarative import declarative_base
-
+import passlib.hash
 
 engine = create_engine(
     'postgresql://postgres:MyPassIs23Word@localhost:5432/postgres')
@@ -28,6 +28,7 @@ class User(Base):
     name = Column(String, nullable=False)
     email = Column(String, nullable=False)
     role = Column(Enum(*ROLES, name='user_roles'), nullable=False)
+    password = Column(String, nullable=False)
 
     def __repr__(self):
         return f"<User(id={self.id}, name='{self.name}', email='{self.email}', role='{self.role}')>"

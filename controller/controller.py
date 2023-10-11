@@ -1,5 +1,6 @@
 from models.models import (User, Client, Contract, Event, session)
 import re
+import passlib.hash
 
 import psycopg2
 import click
@@ -70,7 +71,10 @@ class App():
                 click.echo(
                     "Name, email, and role are required for user creation.")
             else:
-                new_user = User(name=name, email=email, role=role)
+                hashed_password = passlib.hash.argon2.hash(password)
+
+                new_user = User(name=name, email=email,
+                                role=role, password=hashed_password)
                 session.add(new_user)
                 session.commit()
                 click.echo("User created successfully.")
