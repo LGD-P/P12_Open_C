@@ -47,7 +47,11 @@ class App():
     def read_all_in_table(ctx, table):
         conn = ctx.obj['conn']
         cur = conn.cursor()
-        cur.execute(f'SELECT * FROM {table};')
+        if table == 'users':
+            cur.execute(
+                f"SELECT id, name, email, role FROM {table}")
+        else:
+            cur.execute(f'SELECT * FROM {table};')
         rows = cur.fetchall()
         for row in rows:
             click.echo(row)
@@ -71,7 +75,8 @@ class App():
                 click.echo(
                     "Name, email, and role are required for user creation.")
             else:
-                hashed_password = passlib.hash.argon2.hash(password)
+                hashed_password = passlib.hash.argon2.using(
+                    rounds=12).hash(password)
 
                 new_user = User(name=name, email=email,
                                 role=role, password=hashed_password)
