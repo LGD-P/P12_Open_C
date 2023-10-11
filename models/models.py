@@ -11,6 +11,7 @@ from sqlalchemy.ext.declarative import declarative_base
 engine = create_engine(
     'postgresql://postgres:MyPassIs23Word@localhost:5432/postgres')
 
+Base = declarative_base()
 Base.metadata.create_all(engine)
 
 Session = sessionmaker(bind=engine)
@@ -26,9 +27,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     email = Column(String, nullable=False)
-    # à rajouter password = Column(String, nullable=False)
     role = Column(Enum(*ROLES, name='user_roles'), nullable=False)
-    # à rajouter une méthode pour gérer le hash et le check du password
 
     def __repr__(self):
         return f"<User(id={self.id}, name='{self.name}', email='{self.email}', role='{self.role}')>"

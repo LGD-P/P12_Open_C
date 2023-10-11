@@ -1,10 +1,27 @@
-from models.models import (User, Client, Contract, Event)
+from models.models import (User, Client, Contract, Event, session)
+import re
 
 import psycopg2
 import click
 
 
 class App():
+
+    def pass_is_valid(ctx, param, value):
+        regex = re.compile(
+            "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$")
+        if value != ctx.params.get('password', None) and re.fullmatch(regex, value) is None:
+            raise click.UsageError(
+                "Invalid password. Passwords do not match or not strong enough.")
+        return value
+
+    def email_is_valid(ctx, param, value):
+        regex = re.compile(
+            r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9-]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
+        if re.fullmatch(regex, value):
+            return value
+        else:
+            raise click.UsageError("Invalid email address.")
 
     @click.group()
     @click.option('--host', '-h', default='localhost', help='Database host')
@@ -36,8 +53,28 @@ class App():
         cur.close()
         conn.close()
 
+    @connect.command()
+    @click.option('--table', '-t', help='Name of the table to create in')
+    @click.option('--name', '-n', help='Name for the new object')
+    @click.option('--email', '-e', help='Email for the new object', callback=email_is_valid)
+    @click.option('--role', '-r', help='Role for the new user')
+    @click.option('--password', '-P', prompt=True, hide_input=False, confirmation_prompt=True,
+                  callback=pass_is_valid)
+    @click.pass_context
+    def create(ctx, table, name, email, role, password):
+        conn = ctx.obj['conn']
+        cur = conn.cursor()
 
-"""
-if __name__ == '__main__':
-    app = App.cli(obj={})
-"""
+        if table == 'users':
+            if not name or not email or not role:
+                click.echo(
+                    "Name, email, and role are required for user creation.")
+            else:
+                new_user = User(name=name, email=email, role=role)
+                session.add(new_user)
+                session.commit()
+                click.echo("User created successfully.")
+
+        # Elif for other tables ?
+        cur.close()
+        conn.close()
