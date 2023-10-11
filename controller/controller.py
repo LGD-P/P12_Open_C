@@ -58,7 +58,7 @@ class App():
     @click.option('--name', '-n', help='Name for the new object')
     @click.option('--email', '-e', help='Email for the new object', callback=email_is_valid)
     @click.option('--role', '-r', help='Role for the new user')
-    @click.option('--password', '-P', prompt=True, hide_input=False, confirmation_prompt=True,
+    @click.option('--password', '-P', prompt=True, hide_input=True, confirmation_prompt=True,
                   callback=pass_is_valid)
     @click.pass_context
     def create(ctx, table, name, email, role, password):
@@ -76,5 +76,17 @@ class App():
                 click.echo("User created successfully.")
 
         # Elif for other tables ?
+        cur.close()
+        conn.close()
+
+    @connect.command()
+    @click.option('--table', '-t', help='Name of the table to query')
+    @click.option('--id', '-i', help='Id of the user you want to delete')
+    @click.pass_context
+    def delete_in_table(ctx, table, id):
+        conn = ctx.obj['conn']
+        cur = conn.cursor()
+        cur.execute(f'DELETE FROM {table} WHERE id = %s;', (id,))
+        conn.commit()
         cur.close()
         conn.close()
