@@ -1,7 +1,7 @@
-from controller.user_controller import App
+from controllers.user_controller import UserApp
 
 
-app = App()
+app = UserApp()
 
 
 if __name__ == '__main__':
