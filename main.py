@@ -1,4 +1,4 @@
-from controller.controller import App
+from controller.user_controller import App
 
 
 app = App()
