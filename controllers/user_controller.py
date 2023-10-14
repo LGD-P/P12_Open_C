@@ -1,7 +1,7 @@
 from models.models import (User, Client, Contract, Event, session)
 from views.users_view import (
     users_table, created_succes, deleted_success, user_not_found,
-    table_not_found, param_required, email_is_valid, pass_is_valid,role_is_valid)
+    table_not_found, param_required, invalid_email, invalid_pass,invalid_role)
 import re
 import passlib.hash
 import psycopg2
@@ -13,6 +13,41 @@ from rich.text import Text
 
 
 class UserApp():
+    
+    
+    
+    
+    def pass_is_valid(ctx, param, value):
+        regex = re.compile(
+            "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$")
+        if value != ctx.params.get('password', None) and re.fullmatch(regex, value) is None:
+            invalid_pass()
+            raise click.UsageError(
+                "Invalid password. Passwords do not match or not strong enough.")
+        return value
+
+
+    def email_is_valid(ctx, param, value):
+        regex = re.compile(
+            r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9-]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
+        if re.fullmatch(regex, value):
+            return value
+        else:
+            invalid_email()
+            raise click.UsageError("Invalid email.")
+        
+        
+
+    def role_is_valid(ctx, param, value):
+    
+        if value in ["support", "commercial" ,"management"]:
+            return value
+        else:
+            invalid_role()
+            raise click.UsageError("Invalid role")
+            
+    
+    
 
     @click.group()
     @click.option('--host', '-h', default='localhost', help='Database host')
