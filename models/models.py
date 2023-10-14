@@ -19,7 +19,6 @@ Session = sessionmaker(bind=engine)
 session = Session()
 
 
-
 class User(Base):
 
     __tablename__ = 'users'
