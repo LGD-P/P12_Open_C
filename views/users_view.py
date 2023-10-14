@@ -1,6 +1,8 @@
 from rich.console import Console
 from rich.table import Table
 from rich.text import Text
+import re
+import click
 
 
 def users_table(users, table):
@@ -60,3 +62,44 @@ def created_succes():
 def deleted_success(id):
     Console().print(
         f"[blue] User with ID '[bold red]{id}[/bold red]' has been '[bold red]deleted[/bold red]'.")
+
+
+    
+def pass_is_valid(ctx, param, value):
+    regex = re.compile(
+        "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$")
+    if value != ctx.params.get('password', None) and re.fullmatch(regex, value) is None:
+        Console().print(
+    "[blue]Password must have at least:\n"
+    "[bold red]'one capital'[/bold red] from '[bold red](A-Z)'[/bold red]\n"
+    "[bold red]'one lower'[/bold red] from '[bold red](a-z)'[/bold red]\n"
+    "[bold red]'one number'[/bold red] from '[bold red](0-9)'[/bold red]\n"
+    "[bold red]'one special char'[/bold red] from '[bold red](#?!@$%^&*-)'[/bold red]\n"
+    "and at least [bold red]'8 characters'[/bold red]."
+)
+        raise click.UsageError(
+            "Invalid password. Passwords do not match or not strong enough.")
+    return value
+
+
+def email_is_valid(ctx, param, value):
+    regex = re.compile(
+        r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9-]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+')
+    if re.fullmatch(regex, value):
+        return value
+    else:
+        Console().print("[blue]The '[bold red]Email[/bold red]' you provided is '[bold red]invalid[/bold red]'")
+        raise click.UsageError("Invalid email.")
+    
+    
+
+def role_is_valid(ctx, param, value):
+ 
+    if value in ["support", "commercial" ,"management"]:
+        return value
+    else:
+        Console().print(
+        "'[bold red]Invalid[/bold red]'[blue] role must be ==> '[bold red]support[/bold red]' or '[bold red] commercial[/bold red]' or '[bold red]management[/bold red]'.")
+        raise click.UsageError("Invalid role")
+        
+        
