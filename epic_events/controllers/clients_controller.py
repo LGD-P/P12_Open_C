@@ -21,7 +21,10 @@ def list(ctx, id):
     session = ctx.obj['session']
     if id:
         client = session.scalar(select(Client).where(Client.id == id))
-        clients_table([client])
+        if client is None:
+            client_not_found(id)
+        else:
+            clients_table([client])
     else:
         clients_list = session.scalars(select(Client)).all()
         clients_table(clients_list)
