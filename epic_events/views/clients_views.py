@@ -55,15 +55,16 @@ def clients_table(clients):
     c.print(clients_table)
 
 
-def table_not_found(table):
+"""
+def table_not_found():
     Console().print(
-        f"[blue] Table '[bold red]{table}[/bold red]' not found[/blue]")
+        "[blue] Table '[bold red]CLIENTS[/bold red]' not found[/blue]")"""
 
 
 def param_required():
     Console().print(
-        "[blue] '[bold red]Name[/bold red]'[blue], '[bold red]Email[/bold red]'[blue], and "
-        "'[bold red]phone[/bold red]'[blue] are required for clients creation")
+        "[blue] '[bold red]Name[/bold red]'[blue], '[bold red]Email[/bold red]'[blue], "
+        "'[bold red]phone[/bold red]' and '[bold red]company[/bold red]' [blue] are required for clients creation")
 
 
 def created_succes(client):

@@ -1,6 +1,7 @@
+from logging import raiseExceptions
 from epic_events.models.models import Client
 from epic_events.views.clients_views import (
-    clients_table, table_not_found, param_required, created_succes,
+    clients_table, param_required, created_succes,
     deleted_success, client_not_found, modification_done)
 
 from datetime import datetime
@@ -30,56 +31,35 @@ def list(ctx, id):
         clients_table(clients_list)
 
 
-"""
 @client.command()
-@click.option('--table', '-t', help='Name of the table to query', required=True)
-@click.pass_context
-def access_clients(ctx, table):
-    conn = ctx.obj['conn']
-
-    if table == 'clients':
-        clients = session.query(Client).all()
-        clients_table(clients, table)
-        session.close()
-    else:
-        table_not_found(table)
-
-    conn.close()
-
-
-@client.command()
-@click.option('--table', '-t', help='Name of the table to create in', required=True)
 @click.option('--name', '-n', help='Full name for the new object', required=True)
 @click.option('--email', '-e', help='Email for the new object', required=True)
 @click.option('--phone', '-ph', help='Phone nummber', required=True)
 @click.option('--company', '-c', help='Company name')
 @click.pass_context
-def get(ctx, table, name, email, phone, company):
-    conn = ctx.obj['conn']
-    cur = conn.cursor()
+def create(ctx, name, email, phone, company):
+    session = ctx.obj['session']
 
-    if table == 'clients':
-        if not name or not email or not phone:
-            param_required()
-        else:
-            creation = datetime.now()
-            last_contact = datetime.now()
-            company_name = None if company is None else company
+    if not name or not email or not phone or not company:
+        param_required()
+    else:
+        creation = datetime.now()
+        last_contact = datetime.now()
+        company_name = None if company is None else company
 
-            new_client = Client(full_name=name, email=email,
-                                phone=phone, company_name=company_name,
-                                creation_date=str(creation), last_contact_date=str(last_contact)
-                                )
-            session.add(new_client)
-            session.commit()
-            created_succes(new_client)
+        new_client = Client(full_name=name, email=email,
+                            phone=phone, company_name=company_name,
+                            creation_date=str(creation), last_contact_date=str(last_contact)
+                            )
+        session.add(new_client)
+        session.commit()
+        created_succes(new_client)
 
-    cur.close()
-    conn.close()
+    session.close()
 
 
+"""
 @client.command()
-@click.option('--table', '-t', help='Name of the table to query', required=True)
 @click.option('--id', '-i', help='Id of the user you want to modify', required=True)
 @click.option('--name', '-n', help='Full name for the new object')
 @click.option('--email', '-e', help='Email for the new object')
@@ -87,8 +67,8 @@ def get(ctx, table, name, email, phone, company):
 @click.option('--company', '-c', help='Company name')
 @click.pass_context
 def modify(ctx, table, id, name, email, phone, company):
-    conn = ctx.obj['conn']
-    cur = conn.cursor()
+    session = ctx.obj['session']
+    cur = session.cursor()
 
     if table == 'clients':
         client_to_modify = session.query(Client).filter_by(id=id).first()
@@ -116,28 +96,23 @@ def modify(ctx, table, id, name, email, phone, company):
         table_not_found(table)
 
     cur.close()
+"""
 
 
 @client.command()
-@click.option('--table', '-t', help='Name of the table to query', required=True)
 @click.option('--id', '-i', help='Id of the client you want to delete', required=True)
 @click.pass_context
-def delete(ctx, table, id):
-    conn = ctx.obj['conn']
-    cur = conn.cursor()
+def delete(ctx, id):
+    session = ctx.obj['session']
 
-    if table == 'clients':
-        client_to_delete = session.query(Client).filter_by(id=id).first()
+    client_to_delete = session.query(Client).filter_by(id=id).first()
 
-        if client_to_delete:
-            session.delete(client_to_delete)
-            session.commit()
-            deleted_success(id, client_to_delete)
+    if client_to_delete:
+        session.delete(client_to_delete)
+        session.commit()
+        deleted_success(id, client_to_delete)
 
-        else:
-            client_not_found(id)
     else:
-        table_not_found(table)
-    cur.close()
-    conn.close()
-"""
+        client_not_found(id)
+
+    session.close()
