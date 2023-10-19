@@ -1,4 +1,3 @@
-from logging import raiseExceptions
 from epic_events.models.models import Client
 from epic_events.views.clients_views import (
     clients_table, param_required, created_succes,
@@ -27,7 +26,9 @@ def list(ctx, id):
         else:
             clients_table([client])
     else:
-        clients_list = session.scalars(select(Client)).all()
+        clients_list = session.scalars(
+            select(Client).order_by(Client.id)).all()
+
         clients_table(clients_list)
 
 
@@ -58,7 +59,6 @@ def create(ctx, name, email, phone, company):
     session.close()
 
 
-"""
 @client.command()
 @click.option('--id', '-i', help='Id of the user you want to modify', required=True)
 @click.option('--name', '-n', help='Full name for the new object')
@@ -66,37 +66,30 @@ def create(ctx, name, email, phone, company):
 @click.option('--phone', '-ph', help='Phone nummber')
 @click.option('--company', '-c', help='Company name')
 @click.pass_context
-def modify(ctx, table, id, name, email, phone, company):
+def modify(ctx, id, name, email, phone, company):
     session = ctx.obj['session']
-    cur = session.cursor()
 
-    if table == 'clients':
-        client_to_modify = session.query(Client).filter_by(id=id).first()
+    client_to_modify = session.query(Client).filter_by(id=id).first()
 
-        if client_to_modify:
+    if client_to_modify:
 
-            if name is not None:
-                client_to_modify.full_name = name
-            if email is not None:
-                client_to_modify.email = email
+        if name is not None:
+            client_to_modify.full_name = name
+        if email is not None:
+            client_to_modify.email = email
 
-            if phone is not None:
-                client_to_modify.phone = phone
+        if phone is not None:
+            client_to_modify.phone = phone
 
-            if company is not None:
-                client_to_modify.company_name = company
+        if company is not None:
+            client_to_modify.company_name = company
 
-            client_to_modify.last_contact_date = datetime.now()
+        client_to_modify.last_contact_date = datetime.now()
 
-            session.commit()
-            modification_done(client_to_modify)
-        else:
-            client_not_found(id)
+        session.commit()
+        modification_done(client_to_modify)
     else:
-        table_not_found(table)
-
-    cur.close()
-"""
+        client_not_found(id)
 
 
 @client.command()

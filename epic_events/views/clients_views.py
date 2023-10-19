@@ -55,12 +55,6 @@ def clients_table(clients):
     c.print(clients_table)
 
 
-"""
-def table_not_found():
-    Console().print(
-        "[blue] Table '[bold red]CLIENTS[/bold red]' not found[/blue]")"""
-
-
 def param_required():
     Console().print(
         "[blue] '[bold red]Name[/bold red]'[blue], '[bold red]Email[/bold red]'[blue], "
