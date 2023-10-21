@@ -35,9 +35,9 @@ def clients_table(clients):
     )
 
     for client in clients:
-        creation_date = client.creation_date.strftime('%Y-%m-%d - %H:%M')
+        creation_date = client.creation_date.strftime('%d-%m-%Y - %H:%M')
         last_contact_date = client.last_contact_date.strftime(
-            '%Y-%m-%d - %H:%M')
+            '%d-%m-%Y - %H:%M')
         commercial_contact_id = "❌" if client.commercial_contact_id is None else client.commercial_contact_id
         company_name = "❌" if client.company_name is None or client.company_name == 'None' else client.company_name
 

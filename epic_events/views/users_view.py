@@ -1,13 +1,14 @@
 from rich.console import Console
 from rich.table import Table
 from rich.text import Text
+import getpass
 
 
-def users_table(users, table):
+def users_table(users):
     c = Console()
 
     user_table = Table(show_header=True, header_style="bold blue",
-                       title=f'[bold red]Table: {table.upper()}[/bold red]')
+                       title='[bold red]Table: USERS[/bold red]')
     user_table.add_column(
         Text("ID", style="bleu", justify="center", no_wrap=True), justify="left", style="yellow",
     )
@@ -37,11 +38,6 @@ def users_table(users, table):
     c.print(user_table)
 
 
-def table_not_found(table):
-    Console().print(
-        f"[blue] Table '[bold red]{table}[/bold red]' not found[/blue]")
-
-
 def user_not_found(id):
     Console().print(
         f"[blue] User with ID '[bold red]{id}[/bold red]' is '[bold red]not found[/bold red]'.")
@@ -51,6 +47,11 @@ def param_required():
     Console().print(
         "[blue] '[bold red]Name[/bold red]'[blue], '[bold red]Email[/bold red]'[blue], and "
         "'[bold red]role[/bold red]'[blue] are required for user creation")
+
+
+def param_not_required():
+    Console().print(
+        "[blue] '[bold red]-P[/bold red]'[blue] is '[bold red]not required [/bold red]'for user creation")
 
 
 def created_succes(user):
@@ -89,3 +90,23 @@ def invalid_role():
 def modification_done(user):
     Console().print(
         f"[bold green] '[bold blue]{user.name.upper()}[/bold blue]' successfully modified.")
+
+
+def input_old_pass():
+    check = getpass.getpass('Enter the old password: ')
+    return check
+
+
+def new_pass():
+    check = getpass.getpass('Enter or confirm  new password: ')
+    return check
+
+
+def wrong_pass():
+    Console().print(
+        "[bold red '[bold red] You enter a wrong password[/bold red]' ")
+
+
+def wrong_confirm_pass():
+    Console().print(
+        "[bold red '[bold red] Your confirm is wrong[/bold red]' ")

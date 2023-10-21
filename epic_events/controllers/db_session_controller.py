@@ -2,8 +2,6 @@ from functools import update_wrapper
 import psycopg2
 import click
 
-from models.models import session
-
 
 def pass_obj(f):
     @click.pass_context
