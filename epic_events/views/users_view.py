@@ -43,6 +43,16 @@ def user_not_found(id):
         f"[blue] User with ID '[bold red]{id}[/bold red]' is '[bold red]not found[/bold red]'.")
 
 
+def username_not_found(name):
+    Console().print(
+        f"[blue] User with name '[bold red]{name}[/bold red]' is '[bold red]not found[/bold red]'.")
+
+
+def login_success(name):
+    Console().print(
+        f"[blue] Welcome '[bold green]{name}[/bold green]' you're logged.")
+
+
 def param_required():
     Console().print(
         "[blue] '[bold red]Name[/bold red]'[blue], '[bold red]Email[/bold red]'[blue], and "

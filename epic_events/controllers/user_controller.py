@@ -2,7 +2,7 @@ from epic_events.models.models import User
 from epic_events.views.users_view import (
     param_not_required, users_table, created_succes, deleted_success, user_not_found,
     param_required, invalid_email, invalid_pass, invalid_role, modification_done,
-    input_old_pass, wrong_pass, new_pass)
+    input_old_pass, wrong_pass, new_pass, username_not_found, login_success)
 import re
 import passlib.hash
 import click
@@ -76,10 +76,12 @@ def list(ctx, id):
 
     if id:
         user = session.scalar(select(User).where(User.id == id))
+        print(user.password)
         if user is None:
             user_not_found(id)
         else:
             users_table([user])
+
     else:
         users_list = session.scalars(
             select(User).order_by(User.id)).all()
@@ -170,4 +172,26 @@ def delete(ctx, id):
     else:
         user_not_found(id)
 
+    session.close()
+
+
+@user.command()
+@click.option('--name', '-n', help='Id of the user you want to delete', required=True)
+@click.option('--password', '-P', help='Password of the user you want to delete', nargs=0)
+@click.pass_context
+def login(ctx, name, password):
+    session = ctx.obj['session']
+
+    user = session.scalar(select(User).where(User.name == name))
+    if user:
+        pass_to_check = new_pass()
+        checking = passlib.hash.argon2.verify(
+            pass_to_check, user.password)
+        login_success(user.name)
+        if not checking:
+            wrong_pass()
+            raise click.UsageError("Password does not match with user.")
+    else:
+        username_not_found(name)
+        raise click.UsageError("User not found.")
     session.close()
