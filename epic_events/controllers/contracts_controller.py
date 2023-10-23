@@ -33,35 +33,33 @@ def list(ctx, id):
         contracts_table(contract_list)
 
 
-"""
 @contract.command()
-@click.option('--table', '-t', help='Name of the table to create in', required=True)
 @click.option('--client', '-c', help='Client ID', required=True)
 @click.option('--management', '-m', help='Management ID', required=True)
 @click.option('--total', '-ta', help='Total Amount', required=True)
 @click.option('--remain', '-r', help='Remaining Amount', required=True)
 @click.option('--status', '-s', help='Status: true or false', required=True)
 @click.pass_context
-def create_contract(ctx, table, client, management, total, remain, status):
-    conn = ctx.obj['conn']
-    cur = conn.cursor()
+def create(ctx, client, management, total, remain, status):
+    session = ctx.obj['session']
 
-    if table == 'contracts':
-        if not client or not management or not total or not remain or not status:
-            param_required()
-        else:
-            status = True if status == 'true' else False
-            new_contract = Contract(client_id=client, management_contact_id=management,
-                                    total_amount=total, remaining_amount=remain,
-                                    status=status)
+    if not client or not management or not total or not remain or not status:
+        param_required()
 
-            session.add(new_contract)
-            session.commit()
-            created_succes(new_contract)
+    else:
+        status = True if status == 'true' else False
+        new_contract = Contract(client_id=client, management_contact_id=management,
+                                total_amount=total, remaining_amount=remain,
+                                status=status)
 
-    cur.close()
-    conn.close()
+        session.add(new_contract)
+        session.commit()
+        created_succes(new_contract)
 
+    session.close()
+
+
+"""
 
 @contract.command()
 @click.option('--table', '-t', help='Name of the table to create in', required=True)
