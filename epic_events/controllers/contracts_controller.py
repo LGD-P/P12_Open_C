@@ -98,30 +98,21 @@ def modify(ctx, id, client, management, total, remain, status):
     session.close()
 
 
-"""
-
-
 @contract.command()
-@click.option('--table', '-t', help='Name of the table to query', required=True)
 @click.option('--id', '-i', help='Id of the contract you want to delete', required=True)
 @click.pass_context
-def delete_contract(ctx, table, id):
-    conn = ctx.obj['conn']
-    cur = conn.cursor()
+def delete(ctx, id):
+    session = ctx.obj['session']
 
-    if table == 'contracts':
-        contract_to_delete = session.query(
-            Contract).filter_by(id=id).first()
+    contract_to_delete = session.query(
+        Contract).filter_by(id=id).first()
 
-        if contract_to_delete:
-            session.delete(contract_to_delete)
-            session.commit()
-            deleted_success(id, contract_to_delete)
+    if contract_to_delete:
+        session.delete(contract_to_delete)
+        session.commit()
+        deleted_success(id, contract_to_delete)
 
-        else:
-            contract_not_found(id)
     else:
-        table_not_found(table)
-    cur.close()
-    conn.close()
-"""
+        contract_not_found(id)
+
+    session.close()
