@@ -59,10 +59,7 @@ def create(ctx, client, management, total, remain, status):
     session.close()
 
 
-"""
-
 @contract.command()
-@click.option('--table', '-t', help='Name of the table to create in', required=True)
 @click.option('--id', '-i', help='Contract ID')
 @click.option('--client', '-c', help='Client ID')
 @click.option('--management', '-m', help='Management ID')
@@ -70,38 +67,38 @@ def create(ctx, client, management, total, remain, status):
 @click.option('--remain', '-r', help='Remaining Amount')
 @click.option('--status', '-s', help='Status: true or false')
 @click.pass_context
-def modify_contract(ctx, table, id, client, management, total, remain, status):
-    conn = ctx.obj['conn']
-    cur = conn.cursor()
+def modify(ctx, id, client, management, total, remain, status):
+    session = ctx.obj['session']
 
-    if table == 'contracts':
-        contract_to_modify = session.query(
-            Contract).filter_by(id=id).first()
+    contract_to_modify = session.query(
+        Contract).filter_by(id=id).first()
 
-        if contract_to_modify:
+    if contract_to_modify:
 
-            if client is not None:
-                contract_to_modify.client_id = client
-            if management is not None:
-                contract_to_modify.management_contact_id = management
+        if client is not None:
+            contract_to_modify.client_id = client
+        if management is not None:
+            contract_to_modify.management_contact_id = management
 
-            if total is not None:
-                contract_to_modify.total_amount = total
+        if total is not None:
+            contract_to_modify.total_amount = total
 
-            if remain is not None:
-                contract_to_modify.remaining_amount = remain
+        if remain is not None:
+            contract_to_modify.remaining_amount = remain
 
-            if status is not None:
-                contract_to_modify.status = status
+        if status is not None:
+            status = True if status == 'true' else False
+            contract_to_modify.status = status
 
-            session.commit()
-            modification_done(contract_to_modify)
-        else:
-            contract_not_found(id)
+        session.commit()
+        modification_done(contract_to_modify)
     else:
-        table_not_found(table)
+        contract_not_found(id)
 
-    cur.close()
+    session.close()
+
+
+"""
 
 
 @contract.command()
