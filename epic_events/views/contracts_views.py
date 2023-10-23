@@ -3,11 +3,11 @@ from rich.table import Table
 from rich.text import Text
 
 
-def contracts_table(contracts, table):
+def contracts_table(contracts):
     c = Console()
 
     contracts_table = Table(show_header=True, header_style="bold blue",
-                            title=f'[bold red]Table: {table.upper()}[/bold red]')
+                            title=f'[bold red]Table: CONTRACTS[/bold red]')
     contracts_table.add_column(
         Text("ID", style="bleu", justify="center", no_wrap=True), justify="center", style="yellow",
     )
