@@ -2,24 +2,12 @@ from rich.console import Console
 from rich.table import Table
 from rich.text import Text
 
-"""
-    id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False)
-    contract_id = Column(Integer, ForeignKey('contracts.id'))
-    support_contact_id = Column(Integer, ForeignKey('users.id'))
-    start_date = Column(DateTime, nullable=False)
-    end_date = Column(DateTime, nullable=False)
-    location = Column(String(250), nullable=False)
-    attendees = Column(Integer, nullable=False)
-    notes = Column(String(800))
-"""
 
-
-def events_table(events, table):
+def events_table(events):
     c = Console()
 
     events_table = Table(show_header=True, header_style="bold blue",
-                         title=f'[bold red]Table: {table.upper()}[/bold red]')
+                         title='[bold red]Table: EVENTS[/bold red]')
     events_table.add_column(
         Text("ID", style="bleu", justify="center", no_wrap=True), justify="center", style="yellow",
     )
