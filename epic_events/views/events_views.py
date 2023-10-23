@@ -39,8 +39,8 @@ def events_table(events):
     )
 
     for event in events:
-        start_date = event.start_date.strftime('%Y-%m-%d - %H:%M')
-        end_date = event.end_date.strftime('%Y-%m-%d - %H:%M')
+        start_date = event.start_date.strftime('%d-%m-%Y - %H:%M')
+        end_date = event.end_date.strftime('%d-%m-%Y - %H:%M')
 
         events_table.add_row(
             str(event.id),
@@ -68,6 +68,18 @@ def param_required():
         "'[bold red]Support contact_id[/bold red]', '[bold red]start date[/bold red][blue] "
         "'[bold red]End date[/bold red]', '[bold red]location[/bold red]' and '[bold red]Attendees[/bold red]' "
         "are required for clients creation")
+
+
+def date_param():
+    Console().print(
+        "[blue] '[bold red]Date[/bold red]'[blue], must be written like this ==> "
+        "'[bold red]YYYY-MM-DD - HH:MM [/bold red]'")
+
+
+def end_date_error():
+    Console().print(
+        "[blue] Unfortunatly you can't go back in time '[bold red]Ending Date[/bold red]' must be"
+        " after '[bold red]Starting Date[/bold red]'")
 
 
 def created_succes(event):

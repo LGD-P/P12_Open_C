@@ -1,7 +1,8 @@
+from logging import raiseExceptions
 from epic_events.models.models import Event
 from epic_events.views.events_views import (
-    events_table, table_not_found, param_required, created_succes,
-    deleted_success, event_not_found, modification_done)
+    end_date_error, events_table, table_not_found, param_required, created_succes,
+    deleted_success, event_not_found, modification_done, date_param)
 
 from datetime import datetime
 import click
@@ -35,43 +36,44 @@ def list(ctx, id):
     session.close()
 
 
-"""
-
 @event.command()
-@click.option('--table', '-t', help='Name of the table to create in', required=True)
 @click.option('--name', '-n', help='Event name', required=True)
 @click.option('--contract', '-c', help='Contract ID', required=True)
 @click.option('--support', '-su', help='Support ID', required=True)
 @click.option('--starting', '-sd', help='Starting date : format YYYY-MM-DD - HH:MM', required=True)
-@click.option('--ending', '-e', help='Ending date : format YYYY-MM-DD - HH:MM', required=True)
+@click.option('--ending', '-ed', help='Ending date : format YYYY-MM-DD - HH:MM', required=True)
 @click.option('--location', '-l', help='Location', required=True)
 @click.option('--attendees', '-a', help='Attendees', required=True)
 @click.option('--notes', '-nt', help='Notes')
 @click.pass_context
-def create_event(ctx, table, name, contract, support, starting, ending, location, attendees, notes):
-    conn = ctx.obj['conn']
-    cur = conn.cursor()
+def create(ctx, name, contract, support, starting, ending, location, attendees, notes):
+    session = ctx.obj['session']
 
-    if table == 'events':
-        # a vérifier...
-        if not name or not contract or not support or not starting or not ending or not location or not attendees:
-            param_required()
-        else:
+    try:
+        starting = datetime.strptime(starting, '%Y-%m-%d - %H:%M')
+    except ValueError:
+        return date_param()
 
-            starting = datetime.strptime(starting, '%Y-%m-%d - %H:%M')
-            ending = datetime.strptime(ending, '%Y-%m-%d - %H:%M')
+    try:
+        ending = datetime.strptime(ending, '%Y-%m-%d - %H:%M')
+    except ValueError:
+        return date_param()
 
-            new_event = Event(name=name, contract_id=contract, support_contact_id=support,
-                                start_date=starting, end_date=ending, location=location,
-                                attendees=attendees, notes=notes)
+    if ending < starting:
+        return end_date_error()
 
-            session.add(new_event)
-            session.commit()
-            created_succes(new_event)
+    new_event = Event(name=name, contract_id=contract, support_contact_id=support,
+                      start_date=starting, end_date=ending, location=location,
+                      attendees=attendees, notes=notes)
 
-        cur.close()
-        conn.close()
+    session.add(new_event)
+    session.commit()
+    created_succes(new_event)
 
+    session.close()
+
+
+"""
 @event.command()
 @click.option('--table', '-t', help='Name of the table to create in', required=True)
 @click.option('--id', '-i', help='Event ID', required=True)
