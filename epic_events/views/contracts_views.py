@@ -7,7 +7,7 @@ def contracts_table(contracts):
     c = Console()
 
     contracts_table = Table(show_header=True, header_style="bold blue",
-                            title=f'[bold red]Table: CONTRACTS[/bold red]')
+                            title='[bold red]Table: CONTRACTS[/bold red]')
     contracts_table.add_column(
         Text("ID", style="bleu", justify="center", no_wrap=True), justify="center", style="yellow",
     )
