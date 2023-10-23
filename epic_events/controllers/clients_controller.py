@@ -69,7 +69,7 @@ def create(ctx, name, email, phone, company):
 def modify(ctx, id, name, email, phone, company):
     session = ctx.obj['session']
 
-    client_to_modify = session.query(Client).filter_by(id=id).first()
+    client_to_modify = session.scalar(select(Client).where(Client.id == id))
 
     if client_to_modify:
 
@@ -98,7 +98,7 @@ def modify(ctx, id, name, email, phone, company):
 def delete(ctx, id):
     session = ctx.obj['session']
 
-    client_to_delete = session.query(Client).filter_by(id=id).first()
+    client_to_delete = session.scalar(select(Client).where(Client.id == id))
 
     if client_to_delete:
         session.delete(client_to_delete)

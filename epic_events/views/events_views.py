@@ -90,7 +90,7 @@ def created_succes(event):
 
 def deleted_success(id, event):
     Console().print(
-        f"[blue] Event with ID '[bold red]{id}[/bold red]', '[bold blue]{event.name}[/bold blue]' "
+        f"[blue] Event with ID '[bold red]{id}[/bold red]', '[bold red]{event.name}[/bold red]' "
         "has been '[bold red]deleted[/bold red]'.")
 
 

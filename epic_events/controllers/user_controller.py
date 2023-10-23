@@ -129,8 +129,7 @@ def create(ctx, name, email, role, password):
 def modify(ctx, id, name, email, role, password):
     session = ctx.obj['session']
 
-    user_to_modify = session.query(User).filter_by(id=id).first()
-
+    user_to_modify = session.scalar(select(User).where(User.id == id))
     if user_to_modify:
 
         if name is not None:
@@ -161,7 +160,7 @@ def modify(ctx, id, name, email, role, password):
 def delete(ctx, id):
     session = ctx.obj['session']
 
-    user_to_delete = session.query(User).filter_by(id=id).first()
+    user_to_delete = session.scalar(select(User).where(User.id == id))
 
     if user_to_delete:
         session.delete(user_to_delete)

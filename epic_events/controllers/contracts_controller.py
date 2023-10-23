@@ -15,7 +15,7 @@ def contract(ctx):
 
 
 @contract.command()
-@click.option("--id", "-i", help="id of the contact search", )
+@click.option("--id", "-i", help="id of the event to search", )
 @click.pass_context
 def list(ctx, id):
     session = ctx.obj['session']
@@ -70,8 +70,8 @@ def create(ctx, client, management, total, remain, status):
 def modify(ctx, id, client, management, total, remain, status):
     session = ctx.obj['session']
 
-    contract_to_modify = session.query(
-        Contract).filter_by(id=id).first()
+    contract_to_modify = session.scalar(
+        select(Contract).where(Contract.id == id))
 
     if contract_to_modify:
 
@@ -104,8 +104,8 @@ def modify(ctx, id, client, management, total, remain, status):
 def delete(ctx, id):
     session = ctx.obj['session']
 
-    contract_to_delete = session.query(
-        Contract).filter_by(id=id).first()
+    contract_to_delete = session.scalar(
+        select(Contract).where(Contract.id == id))
 
     if contract_to_delete:
         session.delete(contract_to_delete)
