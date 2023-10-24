@@ -8,8 +8,15 @@ from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy.ext.declarative import declarative_base
 import passlib.hash
 
+import os
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
+
 engine = create_engine(
-    'postgresql://postgres:MyPassIs23Word@localhost:5432/postgres')
+    os.environ.get("DATABASE_URL"))
 
 Base = declarative_base()
 
