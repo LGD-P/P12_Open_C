@@ -7,6 +7,10 @@ import re
 import passlib.hash
 import click
 from sqlalchemy import select
+import jwt
+import secrets
+from dotenv import find_dotenv
+import os
 
 
 @click.group()
@@ -175,6 +179,15 @@ def delete(ctx, id):
     session.close()
 
 
+def update_secret_key_in_env_file(secret_key):
+    pass
+
+
+def generate_token(user_info, secret_key):
+    token = jwt.encode(user_info, secret_key, algorithm='HS256')
+    return token
+
+
 @user.command()
 @click.option('--name', '-n', help='Id of the user you want to delete', required=True)
 @click.option('--password', '-P', help='Password of the user you want to delete', nargs=0)
@@ -188,6 +201,18 @@ def login(ctx, name, password):
         checking = passlib.hash.argon2.verify(
             pass_to_check, user.password)
         login_success(user.name)
+
+        paylod = {
+            'username': user.name,
+            'email': user.email,
+            'role': user.role
+        }
+        secret_key = secrets.token_hex(16)
+
+        token = generate_token(paylod, secret_key)
+
+        upadte_secret = update_secret_key_in_env_file(secret_key)
+
         if not checking:
             wrong_pass()
             raise click.UsageError("Password does not match with user.")
