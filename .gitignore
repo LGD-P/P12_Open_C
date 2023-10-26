@@ -1,0 +1,6 @@
+poetry.lock
+trash
+pgdata
+__pycache__
+.env
+temporary_t.txt
