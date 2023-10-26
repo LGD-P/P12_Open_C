@@ -180,12 +180,38 @@ def delete(ctx, id):
 
 
 def update_secret_key_in_env_file(secret_key):
-    pass
+    env_path = ".env"
+    with open(env_path, 'r') as file:
+        lines = file.readlines()
+        for i in range(len(lines)):
+            if lines[i].startswith('SECRET_KEY='):
+                lines[i] = f'SECRET_KEY={secret_key}\n'
+    with open(env_path, 'w') as file:
+        file.writelines(lines)
 
 
 def generate_token(user_info, secret_key):
     token = jwt.encode(user_info, secret_key, algorithm='HS256')
     return token
+
+
+def get_token_in_temp(token):
+    folder_path = 'temp'
+    file_path = os.path.join(folder_path, 'temporary_t.txt')
+
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+
+    if not os.listdir(folder_path):
+        with open(file_path, 'w') as file:
+            file.write(f"TOKEN={token}\n")
+    else:
+        for filename in os.listdir(folder_path):
+            file_path_to_delete = os.path.join(folder_path, filename)
+            os.unlink(file_path_to_delete)
+
+        with open(file_path, 'w') as file:
+            file.write(f"TOKEN={token}\n")
 
 
 @user.command()
@@ -211,7 +237,9 @@ def login(ctx, name, password):
 
         token = generate_token(paylod, secret_key)
 
-        upadte_secret = update_secret_key_in_env_file(secret_key)
+        update_secret_key_in_env_file(secret_key)
+
+        get_token_in_temp(token)
 
         if not checking:
             wrong_pass()
