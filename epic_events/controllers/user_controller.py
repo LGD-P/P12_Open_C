@@ -1,4 +1,4 @@
-from epic_events.models.models import User
+from epic_events.models.user import User
 from epic_events.views.users_view import (
     param_not_required, users_table, created_succes, deleted_success, user_not_found,
     param_required, invalid_email, invalid_pass, invalid_role, modification_done,
@@ -9,7 +9,6 @@ import click
 from sqlalchemy import select
 import jwt
 import secrets
-from dotenv import find_dotenv
 import os
 
 

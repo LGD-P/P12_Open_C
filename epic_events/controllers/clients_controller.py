@@ -1,4 +1,4 @@
-from epic_events.models.models import Client
+from epic_events.models.client import Client
 from epic_events.views.clients_views import (
     clients_table, param_required, created_succes,
     deleted_success, client_not_found, modification_done)
@@ -41,7 +41,7 @@ def list(ctx, id):
 def create(ctx, name, email, phone, company):
     session = ctx.obj['session']
 
-    if not name or not email or not phone or not company:
+    if not name or not email or not phone:
         param_required()
     else:
         creation = datetime.now()

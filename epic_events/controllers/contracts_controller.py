@@ -1,4 +1,4 @@
-from epic_events.models.models import Contract
+from epic_events.models.contract import Contract
 from epic_events.views.contracts_views import (contracts_table, param_required,
                                                created_succes, deleted_success, contract_not_found,
                                                modification_done)

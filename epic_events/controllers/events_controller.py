@@ -1,4 +1,4 @@
-from epic_events.models.models import Event
+from epic_events.models.event import Event
 from epic_events.views.events_views import (
     end_date_error, events_table, created_succes,
     deleted_success, event_not_found, modification_done, date_param)
