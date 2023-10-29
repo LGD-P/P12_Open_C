@@ -1,7 +1,6 @@
 from epic_events.models.event import Event
-from epic_events.views.events_views import (
-    end_date_error, events_table, created_succes,
-    deleted_success, event_not_found, modification_done, date_param)
+from epic_events.views.events_views import (end_date_error, events_table, created_succes,
+                                            deleted_success, event_not_found, modification_done, date_param)
 
 from datetime import datetime
 import click
@@ -31,8 +30,6 @@ def list(ctx, id):
             select(Event).order_by(Event.id)).all()
 
         events_table(event_list)
-
-    session.close()
 
 
 @event.command()
@@ -68,8 +65,6 @@ def create(ctx, name, contract, support, starting, ending, location, attendees, 
     session.add(new_event)
     session.commit()
     created_succes(new_event)
-
-    session.close()
 
 
 @event.command()
@@ -119,8 +114,6 @@ def modify(ctx, id, name, contract, support, starting, ending,
     else:
         event_not_found(id)
 
-    session.close()
-
 
 @event.command()
 @click.option('--id', '-i', help='Id of the event you want to delete', required=True)
@@ -137,5 +130,3 @@ def delete(ctx, id):
 
     else:
         event_not_found(id)
-
-    session.close()

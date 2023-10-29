@@ -1,55 +1,23 @@
 from epic_events.models.user import User
-from epic_events.views.users_view import (
-    param_not_required, users_table, created_succes, deleted_success, user_not_found,
-    param_required, invalid_email, invalid_pass, invalid_role, modification_done,
-    input_old_pass, wrong_pass, new_pass, username_not_found, login_success)
-import re
+from epic_events.views.users_view import (users_table, created_succes, deleted_success, user_not_found,
+                                          modification_done, wrong_pass, new_pass, username_not_found, login_success,
+                                          invalid_pass, invalid_role, invalid_email)
+
+from epic_events.utils import (
+    generate_token, get_token_in_temp)
+
+
 import passlib.hash
 import click
 from sqlalchemy import select
-import jwt
-import secrets
 import os
+import re
 
 
 @click.group()
 @click.pass_context
 def user(ctx):
     pass
-
-
-def pass_is_valid(ctx, param, value):
-    regex = re.compile(
-        "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$")
-    if value != ctx.params.get('password', None) and re.fullmatch(regex, value) is None:
-        invalid_pass()
-        raise click.UsageError(
-            "Invalid password. Passwords do not match or not strong enough.")
-    return value
-
-
-def change_password(user_to_modify, ctx):
-    initial_password = input_old_pass()
-    checking = passlib.hash.argon2.verify(
-        initial_password, user_to_modify.password)
-
-    if not checking:
-        wrong_pass()
-        raise click.UsageError("Password does not match with user.")
-
-    new_password = new_pass()
-    pass_is_valid(ctx, param=None, value=new_password)
-
-    new_password = passlib.hash.argon2.using(rounds=12).hash(new_password)
-
-    repete_password = new_pass()
-    confirmed = passlib.hash.argon2.verify(repete_password, new_password)
-
-    if not confirmed:
-        wrong_pass()
-        raise click.UsageError("You confirmed a wrong password.")
-
-    return new_password
 
 
 def email_is_valid(ctx, param, value):
@@ -69,6 +37,38 @@ def role_is_valid(ctx, param, value):
     else:
         invalid_role()
         raise click.UsageError("Invalid role")
+
+
+def pass_is_valid(ctx, param, value):
+    regex = re.compile(
+        "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$")
+    if value != ctx.params.get('password', None) and re.fullmatch(regex, value) is None:
+        invalid_pass()
+        raise click.UsageError(
+            "Invalid password. Passwords do not match or not strong enough.")
+    return value
+
+
+def change_password(user_to_modify, ctx):
+
+    checking = User().confirm_pass(user_to_modify.password)
+
+    if not checking:
+        wrong_pass()
+        raise click.UsageError("Password does not match with user.")
+
+    new_password = new_pass()
+    pass_is_valid(ctx, param=None, value=new_password)
+
+    new_password = User().hash_pass(new_password)
+
+    confirmed = User().confirm_pass(new_password)
+
+    if not confirmed:
+        wrong_pass()
+        raise click.UsageError("You confirmed a wrong password.")
+
+    return new_password
 
 
 @user.command()
@@ -103,25 +103,13 @@ def list(ctx, id):
 def create(ctx, name, email, role, password):
     session = ctx.obj['session']
 
-    if not name or not email or not role:
-        param_required()
+    hashed_password = User().hash_pass(password)
 
-    if password is not None:
-        param_not_required()
-        raise click.UsageError(
-            "The '-P' option is not required. Password will automaticly be asked don\'t use this option")
-    else:
-
-        hashed_password = passlib.hash.argon2.using(
-            rounds=12).hash(password)
-
-        new_user = User(name=name, email=email,
-                        role=role, password=hashed_password)
-        session.add(new_user)
-        session.commit()
-        created_succes(new_user)
-
-    session.close()
+    new_user = User(name=name, email=email,
+                    role=role, password=hashed_password)
+    session.add(new_user)
+    session.commit()
+    created_succes(new_user)
 
 
 @user.command()
@@ -156,7 +144,6 @@ def modify(ctx, id, name, email, role, password):
         modification_done(user_to_modify)
     else:
         user_not_found(id)
-    session.close()
 
 
 @user.command()
@@ -175,43 +162,6 @@ def delete(ctx, id):
     else:
         user_not_found(id)
 
-    session.close()
-
-
-def update_secret_key_in_env_file(secret_key):
-    env_path = ".env"
-    with open(env_path, 'r') as file:
-        lines = file.readlines()
-        for i in range(len(lines)):
-            if lines[i].startswith('SECRET_KEY='):
-                lines[i] = f'SECRET_KEY={secret_key}\n'
-    with open(env_path, 'w') as file:
-        file.writelines(lines)
-
-
-def generate_token(user_info, secret_key):
-    token = jwt.encode(user_info, secret_key, algorithm='HS256')
-    return token
-
-
-def get_token_in_temp(token):
-    folder_path = 'temp'
-    file_path = os.path.join(folder_path, 'temporary_t.txt')
-
-    if not os.path.exists(folder_path):
-        os.makedirs(folder_path)
-
-    if not os.listdir(folder_path):
-        with open(file_path, 'w') as file:
-            file.write(f"TOKEN={token}\n")
-    else:
-        for filename in os.listdir(folder_path):
-            file_path_to_delete = os.path.join(folder_path, filename)
-            os.unlink(file_path_to_delete)
-
-        with open(file_path, 'w') as file:
-            file.write(f"TOKEN={token}\n")
-
 
 @user.command()
 @click.option('--name', '-n', help='Id of the user you want to delete', required=True)
@@ -228,15 +178,11 @@ def login(ctx, name, password):
         login_success(user.name)
 
         paylod = {
-            'username': user.name,
-            'email': user.email,
-            'role': user.role
+            'user_id': user.id
         }
-        secret_key = secrets.token_hex(16)
 
-        token = generate_token(paylod, secret_key)
-
-        update_secret_key_in_env_file(secret_key)
+        secret = os.environ.get("SECRET_KEY")
+        token = generate_token(paylod, secret)
 
         get_token_in_temp(token)
 
@@ -246,4 +192,3 @@ def login(ctx, name, password):
     else:
         username_not_found(name)
         raise click.UsageError("User not found.")
-    session.close()

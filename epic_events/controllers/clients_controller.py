@@ -1,7 +1,6 @@
 from epic_events.models.client import Client
-from epic_events.views.clients_views import (
-    clients_table, param_required, created_succes,
-    deleted_success, client_not_found, modification_done)
+from epic_events.views.clients_views import (clients_table, created_succes, deleted_success,
+                                             client_not_found, modification_done)
 
 from datetime import datetime
 import click
@@ -41,22 +40,17 @@ def list(ctx, id):
 def create(ctx, name, email, phone, company):
     session = ctx.obj['session']
 
-    if not name or not email or not phone:
-        param_required()
-    else:
-        creation = datetime.now()
-        last_contact = datetime.now()
-        company_name = None if company is None else company
+    creation = datetime.now()
+    last_contact = datetime.now()
+    company_name = None if company is None else company
 
-        new_client = Client(full_name=name, email=email,
-                            phone=phone, company_name=company_name,
-                            creation_date=str(creation), last_contact_date=str(last_contact)
-                            )
-        session.add(new_client)
-        session.commit()
-        created_succes(new_client)
-
-    session.close()
+    new_client = Client(full_name=name, email=email,
+                        phone=phone, company_name=company_name,
+                        creation_date=str(creation), last_contact_date=str(last_contact)
+                        )
+    session.add(new_client)
+    session.commit()
+    created_succes(new_client)
 
 
 @client.command()
@@ -107,5 +101,3 @@ def delete(ctx, id):
 
     else:
         client_not_found(id)
-
-    session.close()

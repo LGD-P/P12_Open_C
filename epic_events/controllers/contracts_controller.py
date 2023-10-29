@@ -1,7 +1,6 @@
 from epic_events.models.contract import Contract
-from epic_events.views.contracts_views import (contracts_table, param_required,
-                                               created_succes, deleted_success, contract_not_found,
-                                               modification_done)
+from epic_events.views.contracts_views import (contracts_table, created_succes, deleted_success,
+                                               contract_not_found, modification_done)
 
 import click
 
@@ -43,20 +42,14 @@ def list(ctx, id):
 def create(ctx, client, management, total, remain, status):
     session = ctx.obj['session']
 
-    if not client or not management or not total or not remain or not status:
-        param_required()
+    status = True if status == 'true' else False
+    new_contract = Contract(client_id=client, management_contact_id=management,
+                            total_amount=total, remaining_amount=remain,
+                            status=status)
 
-    else:
-        status = True if status == 'true' else False
-        new_contract = Contract(client_id=client, management_contact_id=management,
-                                total_amount=total, remaining_amount=remain,
-                                status=status)
-
-        session.add(new_contract)
-        session.commit()
-        created_succes(new_contract)
-
-    session.close()
+    session.add(new_contract)
+    session.commit()
+    created_succes(new_contract)
 
 
 @contract.command()
@@ -95,8 +88,6 @@ def modify(ctx, id, client, management, total, remain, status):
     else:
         contract_not_found(id)
 
-    session.close()
-
 
 @contract.command()
 @click.option('--id', '-i', help='Id of the contract you want to delete', required=True)
@@ -114,5 +105,3 @@ def delete(ctx, id):
 
     else:
         contract_not_found(id)
-
-    session.close()
