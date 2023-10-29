@@ -4,13 +4,11 @@ from epic_events.views.users_view import (users_table, created_succes, deleted_s
                                           invalid_pass, invalid_role, invalid_email)
 
 from epic_events.utils import (
-    generate_token, get_token_in_temp)
+    generate_token, write_token_in_temp, is_token_valid)
 
 
-import passlib.hash
 import click
 from sqlalchemy import select
-import os
 import re
 
 
@@ -172,23 +170,20 @@ def login(ctx, name, password):
 
     user = session.scalar(select(User).where(User.name == name))
     if user:
-        pass_to_check = new_pass()
-        checking = passlib.hash.argon2.verify(
-            pass_to_check, user.password)
-        login_success(user.name)
 
-        paylod = {
-            'user_id': user.id
-        }
-
-        secret = os.environ.get("SECRET_KEY")
-        token = generate_token(paylod, secret)
-
-        get_token_in_temp(token)
+        checking = User().confirm_pass(user.password)
 
         if not checking:
             wrong_pass()
             raise click.UsageError("Password does not match with user.")
+
+        else:
+            login_success(user.name)
+
+            token = generate_token(user)
+
+            write_token_in_temp(token)
+            is_token_valid()
     else:
         username_not_found(name)
         raise click.UsageError("User not found.")

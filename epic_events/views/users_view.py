@@ -114,3 +114,8 @@ def wrong_pass():
 def wrong_confirm_pass():
     Console().print(
         "[bold red '[bold red] Your confirm is wrong[/bold red]' ")
+
+
+def invalid_token():
+    Console().print(
+        "[bold red '[bold red] Invalid Token[/bold red]' ")
