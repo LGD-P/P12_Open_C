@@ -31,7 +31,7 @@ def users_table(users):
             str(user.id),
             user.name,
             user.email,
-            user.role,
+            f"{user.role.name} - Role ID = {str(user.role.id)} ",
             user.password
         )
 

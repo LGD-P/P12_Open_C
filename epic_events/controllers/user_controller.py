@@ -1,7 +1,8 @@
 from epic_events.models.user import User
+from epic_events.models.role import Role
 from epic_events.views.users_view import (users_table, created_succes, deleted_success, user_not_found,
                                           modification_done, wrong_pass, new_pass, username_not_found, login_success,
-                                          invalid_pass, invalid_role, invalid_email)
+                                          invalid_pass, invalid_email)
 
 from epic_events.utils import (
     generate_token, write_token_in_temp, is_token_valid)
@@ -26,15 +27,6 @@ def email_is_valid(ctx, param, value):
     else:
         invalid_email()
         raise click.UsageError("Invalid email.")
-
-
-def role_is_valid(ctx, param, value):
-
-    if value in ["support", "commercial", "management"]:
-        return value
-    else:
-        invalid_role()
-        raise click.UsageError("Invalid role")
 
 
 def pass_is_valid(ctx, param, value):
@@ -93,7 +85,8 @@ def list(ctx, id):
 @user.command()
 @click.option('--name', '-n', help='Name for the new object', required=True)
 @click.option('--email', '-e', help='Email for the new object', required=True, callback=email_is_valid)
-@click.option('--role', '-r', help='Role must be : support management or commercial', required=True, callback=role_is_valid)
+@click.option('--role', '-r', help='Role must be : support management or commercial',
+              required=True, callback=Role.role_is_valid)
 @click.option('--password', '-P', help='Password will automaticly be asked don\'t use this option',
               prompt=True, hide_input=True, confirmation_prompt=True, default=None,
               callback=pass_is_valid)
@@ -101,10 +94,15 @@ def list(ctx, id):
 def create(ctx, name, email, role, password):
     session = ctx.obj['session']
 
+    new_role = Role(name=role)
+    session.add(new_role)
+    session.flush()
+
     hashed_password = User().hash_pass(password)
 
     new_user = User(name=name, email=email,
-                    role=role, password=hashed_password)
+                    role=new_role, password=hashed_password)
+
     session.add(new_user)
     session.commit()
     created_succes(new_user)
@@ -131,7 +129,7 @@ def modify(ctx, id, name, email, role, password):
             user_to_modify.email = email
 
         if role is not None:
-            role = role_is_valid(ctx, None, role)
+            role = Role().role_is_valid(ctx, None, role)
             user_to_modify.role = role
 
         if password is not None:

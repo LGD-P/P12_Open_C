@@ -1,6 +1,6 @@
 from epic_events.models.base import Base
-from sqlalchemy import (Column, Integer, String)
-# from sqlalchemy.orm import relationship
+from sqlalchemy import (Column, Integer, String, ForeignKey)
+from sqlalchemy.orm import relationship
 from epic_events.views.users_view import input_old_pass
 import passlib.hash
 
@@ -11,11 +11,10 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     email = Column(String, nullable=False)
-    # role_id = Column(Integer, ForeignKey('roles.id'), nullable=False)
-    role = Column(String, nullable=False)
+    role_id = Column(Integer, ForeignKey('roles.id'), nullable=False)
     password = Column(String, nullable=False)
 
-    # role = relationship('Role', back_populates='users')
+    role = relationship('Role', back_populates='users')
 
     def hash_pass(self, password):
         hashed_password = passlib.hash.argon2.using(rounds=12).hash(password)
