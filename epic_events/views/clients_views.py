@@ -55,12 +55,6 @@ def clients_table(clients):
     c.print(clients_table)
 
 
-def param_required():
-    Console().print(
-        "[blue] '[bold red]Name[/bold red]'[blue], '[bold red]Email[/bold red]'[blue], "
-        "'[bold red]phone[/bold red]' and '[bold red]company[/bold red]' [blue] are required for clients creation")
-
-
 def created_succes(client):
     Console().print(
         f"[bold green] '[bold blue]{client.full_name.upper()}[/bold blue]'created successfully.")

@@ -62,14 +62,6 @@ def table_not_found(table):
         f"[blue] Table '[bold red]{table}[/bold red]' not found[/blue]")
 
 
-def param_required():
-    Console().print(
-        "[blue] '[bold red]Name[/bold red]'[blue], '[bold red]Contract Id [/bold red]'[blue], and "
-        "'[bold red]Support contact_id[/bold red]', '[bold red]start date[/bold red][blue] "
-        "'[bold red]End date[/bold red]', '[bold red]location[/bold red]' and '[bold red]Attendees[/bold red]' "
-        "are required for clients creation")
-
-
 def date_param():
     Console().print(
         "[blue] '[bold red]Date[/bold red]'[blue], must be written like this ==> "

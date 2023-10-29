@@ -53,12 +53,6 @@ def login_success(name):
         f"[blue] Welcome '[bold green]{name}[/bold green]' you're logged.")
 
 
-def param_required():
-    Console().print(
-        "[blue] '[bold red]Name[/bold red]'[blue], '[bold red]Email[/bold red]'[blue], and "
-        "'[bold red]role[/bold red]'[blue] are required for user creation")
-
-
 def param_not_required():
     Console().print(
         "[blue] '[bold red]-P[/bold red]'[blue] is '[bold red]not required [/bold red]'for user creation")

@@ -58,13 +58,6 @@ def table_not_found(table):
         f"[blue] Table '[bold red]{table}[/bold red]' not found[/blue]")
 
 
-def param_required():
-    Console().print(
-        "[blue] '[bold red]Client ID [/bold red]'[blue], '[bold red]Management ID [/bold red]'[blue], and "
-        "'[bold red]Total Amount[/bold red]', '[bold red]Remaining Amount[/bold red][blue] "
-        " '[bold red]Status[/bold red] are required for clients creation")
-
-
 def created_succes(contract):
     Console().print(
         f"[bold green] ID N° '[bold blue]N°{str(contract.id)}[/bold blue]' "
