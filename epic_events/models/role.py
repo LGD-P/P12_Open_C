@@ -13,8 +13,7 @@ class Role(Base):
 
     users = relationship('User', back_populates='role')
 
-    def role_is_valid(self, param, value):
-
+    def role_is_valid(self, value):
         if value in ["support", "commercial", "management"]:
             return value
         else:
