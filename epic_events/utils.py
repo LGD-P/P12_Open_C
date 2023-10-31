@@ -53,5 +53,5 @@ def is_token_valid():
 
                 return decode['user_id']
 
-            except jwt.exceptions.DecodeError:
+            except (jwt.exceptions.DecodeError, jwt.exceptions.ExpiredSignatureError):
                 invalid_token()

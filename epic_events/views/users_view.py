@@ -118,4 +118,9 @@ def wrong_confirm_pass():
 
 def invalid_token():
     Console().print(
-        "[bold red '[bold red] Invalid Token[/bold red]' ")
+        "[bold red '[bold red] Invalid Token please logged in again[/bold red]' ")
+
+
+def logout_success():
+    Console().print(
+        "'[bold green]You have been successfully logout out[/bold green]' ")

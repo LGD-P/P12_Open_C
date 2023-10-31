@@ -2,7 +2,7 @@ from epic_events.models.user import User
 from epic_events.models.role import Role
 from epic_events.views.users_view import (users_table, created_succes, deleted_success, user_not_found,
                                           modification_done, wrong_pass, new_pass, username_not_found, login_success,
-                                          invalid_pass, invalid_email)
+                                          invalid_pass, invalid_email, logout_success)
 
 from epic_events.utils import (
     generate_token, write_token_in_temp, is_token_valid)
@@ -11,6 +11,7 @@ from epic_events.utils import (
 import click
 from sqlalchemy import select
 import re
+import os
 
 
 @click.group()
@@ -185,3 +186,18 @@ def login(ctx, name, password):
     else:
         username_not_found(name)
         raise click.UsageError("User not found.")
+
+
+@user.command()
+@click.pass_context
+def logout(ctx):
+    ctx.obj['session']
+    folder_path = 'temp'
+
+    file_path_to_delete = os.path.join(folder_path, 'temporary.txt')
+
+    for filename in os.listdir(folder_path):
+        file_path_to_delete = os.path.join(folder_path, filename)
+        os.unlink(file_path_to_delete)
+
+    logout_success()

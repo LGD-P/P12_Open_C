@@ -1,7 +1,7 @@
 from epic_events.models.role import Role
 from epic_events.models.user import User
 from epic_events.views.roles_views import (
-    id_not_found, role_not_found, roles_table, created_succes, deleted_success, modification_done)
+    id_not_found, role_not_found, roles_table, created_succes, deleted_success)
 
 
 import click

@@ -14,7 +14,7 @@ def client(ctx):
 
 
 @client.command()
-@click.option('--id', '-i', help='Name of the table to query', required=False)
+@click.option('--id', '-i', help='ID of client to query', required=False)
 @click.pass_context
 def list(ctx, id):
     session = ctx.obj['session']
