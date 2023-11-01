@@ -1,5 +1,6 @@
 import click
 from epic_events.database import database
+from epic_events.utils import user_logged
 from epic_events.controllers.user_controller import user
 from epic_events.controllers.clients_controller import client
 from epic_events.controllers.contracts_controller import contract
@@ -10,6 +11,7 @@ from epic_events.controllers.roles_controller import role
 @click.group()
 @click.pass_context
 @database
+@user_logged
 def app(ctx):
     pass
 

@@ -1,8 +1,11 @@
 from epic_events.views.users_view import invalid_token
-
+import click
 import jwt
 import os
+from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
+
+load_dotenv()
 
 
 def generate_token(user):
@@ -39,8 +42,9 @@ def write_token_in_temp(token):
 def is_token_valid():
     script_directory = os.path.dirname(os.path.abspath(__file__))
 
+    token_path = os.environ.get("TEMP_TOKEN_PATH")
     token = os.path.join(
-        script_directory, "/home/lgd-/Documents/Open_C/Original/P12_Open_C/P12_Open_C/epic_events/temp/temporary.txt")
+        script_directory, token_path)
 
     with open(token, "r") as f:
         for line in f:
@@ -55,3 +59,36 @@ def is_token_valid():
 
             except (jwt.exceptions.DecodeError, jwt.exceptions.ExpiredSignatureError):
                 invalid_token()
+
+
+def user_logged(func):
+    def if_token_valid(ctx, *args, **kwargs):
+        script_directory = os.path.dirname(os.path.abspath(__file__))
+        temp_path = os.environ.get("TEMP_TOKEN_PATH")
+        token = os.path.join(
+            script_directory, temp_path)
+
+        if not os.path.exists(token):
+            invalid_token()
+            raise click.Abort()
+
+        with open(token, "r") as f:
+            for line in f:
+                if line.startswith("TOKEN="):
+                    token = line.split("=", 1)[1].strip()
+                    secret = os.environ.get("SECRET_KEY")
+
+                if token is None:
+                    invalid_token()
+                    raise click.Abort()
+
+                try:
+                    decode = jwt.decode(token, secret, algorithms=["HS256"])
+                    user_id = decode['user_id']
+                    ctx.obj['user_id'] = user_id
+                    return func(ctx, *args, **kwargs)
+                except (jwt.exceptions.DecodeError, jwt.exceptions.ExpiredSignatureError):
+                    invalid_token()
+                    raise click.Abort()
+
+    return if_token_valid

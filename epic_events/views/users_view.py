@@ -99,7 +99,7 @@ def modification_done(user):
 
 
 def input_old_pass():
-    check = getpass.getpass('Enter the old password: ')
+    check = getpass.getpass('Enter your password: ')
     return check
 
 
@@ -120,7 +120,7 @@ def wrong_confirm_pass():
 
 def invalid_token():
     Console().print(
-        "[bold red '[bold red] Invalid Token please logged in again[/bold red]' ")
+        "[bold green]'[bold red] Invalid Token [/bold red] please logged in again' ")
 
 
 def logout_success():
