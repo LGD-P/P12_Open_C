@@ -13,7 +13,7 @@ class Role(Base):
 
     users = relationship('User', back_populates='role')
 
-    def role_is_valid(self, value):
+    def role_is_valid(ctx, param, value):
         if value in ["support", "commercial", "management"]:
             return value
         else:
@@ -24,4 +24,5 @@ class Role(Base):
         return f"<Role(id={self.id}, name='{self.name}', relationship='{self.users}'>"
 
     def __str__(self):
-        return f"Role(id={self.id}, name='{self.name}', relationship='{self.users}')"
+        for user in self.users:
+            return f"Role(id={self.id}, name='{self.name}', relationship='{self.users}')"

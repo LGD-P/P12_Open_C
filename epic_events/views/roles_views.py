@@ -15,15 +15,16 @@ def roles_table(roles):
         Text("role_name", style="blue", justify="center", no_wrap=True), justify="center", style="green"
     )
     roles_table.add_column(
-        Text("Backlink to User", style="blue", justify="center", no_wrap=True), justify="center", style="green"
+        Text("Backlink to User", style="blue", justify="center", no_wrap=True), justify="left", style="green"
     )
 
     for role in roles:
+        user = f"[bold blue] User ID : [bold yellow]{role.users[0].id}[/bold yellow] - "\
+            f"Name : [bold green]{role.users[0].name}[/bold green]"
         roles_table.add_row(
             str(role.id),
             role.name,
-            str(role.users),
-            # f"ID : {role.users[0].id} - Name : {role.users[0].name}",
+            user,
         )
 
     c.print(roles_table)

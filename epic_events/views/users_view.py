@@ -10,7 +10,7 @@ def users_table(users):
     user_table = Table(show_header=True, header_style="bold blue",
                        title='[bold red]Table: USERS[/bold red]')
     user_table.add_column(
-        Text("ID", style="bleu", justify="center", no_wrap=True), justify="left", style="yellow",
+        Text("ID", style="bleu", justify="center", no_wrap=True), justify="left", style="bold yellow",
     )
     user_table.add_column(
         Text("Name", style="blue", justify="center", no_wrap=True), justify="left", style="green"
@@ -19,19 +19,21 @@ def users_table(users):
         Text("Email", style="blue", justify="center", no_wrap=True), justify="left", style="green"
     )
     user_table.add_column(
-        Text("Role", style="blue", justify="center", no_wrap=True), justify="left", style="green"
+        Text("Backlink to Role", style="blue", justify="center", no_wrap=True), justify="left", style="green"
     )
     user_table.add_column(
         Text("Password", style="blue", justify="center", no_wrap=True), justify="left", style="red"
     )
 
     for user in users:
+        roles = f"[bold blue] ID : [bold yellow]{user.role.id}[/bold yellow] - "\
+            f"type : [bold green]{user.role.name}[/bold green]"
         user.password = "****" if "$argon2" in user.password else user.password
         user_table.add_row(
             str(user.id),
             user.name,
             user.email,
-            f"{user.role.name} - Role ID = {str(user.role.id)} ",
+            roles,
             user.password
         )
 
