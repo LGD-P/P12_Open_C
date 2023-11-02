@@ -61,7 +61,7 @@ def is_token_valid():
                 invalid_token()
 
 
-def user_logged(func):
+def is_user_logged(func):
     def if_token_valid(ctx, *args, **kwargs):
         script_directory = os.path.dirname(os.path.abspath(__file__))
         temp_path = os.environ.get("TEMP_TOKEN_PATH")
