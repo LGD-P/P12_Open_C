@@ -56,9 +56,10 @@ def contracts_table(contracts):
             str(contract.total_amount),
             str(contract.remaining_amount),
             creation_date,
-            status
+            status, end_section=True
         )
 
+    print("\n")
     c.print(contracts_table, justify="center")
 
 

@@ -59,9 +59,10 @@ def clients_table(clients):
             company_name,
             creation_date,
             last_contact_date,
-            commercial_contact_id
+            commercial_contact_id, end_section=True
         )
 
+    print("\n")
     c.print(clients_table, justify="center")
 
 

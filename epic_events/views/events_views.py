@@ -60,9 +60,9 @@ def events_table(events):
             end_date,
             event.location,
             str(event.attendees),
-            event.notes
+            event.notes, end_section=True
         )
-
+    print("\n")
     c.print(events_table, justify="center")
 
 

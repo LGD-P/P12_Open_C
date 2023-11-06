@@ -19,15 +19,18 @@ def roles_table(roles):
         justify="left", style="green")
 
     for role in roles:
-        user = f"[bold blue] User ID : [bold yellow]{role.users[0].id}"
-        f"[/bold yellow] - Name : [bold green]{role.users[0].name}"
-        "[/bold green]"
+        for _ in role.users:
+            user = "\n".join([f"[bold blue] User ID : "
+                              f"[bold yellow]{user.id}[/bold yellow] - Name : "
+                              f"[bold green]{user.name}[/bold green]" for user
+                              in role.users])
+
         roles_table.add_row(
             str(role.id),
-            role.name,
-            user,
+            role.name.upper(),
+            user, end_section=True
         )
-
+    print("\n")
     c.print(roles_table, justify="center")
 
 

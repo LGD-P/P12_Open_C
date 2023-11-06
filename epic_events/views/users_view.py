@@ -39,9 +39,9 @@ def users_table(users):
             user.name,
             user.email,
             roles,
-            user.password
+            user.password, end_section=True
         )
-
+    print("\n")
     c.print(user_table, justify="center")
 
 
@@ -77,7 +77,7 @@ def created_succes(user):
 def deleted_success(id, user):
     Console().print(
         f"[blue] User with ID '[bold red]{id}[/bold red]', "
-        "'[bold red]{user.name.upper()}[/bold red]' "
+        f"'[bold red]{user.name.upper()}[/bold red]' "
         "has been '[bold red]deleted[/bold red]'.")
 
 
@@ -154,3 +154,4 @@ def logged_as(user):
     Console().print(
         f"[blue] [green]Logged as :[/green] {user}", style='italic',
         justify='right')
+    print("\n")
