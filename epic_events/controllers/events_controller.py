@@ -1,4 +1,6 @@
+from epic_events.models.user import User
 from epic_events.models.event import Event
+from epic_events.views.users_view import logged_as
 from epic_events.views.events_views import (end_date_error, events_table,
                                             created_succes, deleted_success,
                                             event_not_found, modification_done,
@@ -20,18 +22,25 @@ def event(ctx):
 @click.pass_context
 def list(ctx, id):
     session = ctx.obj['session']
-
-    if id:
-        event = session.scalar(select(Event).where(Event.id == id))
-        if event is None:
-            event_not_found(id)
+    try:
+        user_logged = session.scalar(
+            select(User).where(User.id == ctx.obj['user_id'].id)
+        )
+        if id:
+            event = session.scalar(select(Event).where(Event.id == id))
+            if event is None:
+                event_not_found(id)
+            else:
+                events_table([event])
         else:
-            events_table([event])
-    else:
-        event_list = session.scalars(
-            select(Event).order_by(Event.id)).all()
+            event_list = session.scalars(
+                select(Event).order_by(Event.id)).all()
 
-        events_table(event_list)
+            events_table(event_list)
+            logged_as(user_logged.name)
+
+    except KeyError:
+        pass
 
 
 @event.command()

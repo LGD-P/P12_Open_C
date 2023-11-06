@@ -83,11 +83,10 @@ def list(ctx, id):
                 select(User).order_by(User.id)).all()
 
             users_table(users_list)
+            logged_as(user_logged.name)
 
     except KeyError:
         pass
-
-    logged_as(user_logged.name)
 
 
 @user.command()

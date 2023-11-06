@@ -1,4 +1,6 @@
+from epic_events.models.user import User
 from epic_events.models.contract import Contract
+from epic_events.views.users_view import logged_as
 from epic_events.views.contracts_views import (contracts_table, created_succes,
                                                deleted_success,
                                                contract_not_found,
@@ -20,18 +22,24 @@ def contract(ctx):
 @click.pass_context
 def list(ctx, id):
     session = ctx.obj['session']
-
-    if id:
-        contract = session.scalar(select(Contract).where(Contract.id == id))
-        if contract is None:
-            contract_not_found(id)
+    try:
+        user_logged = session.scalar(
+            select(User).where(User.id == ctx.obj['user_id'].id))
+        if id:
+            contract = session.scalar(
+                select(Contract).where(Contract.id == id))
+            if contract is None:
+                contract_not_found(id)
+            else:
+                contracts_table([contract])
         else:
-            contracts_table([contract])
-    else:
-        contract_list = session.scalars(
-            select(Contract).order_by(Contract.id)).all()
+            contract_list = session.scalars(
+                select(Contract).order_by(Contract.id)).all()
 
-        contracts_table(contract_list)
+            contracts_table(contract_list)
+            logged_as(user_logged.name)
+    except KeyError:
+        pass
 
 
 @contract.command()

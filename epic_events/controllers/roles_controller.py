@@ -20,21 +20,25 @@ def role(ctx):
 @click.pass_context
 def list(ctx, id):
     session = ctx.obj['session']
-    user_logged = session.scalar(
-        select(User).where(User.id == ctx.obj['user_id'].id))
 
-    if id:
-        role = session.scalar(select(Role).where(Role.id == id))
-        if role is None:
-            role_not_found(id)
+    try:
+        user_logged = session.scalar(
+            select(User).where(User.id == ctx.obj['user_id'].id))
+
+        if id:
+            role = session.scalar(select(Role).where(Role.id == id))
+            if role is None:
+                role_not_found(id)
+            else:
+                roles_table([role])
         else:
-            roles_table([role])
-    else:
-        roles_list = session.scalars(
-            select(Role).order_by(Role.id)).all()
+            roles_list = session.scalars(
+                select(Role).order_by(Role.id)).all()
 
-        roles_table(roles_list)
-        logged_as(user_logged.name)
+            roles_table(roles_list)
+            logged_as(user_logged.name)
+    except KeyError:
+        pass
 
 
 @role.command()
