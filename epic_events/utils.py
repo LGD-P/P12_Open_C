@@ -60,7 +60,6 @@ def check_authentication(func):
                     secret = os.environ.get("SECRET_KEY")
 
                 if token is None:
-                    expired_token()
                     return None
 
                 try:
@@ -71,10 +70,8 @@ def check_authentication(func):
                     return user
 
                 except jwt.exceptions.DecodeError:
-                    expired_token()
                     return None
                 except jwt.exceptions.ExpiredSignatureError:
-                    expired_token()
                     return None
 
     def if_token_valid(ctx, *args, **kwargs):

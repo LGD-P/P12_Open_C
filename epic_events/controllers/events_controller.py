@@ -1,6 +1,6 @@
 from epic_events.models.user import User
 from epic_events.models.event import Event
-from epic_events.views.users_view import logged_as
+from epic_events.views.users_view import logged_as, invalid_token
 from epic_events.views.events_views import (end_date_error, events_table,
                                             created_succes, deleted_success,
                                             event_not_found, modification_done,
@@ -40,6 +40,7 @@ def list(ctx, id):
             logged_as(user_logged.name)
 
     except KeyError:
+        invalid_token()
         pass
 
 

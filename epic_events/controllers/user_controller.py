@@ -1,9 +1,10 @@
 from epic_events.models.user import User
 from epic_events.models.role import Role
-from epic_events.views.users_view import (logged_as, users_table,
-                                          created_succes, deleted_success,
-                                          user_not_found, modification_done,
-                                          wrong_pass, new_pass, invalid_pass,
+from epic_events.views.users_view import (invalid_token, logged_as,
+                                          users_table, created_succes,
+                                          deleted_success, user_not_found,
+                                          modification_done, wrong_pass,
+                                          new_pass, invalid_pass,
                                           invalid_email)
 
 
@@ -86,6 +87,7 @@ def list(ctx, id):
             logged_as(user_logged.name)
 
     except KeyError:
+        invalid_token()
         pass
 
 

@@ -1,6 +1,6 @@
 from epic_events.models.user import User
 from epic_events.models.contract import Contract
-from epic_events.views.users_view import logged_as
+from epic_events.views.users_view import logged_as, invalid_token
 from epic_events.views.contracts_views import (contracts_table, created_succes,
                                                deleted_success,
                                                contract_not_found,
@@ -39,6 +39,7 @@ def list(ctx, id):
             contracts_table(contract_list)
             logged_as(user_logged.name)
     except KeyError:
+        invalid_token()
         pass
 
 

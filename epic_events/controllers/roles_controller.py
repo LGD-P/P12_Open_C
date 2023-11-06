@@ -1,5 +1,6 @@
 from epic_events.models.role import Role
 from epic_events.models.user import User
+from epic_events.views.users_view import invalid_token
 from epic_events.views.roles_views import (
     id_not_found, role_not_found, roles_table, created_succes, deleted_success)
 
@@ -38,6 +39,7 @@ def list(ctx, id):
             roles_table(roles_list)
             logged_as(user_logged.name)
     except KeyError:
+        invalid_token()
         pass
 
 
