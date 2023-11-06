@@ -21,8 +21,10 @@ class Role(Base):
             raise click.UsageError("Invalid role")
 
     def __repr__(self):
-        return f"<Role(id={self.id}, name='{self.name}', relationship='{self.users}'>"
+        return f"<Role(id={self.id}, name='{self.name}', "\
+            f"relationship='{self.users}'>"
 
     def __str__(self):
         for user in self.users:
-            return f"Role(id={self.id}, name='{self.name}', relationship='{self.users}')"
+            return f"Role(id={self.id}, name='{self.name}',"\
+                f"relationship='{self.users}')"

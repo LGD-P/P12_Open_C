@@ -21,7 +21,9 @@ class Contract(Base):
     management_contact = relationship('User', backref='contracts')
 
     def __repr__(self):
-        return f"<Contract(id={self.id}, uuid='{self.uuid}', total_amount={self.total_amount}, status={self.status})>"
+        return f"<Contract(id={self.id}, uuid='{self.uuid}', "\
+            f"total_amount={self.total_amount}, status={self.status})>"
 
     def __str__(self):
-        return f"Contract(id={self.id}, uuid='{self.uuid}', total_amount={self.total_amount}, status={self.status})"
+        return f"Contract(id={self.id}, uuid='{self.uuid}', "\
+            f"total_amount={self.total_amount}, status={self.status})"

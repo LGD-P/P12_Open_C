@@ -21,7 +21,9 @@ class Client(Base):
     commercial_contact = relationship('User', backref='clients')
 
     def __repr__(self):
-        return f"<Client(id={self.id}, full_name='{self.full_name}', email='{self.email}')>"
+        return f"<Client(id={self.id}, full_name='{self.full_name}', "\
+            f"email='{self.email}')>"
 
     def __str__(self):
-        return f"Client(id={self.id}, full_name='{self.full_name}', email='{self.email}')"
+        return f"Client(id={self.id}, full_name='{self.full_name}', "\
+            f"email='{self.email}')"

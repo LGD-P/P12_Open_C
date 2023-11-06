@@ -22,7 +22,9 @@ class Event(Base):
     support_contact = relationship('User', backref='events')
 
     def __repr__(self):
-        return f"<Event(id={self.id}, name='{self.name}', start_date='{self.start_date}', end_date='{self.end_date}')>"
+        return f"<Event(id={self.id}, name='{self.name}', "\
+            f"start_date='{self.start_date}', end_date='{self.end_date}')>"
 
     def __str__(self):
-        return f"Event(id={self.id}, name='{self.name}', start_date='{self.start_date}', end_date='{self.end_date}')"
+        return f"Event(id={self.id}, name='{self.name}', "\
+            f"start_date='{self.start_date}', end_date='{self.end_date}')"

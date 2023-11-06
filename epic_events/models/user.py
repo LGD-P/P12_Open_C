@@ -27,7 +27,9 @@ class User(Base):
         return checking
 
     def __repr__(self):
-        return f"<User(id={self.id}, name='{self.name}', email='{self.email}', role='{self.role}')>"
+        return f"<User(id={self.id}, name='{self.name}', "\
+            f"email='{self.email}',role='{self.role}')>"
 
     def __str__(self):
-        return f"User(id={self.id}, name='{self.name}', email='{self.email}', role='{self.role}')"
+        return f"User(id={self.id}, name='{self.name}', "\
+            f"email='{self.email}', role='{self.role}')"
