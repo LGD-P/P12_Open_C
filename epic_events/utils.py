@@ -1,6 +1,5 @@
 from epic_events.models.user import User
 from epic_events.views.users_view import expired_token
-# import click
 from sqlalchemy import select
 
 import jwt
@@ -51,6 +50,7 @@ def check_authentication(func):
             script_directory, temp_path)
 
         if not os.path.exists(token) or not os.path.isfile(token):
+            expired_token()
             return None
 
         with open(token, "r") as f:
@@ -60,6 +60,7 @@ def check_authentication(func):
                     secret = os.environ.get("SECRET_KEY")
 
                 if token is None:
+                    expired_token()
                     return None
 
                 try:
@@ -70,6 +71,7 @@ def check_authentication(func):
                     return user
 
                 except jwt.exceptions.DecodeError:
+                    expired_token()
                     return None
                 except jwt.exceptions.ExpiredSignatureError:
                     expired_token()
