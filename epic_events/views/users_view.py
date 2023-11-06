@@ -47,70 +47,70 @@ def users_table(users):
 
 def user_not_found(id):
     Console().print(
-        f"[blue] User with ID '[bold red]{id}[/bold red]' is "
-        "'[bold red]not found[/bold red]'.")
+        f"\n[blue] User with ID '[bold red]{id}[/bold red]' is "
+        "'[bold red]not found[/bold red]'.\n")
 
 
 def username_not_found(name):
     Console().print(
-        f"[blue] User with name '[bold red]{name}[/bold red]' is "
-        "'[bold red]not found[/bold red]'.")
+        f"\n[blue] User with name '[bold red]{name}[/bold red]' is "
+        "'[bold red]not found[/bold red]'.\n")
 
 
 def login_success(name):
     Console().print(
-        f"[blue] Welcome '[bold green]{name}[/bold green]' you're logged.")
+        f"\n[blue] Welcome '[bold green]{name}[/bold green]' you're logged.\n")
 
 
 def param_not_required():
     Console().print(
-        "[blue] '[bold red]-P[/bold red]'[blue] is '[bold red]not required "
-        "[/bold red]'for user creation")
+        "\n[blue] '[bold red]-P[/bold red]'[blue] is '[bold red]not required "
+        "[/bold red]'for user creation\n")
 
 
 def created_succes(user):
     Console().print(
-        f"[bold green] '[bold blue]{user.name.upper()}[/bold blue]'created"
-        " successfully.")
+        f"\n[bold green] '[bold blue]{user.name.upper()}[/bold blue]'created"
+        " successfully.\n")
 
 
 def deleted_success(id, user):
     Console().print(
-        f"[blue] User with ID '[bold red]{id}[/bold red]', "
+        f"\n[blue] User with ID '[bold red]{id}[/bold red]', "
         f"'[bold red]{user.name.upper()}[/bold red]' "
-        "has been '[bold red]deleted[/bold red]'.")
+        "has been '[bold red]deleted[/bold red]'.\n")
 
 
 def invalid_pass():
     Console().print(
-        "[blue]Password must have at least:\n"
+        "\n[blue]Password must have at least:\n"
         "[bold red]'one capital'[/bold red] from "
         "'[bold red](A-Z)'[/bold red]\n"
         "[bold red]'one lower'[/bold red] from '[bold red](a-z)'[/bold red]\n"
         "[bold red]'one number'[/bold red] from '[bold red](0-9)'[/bold red]\n"
         "[bold red]'one special char'[/bold red] from "
         "'[bold red](#?!@$%^&*-)'[/bold red]\n"
-        "and at least [bold red]'8 characters'[/bold red]."
+        "and at least [bold red]'8 characters'[/bold red].\n"
     )
 
 
 def invalid_email():
     Console().print(
-        "[blue]The '[bold red]Email[/bold red]' you provided is "
-        "'[bold red]invalid[/bold red]'")
+        "\n[blue]The '[bold red]Email[/bold red]' you provided is "
+        "'[bold red]invalid[/bold red]'\n")
 
 
 def invalid_role():
     Console().print(
-        "'[bold red]Invalid[/bold red]'[blue] role must be ==> "
+        "\n'[bold red]Invalid[/bold red]'[blue] role must be ==> "
         "'[bold red]support[/bold red]' or '[bold red] commercial[/bold red]' "
-        "or '[bold red]management[/bold red]'.")
+        "or '[bold red]management[/bold red]'.\n")
 
 
 def modification_done(user):
     Console().print(
-        f"[bold green] '[bold blue]{user.name.upper()}[/bold blue]' "
-        "successfully modified.")
+        f"\n[bold green] '[bold blue]{user.name.upper()}[/bold blue]' "
+        "successfully modified.\n")
 
 
 def input_old_pass():
@@ -125,33 +125,32 @@ def new_pass():
 
 def wrong_pass():
     Console().print(
-        "[bold red '[bold red] You enter a wrong password[/bold red]' ")
+        "\n[bold red '[bold red] You enter a wrong password[/bold red]' \n")
 
 
 def wrong_confirm_pass():
     Console().print(
-        "[bold red '[bold red] Your confirm is wrong[/bold red]' ")
+        "\n[bold red '[bold red] Your confirm is wrong[/bold red]' \n")
 
 
 def invalid_token():
     Console().print(
-        "[bold green]'[bold red] Invalid Token [/bold red] please logged in "
-        "again' ")
+        "\n[bold green]'[bold red] Invalid Token [/bold red] please logged in "
+        "again' \n")
 
 
 def expired_token():
     Console().print(
-        "[bold green]'[bold red] Token expired[/bold red] please logged in "
-        "again' ")
+        "\n[bold green]'[bold red] Token expired[/bold red] please logged in "
+        "again '\n")
 
 
 def logout_success():
     Console().print(
-        "'[bold green]You have been successfully logout out[/bold green]' ")
+        "\n'[bold green]You have been successfully logout out[/bold green]'\n")
 
 
 def logged_as(user):
     Console().print(
-        f"[blue] [green]Logged as :[/green] {user}", style='italic',
+        f"\n[blue] [green]Logged as :[/green] {user}\n", style='italic',
         justify='right')
-    print("\n")

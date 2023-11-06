@@ -65,30 +65,30 @@ def contracts_table(contracts):
 
 def table_not_found(table):
     Console().print(
-        f"[blue] Table '[bold red]{table}[/bold red]' not found[/blue]")
+        f"\n[blue] Table '[bold red]{table}[/bold red]' not found[/blue]\n")
 
 
 def created_succes(contract):
     Console().print(
-        f"[bold green] ID N° '[bold blue]N°{str(contract.id)}[/bold blue]' "
+        f"\n[bold green] ID N° '[bold blue]N°{str(contract.id)}[/bold blue]' "
         f"Contract '[bold blue]N°{str(contract.uuid)}[/bold blue]'created "
-        "successfully.")
+        "successfully.\n")
 
 
 def deleted_success(id, contract):
     Console().print(
-        f"[blue] Client with ID '[bold red]{id}[/bold red]', UUID "
+        f"\n[blue] Client with ID '[bold red]{id}[/bold red]', UUID "
         "'[bold red]N°{str(contract.uuid)}[/bold red]' "
-        "has been '[bold red]deleted[/bold red]'.")
+        "has been '[bold red]deleted[/bold red]'.\n")
 
 
 def contract_not_found(id):
     Console().print(
-        f"[blue] Contract with ID '[bold red]{id}[/bold red]' is "
-        "'[bold red]not found[/bold red]'.")
+        f"\n[blue] Contract with ID '[bold red]{id}[/bold red]' is "
+        "'[bold red]not found[/bold red]'.\n")
 
 
 def modification_done(contract):
     Console().print(
-        f"[bold green] Contract '[bold blue]N°{str(contract.uuid)}"
-        "[/bold blue]' successfully modified.")
+        f"\n[bold green] Contract '[bold blue]N°{str(contract.uuid)}"
+        "[/bold blue]' successfully modified.\n")

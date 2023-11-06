@@ -68,24 +68,24 @@ def clients_table(clients):
 
 def created_succes(client):
     Console().print(
-        f"[bold green] '[bold blue]{client.full_name.upper()}"
-        "[/bold blue]'created successfully.")
+        f"\n[bold green] '[bold blue]{client.full_name.upper()}"
+        "[/bold blue]'created successfully.\n")
 
 
 def deleted_success(id, client):
     Console().print(
-        f"[blue] Client with ID '[bold red]{id}[/bold red]', "
+        f"\n[blue] Client with ID '[bold red]{id}[/bold red]', "
         f"'[bold red]{client.full_name.upper()}[/bold red]' "
-        "has been '[bold red]deleted[/bold red]'.")
+        "has been '[bold red]deleted[/bold red]'.\n")
 
 
 def client_not_found(id):
     Console().print(
-        f"[blue] Client with ID '[bold red]{id}[/bold red]' is "
-        "'[bold red]not found[/bold red]'.")
+        f"\n[blue] Client with ID '[bold red]{id}[/bold red]' is "
+        "'[bold red]not found[/bold red]'.\n")
 
 
 def modification_done(client):
     Console().print(
-        f"[bold green] '[bold blue]{client.full_name.upper()}"
-        "[/bold blue]' successfully modified.")
+        f"\n[bold green] '[bold blue]{client.full_name.upper()}"
+        "[/bold blue]' successfully modified.\n")

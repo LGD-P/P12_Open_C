@@ -36,30 +36,30 @@ def roles_table(roles):
 
 def created_succes(role):
     Console().print(
-        f"[bold green] '[bold blue]{role.name.upper()}[/bold blue]'created "
-        "successfully.")
+        f"\n[bold green] '[bold blue]{role.name.upper()}[/bold blue]'created "
+        "successfully.\n")
 
 
 def deleted_success(id, role):
     Console().print(
-        f"[blue] Role with ID '[bold red]{id}[/bold red]', '[bold red]"
+        f"\n[blue] Role with ID '[bold red]{id}[/bold red]', '[bold red]"
         f"{role.name.upper()}[/bold red]' "
-        "has been '[bold red]deleted[/bold red]'.")
+        "has been '[bold red]deleted[/bold red]'.\n")
 
 
 def role_not_found(id):
     Console().print(
-        f"[blue] role with ID '[bold red]{id}[/bold red]' is "
-        "'[bold red]not found[/bold red]'.")
+        f"\n[blue] role with ID '[bold red]{id}[/bold red]' is "
+        "'[bold red]not found[/bold red]'.\n")
 
 
 def id_not_found(id):
     Console().print(
-        f"[blue] the User ID '[bold red]{id}[/bold red]' is "
-        "'[bold red]not found[/bold red]'.")
+        f"\n[blue] the User ID '[bold red]{id}[/bold red]' is "
+        "'[bold red]not found[/bold red]'.\n")
 
 
 def modification_done(role):
     Console().print(
-        f"[bold green] '[bold blue]{role.name.upper()}[/bold blue]' "
-        "successfully modified.")
+        f"\n[bold green] '[bold blue]{role.name.upper()}[/bold blue]' "
+        "successfully modified.\n")
