@@ -14,7 +14,8 @@ def pass_obj(f):
 @click.option('--host', '-h', default='localhost', help='Database host')
 @click.option('--port', '-p', default=5432, help='Database port')
 @click.option('--user', '-u', default='postgres', help='Database user')
-@click.option('--password', '-P', default='MyPassIs23Word', help='Database password')
+@click.option('--password', '-P', default='MyPassIs23Word',
+              help='Database password')
 @click.option('--dbname', '-d', default='postgres', help='Database name')
 @click.pass_context
 def connect(ctx, host, port, user, password, dbname):

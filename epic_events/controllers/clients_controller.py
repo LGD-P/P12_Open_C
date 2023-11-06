@@ -1,6 +1,7 @@
 from epic_events.models.client import Client
-from epic_events.views.clients_views import (clients_table, created_succes, deleted_success,
-                                             client_not_found, modification_done)
+from epic_events.views.clients_views import (clients_table, created_succes,
+                                             deleted_success, client_not_found,
+                                             modification_done)
 
 from datetime import datetime
 import click
@@ -32,7 +33,8 @@ def list(ctx, id):
 
 
 @client.command()
-@click.option('--name', '-n', help='Full name for the new object', required=True)
+@click.option('--name', '-n', help='Full name for the new object',
+              required=True)
 @click.option('--email', '-e', help='Email for the new object', required=True)
 @click.option('--phone', '-ph', help='Phone nummber', required=True)
 @click.option('--company', '-c', help='Company name')
@@ -46,15 +48,16 @@ def create(ctx, name, email, phone, company):
 
     new_client = Client(full_name=name, email=email,
                         phone=phone, company_name=company_name,
-                        creation_date=str(creation), last_contact_date=str(last_contact)
-                        )
+                        creation_date=str(creation),
+                        last_contact_date=str(last_contact))
     session.add(new_client)
     session.commit()
     created_succes(new_client)
 
 
 @client.command()
-@click.option('--id', '-i', help='Id of the user you want to modify', required=True)
+@click.option('--id', '-i', help='Id of the user you want to modify',
+              required=True)
 @click.option('--name', '-n', help='Full name for the new object')
 @click.option('--email', '-e', help='Email for the new object')
 @click.option('--phone', '-ph', help='Phone nummber')
@@ -87,7 +90,8 @@ def modify(ctx, id, name, email, phone, company):
 
 
 @client.command()
-@click.option('--id', '-i', help='Id of the client you want to delete', required=True)
+@click.option('--id', '-i', help='Id of the client you want to delete',
+              required=True)
 @click.pass_context
 def delete(ctx, id):
     session = ctx.obj['session']

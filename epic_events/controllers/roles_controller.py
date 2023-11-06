@@ -5,6 +5,7 @@ from epic_events.views.roles_views import (
 
 
 import click
+from epic_events.views.users_view import logged_as
 from sqlalchemy import select
 
 
@@ -19,6 +20,9 @@ def role(ctx):
 @click.pass_context
 def list(ctx, id):
     session = ctx.obj['session']
+    user_logged = session.scalar(
+        select(User).where(User.id == ctx.obj['user_id'].id))
+
     if id:
         role = session.scalar(select(Role).where(Role.id == id))
         if role is None:
@@ -30,10 +34,13 @@ def list(ctx, id):
             select(Role).order_by(Role.id)).all()
 
         roles_table(roles_list)
+        logged_as(user_logged.name)
 
 
 @role.command()
-@click.option('--name', '-n', help='Must be "support" "commercial" or "manager"', required=True)
+@click.option('--name', '-n',
+              help='Must be "support" "commercial" or "manager"',
+              required=True)
 @click.option('--id', '-i', help='Full name for the new object', required=True)
 @click.pass_context
 def create(ctx, name, id):
@@ -44,10 +51,7 @@ def create(ctx, name, id):
 
     if Role.role_is_valid(ctx, name):
         if is_id is not None:
-            print(is_id)
-            print(id)
             new_role = Role(name=name)
-            print(new_role)
             new_role.users.append(is_id)
             session.add(new_role)
             session.commit()
@@ -56,35 +60,9 @@ def create(ctx, name, id):
             id_not_found(id)
 
 
-"""
 @role.command()
-@click.option('--id', '-i', help='Id of the user you want to modify', required=True)
-@click.option('--name', '-n', help='Full name for the new object')
-@click.option('--email', '-e', help='Email for the new object')
-@click.option('--phone', '-ph', help='Phone nummber')
-@click.option('--company', '-c', help='Company name')
-@click.pass_context
-def modify(ctx, id, name, email, phone, company):
-    session = ctx.obj['session']
-
-    role_to_modify = session.scalar(select(Role).where(Role.id == id))
-
-    if role_to_modify:
-
-        if name is not None:
-            role_to_modify.full_name = name
-        if email is not None:
-            role_to_modify.email = email
-
-        session.commit()
-        modification_done(role_to_modify)
-    else:
-        role_not_found(id)
-"""
-
-
-@role.command()
-@click.option('--id', '-i', help='Id of the role you want to delete', required=True)
+@click.option('--id', '-i', help='Id of the role you want to delete',
+              required=True)
 @click.pass_context
 def delete(ctx, id):
     session = ctx.obj['session']

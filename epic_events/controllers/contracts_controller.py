@@ -1,6 +1,8 @@
 from epic_events.models.contract import Contract
-from epic_events.views.contracts_views import (contracts_table, created_succes, deleted_success,
-                                               contract_not_found, modification_done)
+from epic_events.views.contracts_views import (contracts_table, created_succes,
+                                               deleted_success,
+                                               contract_not_found,
+                                               modification_done)
 
 import click
 
@@ -90,7 +92,8 @@ def modify(ctx, id, client, management, total, remain, status):
 
 
 @contract.command()
-@click.option('--id', '-i', help='Id of the contract you want to delete', required=True)
+@click.option('--id', '-i', help='Id of the contract you want to delete',
+              required=True)
 @click.pass_context
 def delete(ctx, id):
     session = ctx.obj['session']

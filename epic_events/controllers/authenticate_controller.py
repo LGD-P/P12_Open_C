@@ -3,7 +3,7 @@ from epic_events.views.users_view import (
     wrong_pass, username_not_found, login_success, logout_success)
 
 from epic_events.utils import (
-    generate_token, write_token_in_temp, is_token_valid)
+    generate_token, write_token_in_temp)
 
 
 import click
@@ -18,8 +18,10 @@ def authenticate(ctx):
 
 
 @authenticate.command()
-@click.option('--name', '-n', help='Id of the user you want to delete', required=True)
-@click.option('--password', '-P', help='Password of the user you want to delete', nargs=0)
+@click.option('--name', '-n', help='Id of the user you want to delete',
+              required=True)
+@click.option('--password', '-P',
+              help='Password of the user you want to login', nargs=0)
 @click.pass_context
 def login(ctx, name, password):
     session = ctx.obj['session']
@@ -35,7 +37,7 @@ def login(ctx, name, password):
             login_success(user.name)
             token = generate_token(user)
             write_token_in_temp(token)
-            is_token_valid()
+
     else:
         username_not_found(name)
         raise click.UsageError("User not found.")

@@ -1,8 +1,10 @@
 from epic_events.models.user import User
 from epic_events.models.role import Role
-from epic_events.views.users_view import (users_table, created_succes, deleted_success, user_not_found,
-                                          modification_done, wrong_pass, new_pass,
-                                          invalid_pass, invalid_email)
+from epic_events.views.users_view import (logged_as, users_table,
+                                          created_succes, deleted_success,
+                                          user_not_found, modification_done,
+                                          wrong_pass, new_pass, invalid_pass,
+                                          invalid_email)
 
 
 import click
@@ -29,7 +31,8 @@ def email_is_valid(ctx, param, value):
 def pass_is_valid(ctx, param, value):
     regex = re.compile(
         "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$")
-    if value != ctx.params.get('password', None) and re.fullmatch(regex, value) is None:
+    if value != ctx.params.get('password', None) \
+            and re.fullmatch(regex, value) is None:
         invalid_pass()
         raise click.UsageError(
             "Invalid password. Passwords do not match or not strong enough.")
@@ -64,6 +67,9 @@ def change_password(user_to_modify, ctx):
 def list(ctx, id):
     session = ctx.obj['session']
 
+    user_logged = session.scalar(
+        select(User).where(User.id == ctx.obj['user_id'].id))
+
     if id:
         user = session.scalar(select(User).where(User.id == id))
         print(user.password)
@@ -77,20 +83,24 @@ def list(ctx, id):
             select(User).order_by(User.id)).all()
 
         users_table(users_list)
+        logged_as(user_logged.name)
 
 
 @user.command()
 @click.option('--name', '-n', help='Name for the new object', required=True)
-@click.option('--email', '-e', help='Email for the new object', required=True, callback=email_is_valid)
-@click.option('--role', '-r', help='Role must be : support management or commercial',
+@click.option('--email', '-e', help='Email for the new object', required=True,
+              callback=email_is_valid)
+@click.option('--role', '-r',
+              help='Role must be : support management or commercial',
               required=True, callback=Role.role_is_valid)
-@click.option('--password', '-P', help='Password will automaticly be asked don\'t use this option',
-              prompt=True, hide_input=True, confirmation_prompt=True, default=None,
-              callback=pass_is_valid)
+@click.option('--password', '-P',
+              help='Password will automaticly be asked don\'t use this option',
+              prompt=True, hide_input=True, confirmation_prompt=True,
+              default=None, callback=pass_is_valid)
 @click.pass_context
 def create(ctx, name, email, role, password):
     session = ctx.obj['session']
-
+    # récupérer l'user de la session pour l'ajouter dans Role.users
     new_role = Role(name=role)
     session.add(new_role)
     session.flush()
@@ -106,10 +116,12 @@ def create(ctx, name, email, role, password):
 
 
 @user.command()
-@click.option('--id', '-i', help='Id of the user you want to modify', required=True)
+@click.option('--id', '-i', help='Id of the user you want to modify',
+              required=True)
 @click.option('--name', '-n', help='New name of the user')
 @click.option('--email', '-e', help='New email of the user')
-@click.option('--role', '-r', help='New role of the user, must be: support management or commercial')
+@click.option('--role', '-r', help='New role of the user, must be: '
+              'support management or commercial')
 @click.option('--password', '-P', help='-P without argument', nargs=0)
 @click.pass_context
 def modify(ctx, id, name, email, role, password):
@@ -140,7 +152,8 @@ def modify(ctx, id, name, email, role, password):
 
 
 @user.command()
-@click.option('--id', '-i', help='Id of the user you want to delete', required=True)
+@click.option('--id', '-i', help='Id of the user you want to delete',
+              required=True)
 @click.pass_context
 def delete(ctx, id):
     session = ctx.obj['session']

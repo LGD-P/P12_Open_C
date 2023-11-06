@@ -1,6 +1,8 @@
 from epic_events.models.event import Event
-from epic_events.views.events_views import (end_date_error, events_table, created_succes,
-                                            deleted_success, event_not_found, modification_done, date_param)
+from epic_events.views.events_views import (end_date_error, events_table,
+                                            created_succes, deleted_success,
+                                            event_not_found, modification_done,
+                                            date_param)
 
 from datetime import datetime
 import click
@@ -36,13 +38,16 @@ def list(ctx, id):
 @click.option('--name', '-n', help='Event name', required=True)
 @click.option('--contract', '-c', help='Contract ID', required=True)
 @click.option('--support', '-su', help='Support ID', required=True)
-@click.option('--starting', '-sd', help='Starting date : format YYYY-MM-DD - HH:MM', required=True)
-@click.option('--ending', '-ed', help='Ending date : format YYYY-MM-DD - HH:MM', required=True)
+@click.option('--starting', '-sd',
+              help='Starting date : format YYYY-MM-DD - HH:MM', required=True)
+@click.option('--ending', '-ed',
+              help='Ending date : format YYYY-MM-DD - HH:MM', required=True)
 @click.option('--location', '-l', help='Location', required=True)
 @click.option('--attendees', '-a', help='Attendees', required=True)
 @click.option('--notes', '-nt', help='Notes')
 @click.pass_context
-def create(ctx, name, contract, support, starting, ending, location, attendees, notes):
+def create(ctx, name, contract, support, starting, ending, location, attendees,
+           notes):
     session = ctx.obj['session']
 
     try:
@@ -58,8 +63,9 @@ def create(ctx, name, contract, support, starting, ending, location, attendees, 
     if ending < starting:
         return end_date_error()
 
-    new_event = Event(name=name, contract_id=contract, support_contact_id=support,
-                      start_date=starting, end_date=ending, location=location,
+    new_event = Event(name=name, contract_id=contract,
+                      support_contact_id=support, start_date=starting,
+                      end_date=ending, location=location,
                       attendees=attendees, notes=notes)
 
     session.add(new_event)
@@ -72,7 +78,8 @@ def create(ctx, name, contract, support, starting, ending, location, attendees, 
 @click.option('--name', '-n', help='Event name')
 @click.option('--contract', '-c', help='Contract ID')
 @click.option('--support', '-su', help='Support ID')
-@click.option('--starting', '-sd', help='Starting date : format YYYY-MM-DD - HH:MM')
+@click.option('--starting', '-sd',
+              help='Starting date : format YYYY-MM-DD - HH:MM')
 @click.option('--ending', '-e', help='Ending date : format YYYY-MM-DD - HH:MM')
 @click.option('--location', '-l', help='Location')
 @click.option('--attendees', '-a', help='Attendees')
@@ -116,7 +123,8 @@ def modify(ctx, id, name, contract, support, starting, ending,
 
 
 @event.command()
-@click.option('--id', '-i', help='Id of the event you want to delete', required=True)
+@click.option('--id', '-i', help='Id of the event you want to delete',
+              required=True)
 @click.pass_context
 def delete(ctx, id):
     session = ctx.obj['session']
