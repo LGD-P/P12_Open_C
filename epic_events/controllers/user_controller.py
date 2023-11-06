@@ -67,23 +67,27 @@ def change_password(user_to_modify, ctx):
 def list(ctx, id):
     session = ctx.obj['session']
 
-    user_logged = session.scalar(
-        select(User).where(User.id == ctx.obj['user_id'].id))
+    try:
+        user_logged = session.scalar(
+            select(User).where(User.id == ctx.obj['user_id'].id))
 
-    if id:
-        user = session.scalar(select(User).where(User.id == id))
-        print(user.password)
-        if user is None:
-            user_not_found(id)
+        if id:
+            user = session.scalar(select(User).where(User.id == id))
+
+            if user is None:
+                user_not_found(id)
+            else:
+                users_table([user])
         else:
-            users_table([user])
+            users_list = session.scalars(
+                select(User).order_by(User.id)).all()
 
-    else:
-        users_list = session.scalars(
-            select(User).order_by(User.id)).all()
+            users_table(users_list)
 
-        users_table(users_list)
-        logged_as(user_logged.name)
+    except KeyError:
+        pass
+
+    logged_as(user_logged.name)
 
 
 @user.command()
@@ -100,18 +104,22 @@ def list(ctx, id):
 @click.pass_context
 def create(ctx, name, email, role, password):
     session = ctx.obj['session']
-    # récupérer l'user de la session pour l'ajouter dans Role.users
-    new_role = Role(name=role)
-    session.add(new_role)
-    session.flush()
+
+    role_to_fill = session.scalars(
+        select(Role).where(Role.name == role)).one()
 
     hashed_password = User().hash_pass(password)
 
     new_user = User(name=name, email=email,
-                    role=new_role, password=hashed_password)
+                    role=role_to_fill, password=hashed_password)
 
     session.add(new_user)
     session.commit()
+
+    role_to_fill.users.append(new_user)
+    session.add(role_to_fill)
+    session.commit()
+
     created_succes(new_user)
 
 
