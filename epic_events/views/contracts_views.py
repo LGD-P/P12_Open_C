@@ -9,34 +9,43 @@ def contracts_table(contracts):
     contracts_table = Table(show_header=True, header_style="bold blue",
                             title='[bold red]Table: CONTRACTS[/bold red]')
     contracts_table.add_column(
-        Text("ID", style="bleu", justify="center", no_wrap=True), justify="center", style="yellow",
+        Text("ID", style="bleu", justify="center", no_wrap=True),
+        justify="center", style="yellow",
     )
     contracts_table.add_column(
-        Text("UUID", style="blue", justify="center", no_wrap=True), justify="center", style="green"
+        Text("UUID", style="blue", justify="center", no_wrap=True),
+        justify="center", style="green"
     )
     contracts_table.add_column(
-        Text("Client ID", style="blue", justify="center", no_wrap=True), justify="center", style="green"
+        Text("Client ID", style="blue", justify="center", no_wrap=True),
+        justify="center", style="green"
     )
     contracts_table.add_column(
-        Text("Management Contact ID", style="blue", justify="center", no_wrap=True), justify="center", style="green"
+        Text("Management Contact ID", style="blue", justify="center",
+             no_wrap=True), justify="center", style="green"
     )
     contracts_table.add_column(
-        Text("Total Amount", style="blue", justify="center", no_wrap=True), justify="center", style="green"
+        Text("Total Amount", style="blue", justify="center", no_wrap=True),
+        justify="center", style="green"
     )
     contracts_table.add_column(
-        Text("Remaining Amount", style="blue", justify="center", no_wrap=True), justify="center", style="green"
+        Text("Remaining Amount", style="blue", justify="center", no_wrap=True),
+        justify="center", style="green"
     )
     contracts_table.add_column(
-        Text("Creation Date", style="blue", justify="center", no_wrap=True), justify="center", style="red"
+        Text("Creation Date", style="blue", justify="center", no_wrap=True),
+        justify="center", style="red"
     )
 
     contracts_table.add_column(
-        Text("Status", style="blue", justify="center", no_wrap=True), justify="center", style="yellow"
+        Text("Status", style="blue", justify="center", no_wrap=True),
+        justify="center", style="yellow"
     )
 
     for contract in contracts:
         creation_date = contract.creation_date.strftime('%Y-%m-%d - %H:%M')
-        commercial_contact_id = "❌" if contract.management_contact_id is None else contract.management_contact_id
+        commercial_contact_id = "❌" if contract.management_contact_id is None \
+            else contract.management_contact_id
         status = "❌" if contract.status is False else "✅"
 
         contracts_table.add_row(
@@ -50,7 +59,7 @@ def contracts_table(contracts):
             status
         )
 
-    c.print(contracts_table)
+    c.print(contracts_table, justify="center")
 
 
 def table_not_found(table):
@@ -61,20 +70,24 @@ def table_not_found(table):
 def created_succes(contract):
     Console().print(
         f"[bold green] ID N° '[bold blue]N°{str(contract.id)}[/bold blue]' "
-        f"Contract '[bold blue]N°{str(contract.uuid)}[/bold blue]'created successfully.")
+        f"Contract '[bold blue]N°{str(contract.uuid)}[/bold blue]'created "
+        "successfully.")
 
 
 def deleted_success(id, contract):
     Console().print(
-        f"[blue] Client with ID '[bold red]{id}[/bold red]', UUID '[bold red]N°{str(contract.uuid)}[/bold red]' "
+        f"[blue] Client with ID '[bold red]{id}[/bold red]', UUID "
+        "'[bold red]N°{str(contract.uuid)}[/bold red]' "
         "has been '[bold red]deleted[/bold red]'.")
 
 
 def contract_not_found(id):
     Console().print(
-        f"[blue] Contract with ID '[bold red]{id}[/bold red]' is '[bold red]not found[/bold red]'.")
+        f"[blue] Contract with ID '[bold red]{id}[/bold red]' is "
+        "'[bold red]not found[/bold red]'.")
 
 
 def modification_done(contract):
     Console().print(
-        f"[bold green] Contract '[bold blue]N°{str(contract.uuid)}[/bold blue]' successfully modified.")
+        f"[bold green] Contract '[bold blue]N°{str(contract.uuid)}"
+        "[/bold blue]' successfully modified.")
