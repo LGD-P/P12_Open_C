@@ -150,7 +150,14 @@ def logout_success():
         "\n'[bold green]You have been successfully logout out[/bold green]'\n")
 
 
-def logged_as(user):
+def logged_as(user, role):
     Console().print(
-        f"\n[blue] [green]Logged as :[/green] {user}\n", style='italic',
+        f"\n[blue] [green]Logged as :[/green] {user}\n"
+        f"\n[green] Team : [yellow]{role}[/yellow] \n", style='italic',
         justify='right')
+
+
+def not_authorized():
+    Console().print(
+        "\n[bold green]'[bold red] You're not allowed to use this command"
+        "[/bold red]'\n")

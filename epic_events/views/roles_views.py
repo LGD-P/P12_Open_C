@@ -49,7 +49,7 @@ def deleted_success(id, role):
 
 def role_not_found(id):
     Console().print(
-        f"\n[blue] role with ID '[bold red]{id}[/bold red]' is "
+        f"\n[blue] Role with ID '[bold red]{id}[/bold red]' is "
         "'[bold red]not found[/bold red]'.\n")
 
 
