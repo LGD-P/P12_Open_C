@@ -39,7 +39,7 @@ def list(ctx, id):
                 select(Role).order_by(Role.id)).all()
 
             roles_table(roles_list)
-            logged_as(user_logged.name)
+            logged_as(user_logged.name, user_logged.role.name)
     except KeyError:
         invalid_token()
         pass

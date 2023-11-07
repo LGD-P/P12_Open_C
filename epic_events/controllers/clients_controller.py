@@ -38,7 +38,7 @@ def list(ctx, id):
                 select(Client).order_by(Client.id)).all()
 
             clients_table(clients_list)
-            logged_as(user_logged.name)
+            logged_as(user_logged.name, user_logged.role.name)
 
     except KeyError:
         invalid_token()

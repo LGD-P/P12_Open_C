@@ -39,7 +39,7 @@ def list(ctx, id):
                 select(Contract).order_by(Contract.id)).all()
 
             contracts_table(contract_list)
-            logged_as(user_logged.name)
+            logged_as(user_logged.name, user_logged.role.name)
     except KeyError:
         invalid_token()
         pass

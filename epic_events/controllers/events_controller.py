@@ -39,11 +39,10 @@ def list(ctx, id):
                 select(Event).order_by(Event.id)).all()
 
             events_table(event_list)
-            logged_as(user_logged.name)
+            logged_as(user_logged.name, user_logged.role.name)
 
     except KeyError:
         invalid_token()
-        pass
 
 
 @event.command()

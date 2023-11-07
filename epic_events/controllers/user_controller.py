@@ -86,7 +86,7 @@ def list(ctx, id):
                 select(User).order_by(User.id)).all()
 
             users_table(users_list)
-            logged_as(user_logged.name)
+            logged_as(user_logged.name, user_logged.role.name)
 
     except KeyError:
         invalid_token()
@@ -105,6 +105,7 @@ def list(ctx, id):
               prompt=True, hide_input=True, confirmation_prompt=True,
               default=None, callback=pass_is_valid)
 @click.pass_context
+@has_permission(['management'])
 def create(ctx, name, email, role, password):
     session = ctx.obj['session']
 
