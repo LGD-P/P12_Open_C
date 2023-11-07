@@ -94,11 +94,14 @@ def has_permission(allowed_roles):
             session = ctx.obj['session']
             # Pourquoi  raise orm_exc.DetachedInstanceError  si
             # role_id = ctx.obj["user_id"].role.id
-            role_id = ctx.obj["user_id"].role_id
-            user_role = session.scalar(select(Role).where(Role.id == role_id))
-
-            if user_role.name not in allowed_roles:
-                return not_authorized()
+            try:
+                role_id = ctx.obj["user_id"].role_id
+                user_role = session.scalar(
+                    select(Role).where(Role.id == role_id))
+                if user_role.name not in allowed_roles:
+                    return not_authorized()
+            except KeyError:
+                pass
             return function(ctx, *args, **kwargs)
         return wrapped
     return decorator
