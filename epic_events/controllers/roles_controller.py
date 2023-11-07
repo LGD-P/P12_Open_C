@@ -1,5 +1,6 @@
 from epic_events.models.role import Role
 from epic_events.models.user import User
+from epic_events.utils import has_permission
 from epic_events.views.users_view import invalid_token
 from epic_events.views.roles_views import (
     id_not_found, role_not_found, roles_table, created_succes, deleted_success)
@@ -47,8 +48,9 @@ def list(ctx, id):
 @click.option('--name', '-n',
               help='Must be "support" "commercial" or "manager"',
               required=True)
-@click.option('--id', '-i', help='Full name for the new object', required=True)
+@click.option('--id', '-i', help='Id to query', required=True)
 @click.pass_context
+@has_permission(['management'])
 def create(ctx, name, id):
     session = ctx.obj['session']
 
@@ -70,6 +72,7 @@ def create(ctx, name, id):
 @click.option('--id', '-i', help='Id of the role you want to delete',
               required=True)
 @click.pass_context
+@has_permission(['management'])
 def delete(ctx, id):
     session = ctx.obj['session']
 
