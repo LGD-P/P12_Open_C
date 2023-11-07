@@ -1,6 +1,9 @@
+from functools import wraps
 from epic_events.models.user import User
-from epic_events.views.users_view import expired_token
+from epic_events.models.role import Role
+from epic_events.views.users_view import not_authorized
 from sqlalchemy import select
+
 
 import jwt
 import os
@@ -50,7 +53,6 @@ def check_authentication(func):
             script_directory, temp_path)
 
         if not os.path.exists(token) or not os.path.isfile(token):
-            expired_token()
             return None
 
         with open(token, "r") as f:
@@ -71,6 +73,7 @@ def check_authentication(func):
 
                 except jwt.exceptions.DecodeError:
                     return None
+
                 except jwt.exceptions.ExpiredSignatureError:
                     return None
 
@@ -81,3 +84,37 @@ def check_authentication(func):
             ctx.obj['user_id'] = user_id
         return func(ctx, *args, **kwargs)
     return if_token_valid
+
+
+def has_permission(allowed_roles):
+    def decorator(function):
+        @wraps(function)
+        def wrapped(ctx, *args, **kwargs):
+            ctx.ensure_object(dict)
+            session = ctx.obj['session']
+            # Pourquoi  raise orm_exc.DetachedInstanceError  si
+            # role_id = ctx.obj["user_id"].role.id
+            role_id = ctx.obj["user_id"].role_id
+            user_role = session.scalar(select(Role).where(Role.id == role_id))
+
+            if user_role.name not in allowed_roles:
+                return not_authorized()
+            return function(ctx, *args, **kwargs)
+        return wrapped
+    return decorator
+
+
+"""
+def has_permission(allowed_roles):
+    def decorator(function):
+        def fleche(ctx, *args, **kwargs):
+            ctx.ensure_object(dict)
+            session = ctx.obj['session']
+            role_id = ctx.obj["user_id"].role_id
+            user_role = session.scalar(select(Role).where(Role.id == role_id))
+            if user_role not in allowed_roles:
+                return not_authorized()
+            return function(ctx, *args, **kwargs)
+        return fleche
+    return decorator
+"""
