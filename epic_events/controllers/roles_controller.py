@@ -20,6 +20,7 @@ def role(ctx):
 @role.command()
 @click.option('--id', '-i', help='Name of the table to query', required=False)
 @click.pass_context
+@has_permission(['management'])
 def list(ctx, id):
     session = ctx.obj['session']
 

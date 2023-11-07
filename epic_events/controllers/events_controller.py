@@ -1,5 +1,6 @@
 from epic_events.models.user import User
 from epic_events.models.event import Event
+from epic_events.utils import has_permission
 from epic_events.views.users_view import logged_as, invalid_token
 from epic_events.views.events_views import (end_date_error, events_table,
                                             created_succes, deleted_success,
@@ -20,6 +21,7 @@ def event(ctx):
 @event.command()
 @click.option('--id', '-i', help='Id of the event to query')
 @click.pass_context
+@has_permission(['management', 'support', 'commercial'])
 def list(ctx, id):
     session = ctx.obj['session']
     try:
@@ -56,6 +58,7 @@ def list(ctx, id):
 @click.option('--attendees', '-a', help='Attendees', required=True)
 @click.option('--notes', '-nt', help='Notes')
 @click.pass_context
+@has_permission(['commercial'])
 def create(ctx, name, contract, support, starting, ending, location, attendees,
            notes):
     session = ctx.obj['session']
@@ -95,6 +98,7 @@ def create(ctx, name, contract, support, starting, ending, location, attendees,
 @click.option('--attendees', '-a', help='Attendees')
 @click.option('--notes', '-nt', help='Notes')
 @click.pass_context
+@has_permission(['management', 'support', 'commercial'])
 def modify(ctx, id, name, contract, support, starting, ending,
            location, attendees, notes):
     session = ctx.obj['session']
@@ -136,6 +140,7 @@ def modify(ctx, id, name, contract, support, starting, ending,
 @click.option('--id', '-i', help='Id of the event you want to delete',
               required=True)
 @click.pass_context
+@has_permission(['management', 'support', 'commercial'])
 def delete(ctx, id):
     session = ctx.obj['session']
 

@@ -1,5 +1,6 @@
 from epic_events.models.user import User
 from epic_events.models.client import Client
+from epic_events.utils import has_permission
 from epic_events.views.users_view import logged_as, invalid_token
 from epic_events.views.clients_views import (clients_table, created_succes,
                                              deleted_success, client_not_found,
@@ -19,6 +20,7 @@ def client(ctx):
 @client.command()
 @click.option('--id', '-i', help='ID of client to query', required=False)
 @click.pass_context
+@has_permission(['management', 'support', 'commercial'])
 def list(ctx, id):
     session = ctx.obj['session']
     try:
@@ -50,6 +52,7 @@ def list(ctx, id):
 @click.option('--phone', '-ph', help='Phone nummber', required=True)
 @click.option('--company', '-c', help='Company name')
 @click.pass_context
+@has_permission(['commercial'])
 def create(ctx, name, email, phone, company):
     session = ctx.obj['session']
 
@@ -74,6 +77,7 @@ def create(ctx, name, email, phone, company):
 @click.option('--phone', '-ph', help='Phone nummber')
 @click.option('--company', '-c', help='Company name')
 @click.pass_context
+@has_permission(['management', 'commercial'])
 def modify(ctx, id, name, email, phone, company):
     session = ctx.obj['session']
 
@@ -104,6 +108,7 @@ def modify(ctx, id, name, email, phone, company):
 @click.option('--id', '-i', help='Id of the client you want to delete',
               required=True)
 @click.pass_context
+@has_permission(['management', 'commercial'])
 def delete(ctx, id):
     session = ctx.obj['session']
 

@@ -66,7 +66,7 @@ def change_password(user_to_modify, ctx):
 @user.command()
 @click.option('--id', '-i', help='Id of the user to query')
 @click.pass_context
-@has_permission(['management', 'support', 'commercial'])
+@has_permission(['management'])
 def list(ctx, id):
     session = ctx.obj['session']
 

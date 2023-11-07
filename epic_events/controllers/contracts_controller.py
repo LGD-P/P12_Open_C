@@ -1,5 +1,6 @@
 from epic_events.models.user import User
 from epic_events.models.contract import Contract
+from epic_events.utils import has_permission
 from epic_events.views.users_view import logged_as, invalid_token
 from epic_events.views.contracts_views import (contracts_table, created_succes,
                                                deleted_success,
@@ -20,6 +21,7 @@ def contract(ctx):
 @contract.command()
 @click.option("--id", "-i", help="id of the event to search", )
 @click.pass_context
+@has_permission(['management', 'commercial'])
 def list(ctx, id):
     session = ctx.obj['session']
     try:
@@ -50,6 +52,7 @@ def list(ctx, id):
 @click.option('--remain', '-r', help='Remaining Amount', required=True)
 @click.option('--status', '-s', help='Status: true or false', required=True)
 @click.pass_context
+@has_permission(['management'])
 def create(ctx, client, management, total, remain, status):
     session = ctx.obj['session']
 
@@ -71,6 +74,7 @@ def create(ctx, client, management, total, remain, status):
 @click.option('--remain', '-r', help='Remaining Amount')
 @click.option('--status', '-s', help='Status: true or false')
 @click.pass_context
+@has_permission(['management', 'commercial'])
 def modify(ctx, id, client, management, total, remain, status):
     session = ctx.obj['session']
 
@@ -104,6 +108,7 @@ def modify(ctx, id, client, management, total, remain, status):
 @click.option('--id', '-i', help='Id of the contract you want to delete',
               required=True)
 @click.pass_context
+@has_permission(['management', 'commercial'])
 def delete(ctx, id):
     session = ctx.obj['session']
 
