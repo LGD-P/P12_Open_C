@@ -1,5 +1,6 @@
 from epic_events.models.user import User
 from epic_events.models.role import Role
+from epic_events.utils import has_permission
 from epic_events.views.users_view import (invalid_token, logged_as,
                                           users_table, created_succes,
                                           deleted_success, user_not_found,
@@ -65,6 +66,7 @@ def change_password(user_to_modify, ctx):
 @user.command()
 @click.option('--id', '-i', help='Id of the user to query')
 @click.pass_context
+@has_permission(['management', 'support', 'commercial'])
 def list(ctx, id):
     session = ctx.obj['session']
 
@@ -133,6 +135,7 @@ def create(ctx, name, email, role, password):
               'support management or commercial')
 @click.option('--password', '-P', help='-P without argument', nargs=0)
 @click.pass_context
+@has_permission(['management'])
 def modify(ctx, id, name, email, role, password):
     session = ctx.obj['session']
 
@@ -164,6 +167,7 @@ def modify(ctx, id, name, email, role, password):
 @click.option('--id', '-i', help='Id of the user you want to delete',
               required=True)
 @click.pass_context
+@has_permission(['management'])
 def delete(ctx, id):
     session = ctx.obj['session']
 
