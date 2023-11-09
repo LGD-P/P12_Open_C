@@ -70,7 +70,7 @@ def param_not_required():
 
 def created_succes(user):
     Console().print(
-        f"\n[bold green] '[bold blue]{user.name.upper()}[/bold blue]'created"
+        f"\n[bold green] '[bold blue]{user.name.upper()}[/bold blue]' created"
         " successfully.\n")
 
 
