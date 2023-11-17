@@ -1,3 +1,5 @@
+import uuid
+
 from epic_events.models.user import User
 from epic_events.models.contract import Contract
 from epic_events.utils import has_permission
@@ -57,7 +59,8 @@ def create(ctx, client, management, total, remain, status):
     session = ctx.obj['session']
 
     status = True if status == 'true' else False
-    new_contract = Contract(client_id=client, management_contact_id=management,
+    new_contract = Contract(client_id=client, uuid=str(uuid.uuid4()),
+                            management_contact_id=management,
                             total_amount=total, remaining_amount=remain,
                             status=status)
 

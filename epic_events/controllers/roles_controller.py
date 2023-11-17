@@ -17,11 +17,11 @@ def role(ctx):
     pass
 
 
-@role.command()
+@role.command(name='list')
 @click.option('--id', '-i', help='Name of the table to query', required=False)
 @click.pass_context
 @has_permission(['management'])
-def list(ctx, id):
+def list_role(ctx, id):
     session = ctx.obj['session']
 
     try:
@@ -58,7 +58,7 @@ def create(ctx, name, id):
     is_id = session.scalar(select(User).where(
         User.id == id)) if id is not None else None
 
-    if Role.role_is_valid(ctx, name):
+    if Role.role_is_valid(ctx, None, name):
         if is_id is not None:
             new_role = Role(name=name)
             new_role.users.append(is_id)

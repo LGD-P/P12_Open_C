@@ -63,11 +63,11 @@ def change_password(user_to_modify, ctx):
     return new_password
 
 
-@user.command()
+@user.command(name="list")
 @click.option('--id', '-i', help='Id of the user to query')
 @click.pass_context
 @has_permission(['management'])
-def list(ctx, id):
+def list_user(ctx, id):
     session = ctx.obj['session']
 
     try:
@@ -102,7 +102,8 @@ def list(ctx, id):
               required=True, callback=Role.role_is_valid)
 @click.option('--password', '-P',
               help='Password will automaticly be asked don\'t use this option',
-              prompt=True, hide_input=True, confirmation_prompt=True,
+              prompt=True, hide_input=True,
+              # confirmation_prompt=True,
               default=None, callback=pass_is_valid)
 @click.pass_context
 @has_permission(['management'])
@@ -151,8 +152,10 @@ def modify(ctx, id, name, email, role, password):
             user_to_modify.email = email
 
         if role is not None:
-            role = Role().role_is_valid(ctx, None, role)
-            user_to_modify.role = role
+            role = Role().role_is_valid(ctx, role)
+            role_to_give = session.scalar(select(Role).where(
+                Role.name == role))
+            user_to_modify.role_id = role_to_give.id
 
         if password is not None:
             new_password = change_password(user_to_modify, ctx)

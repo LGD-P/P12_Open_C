@@ -47,6 +47,7 @@ def login(ctx, name, password):
 @click.pass_context
 def logout(ctx):
     ctx.obj['session']
+
     folder_path = 'temp'
 
     file_path_to_delete = os.path.join(folder_path, 'temporary.txt')
