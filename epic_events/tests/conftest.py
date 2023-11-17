@@ -1,5 +1,4 @@
 import pytest
-from unittest.mock import MagicMock
 from click.testing import CliRunner
 
 from epic_events.models.base import Base
@@ -66,6 +65,29 @@ def sqlalchemy_mock_config():
             ]
 
 
+@pytest.fixture
+def role_list_mock():
+    roles_list = generate_roles()
+    return roles_list
+
+@pytest.fixture
+def mock_specific_user(role_list_mock):
+    user_manager = generate_user(role_list_mock[0],1)
+    user_commercial = generate_user(role_list_mock[1],2)
+    user_support = generate_user(role_list_mock[2],3)
+    users_list = [user_manager, user_commercial,user_support]
+    return users_list
+
+
+
+
+
+
+
+
+
+
+
 """
 
 @pytest.fixture()
@@ -77,12 +99,9 @@ def session_mock(mocker):
     return session
 
 
-@pytest.fixture
-def role_list_mock():
-    roles_list = generate_roles()
-    return roles_list
 
 
+    
 @pytest.fixture
 def user_mock(role_list_mock):
     user_manager = generate_user(role_list_mock[0], 1)
@@ -90,6 +109,13 @@ def user_mock(role_list_mock):
     user_support = generate_user(role_list_mock[2], 3)
     users_list = [user_manager, user_commercial, user_support]
     return users_list
+
+
+
+
+
+
+
 
 
 @pytest.fixture
@@ -126,13 +152,6 @@ def has_perm_mock(mocker):
     return create_mock
 
 
-@pytest.fixture
-def mock_specific_user(role_list_mock):
-    user_manager = generate_user(role_list_mock[0],1)
-    user_commercial = generate_user(role_list_mock[1],2)
-    user_support = generate_user(role_list_mock[2],3)
-    users_list = [user_manager, user_commercial,user_support]
-    return users_list
 
 
 
