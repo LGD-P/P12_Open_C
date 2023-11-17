@@ -8,6 +8,6 @@ to_do_&_trash
 .idea/
 .python-version
 epic_events/temp/
-epic_events/tests/__ini__t.py
+epic_events/tests/__init__.py
 epic_events/tests/fake_datas.py
 poetry.toml
