@@ -19,50 +19,50 @@ def sqlalchemy_declarative_base():
 @pytest.fixture(scope="function")
 def sqlalchemy_mock_config():
     return [("roles", [
-                 {"id": 1,
-                  "name": "support",
-                  },
-                 {"id": 2,
-                  "name": "management",
-                  },
-                 {"id": 3,
-                  "name": "commercial",
-                  },
-             ]),
-            ("users", [
-                {
-                    "id": 1,
-                    "name": "Kevin",
-                    'email': "keven@epicevent.com",
-                    'role_id': 1,
-                    'password': "$argon2id$v=19$m=65536,t=12,"
-                                "p=4$U8q5916rdY4xRgihdA4hZA$DG/JgT0jwh4ArcbMPQ7Xv3ZdOjUitPDn9KFq2jnbYH0"
-                    # S3CRET@23
-                },
-                {
-                    "id": 2,
-                    "name": "Dwight",
-                    'email': "Dwight@epicevent.com",
-                    'role_id': 2,
-                    'password': "$argon2id$v=19$m=65536,t=12,"
-                                "p=4$ujdmTAmhVIoRglDKGWPMGQ$EuA/DgPVl95jk/OmNbYRfXRtLhao0d35ZjPSwHHhIeU"
-                    # S3CRET@24
-                },
-                {
-                    "id": 3,
-                    "name": "Pierre",
-                    'email': "Pierre@epicevent.com",
-                    'role_id': 3,
-                    'password': "$argon2id$v=19$m=65536,t=12,"
-                                "p=4$eC+F8B5j7L2Xcu49B8D4Xw$WJQ7xOedcIUVk+U1W1xrWgzAUcLi33wbqKoC8m8cgzg"
-                    # S3CRET@25
-                }
-            ]),
-            ("clients",[] ),
-            ("contracts", []),
-            ("events", []),
+        {"id": 1,
+         "name": "support",
+         },
+        {"id": 2,
+         "name": "management",
+         },
+        {"id": 3,
+         "name": "commercial",
+         },
+    ]),
+        ("users", [
+            {
+                "id": 1,
+                "name": "Kevin",
+                'email': "keven@epicevent.com",
+                'role_id': 1,
+                'password': "$argon2id$v=19$m=65536,t=12,"
+                "p=4$U8q5916rdY4xRgihdA4hZA$DG/JgT0jwh4ArcbMPQ7Xv3ZdOjUitPDn9KFq2jnbYH0"
+                # S3CRET@23
+            },
+            {
+                "id": 2,
+                "name": "Dwight",
+                'email': "Dwight@epicevent.com",
+                'role_id': 2,
+                'password': "$argon2id$v=19$m=65536,t=12,"
+                "p=4$ujdmTAmhVIoRglDKGWPMGQ$EuA/DgPVl95jk/OmNbYRfXRtLhao0d35ZjPSwHHhIeU"
+                # S3CRET@24
+            },
+            {
+                "id": 3,
+                "name": "Pierre",
+                'email': "Pierre@epicevent.com",
+                'role_id': 3,
+                'password': "$argon2id$v=19$m=65536,t=12,"
+                "p=4$eC+F8B5j7L2Xcu49B8D4Xw$WJQ7xOedcIUVk+U1W1xrWgzAUcLi33wbqKoC8m8cgzg"
+                # S3CRET@25
+            }
+        ]),
+        ("clients", []),
+        ("contracts", []),
+        ("events", []),
 
-            ]
+    ]
 
 
 @pytest.fixture
@@ -70,26 +70,17 @@ def role_list_mock():
     roles_list = generate_roles()
     return roles_list
 
+
 @pytest.fixture
 def mock_specific_user(role_list_mock):
-    user_manager = generate_user(role_list_mock[0],1)
-    user_commercial = generate_user(role_list_mock[1],2)
-    user_support = generate_user(role_list_mock[2],3)
-    users_list = [user_manager, user_commercial,user_support]
+    user_manager = generate_user(role_list_mock[0], 1)
+    user_commercial = generate_user(role_list_mock[1], 2)
+    user_support = generate_user(role_list_mock[2], 3)
+    users_list = [user_manager, user_commercial, user_support]
     return users_list
 
 
-
-
-
-
-
-
-
-
-
 """
-
 @pytest.fixture()
 def session_mock(mocker):
     session = MagicMock()
@@ -97,9 +88,6 @@ def session_mock(mocker):
     mocker.patch('epic_events.database.sessionmaker',
                  return_value=session_class)
     return session
-
-
-
 
     
 @pytest.fixture
