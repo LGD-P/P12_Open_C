@@ -20,11 +20,11 @@ def contract(ctx):
     pass
 
 
-@contract.command()
+@contract.command(name="list")
 @click.option("--id", "-i", help="id of the event to search", )
 @click.pass_context
 @has_permission(['management', 'commercial'])
-def list(ctx, id):
+def list_contract(ctx, id):
     session = ctx.obj['session']
     try:
         user_logged = session.scalar(
@@ -57,16 +57,22 @@ def list(ctx, id):
 @has_permission(['management'])
 def create(ctx, client, management, total, remain, status):
     session = ctx.obj['session']
+    try:
+        user_logged = session.scalar(
+            select(User).where(User.id == ctx.obj['user_id'].id))
 
-    status = True if status == 'true' else False
-    new_contract = Contract(client_id=client, uuid=str(uuid.uuid4()),
-                            management_contact_id=management,
-                            total_amount=total, remaining_amount=remain,
-                            status=status)
+        status = True if status == 'true' else False
+        new_contract = Contract(client_id=client, uuid=str(uuid.uuid4()), management_contact_id=management,
+                                total_amount=total, remaining_amount=remain,
+                                status=status)
 
-    session.add(new_contract)
-    session.commit()
-    created_succes(new_contract)
+        session.add(new_contract)
+        session.commit()
+        created_succes(new_contract)
+
+    except KeyError:
+        invalid_token()
+        pass
 
 
 @contract.command()
@@ -81,30 +87,38 @@ def create(ctx, client, management, total, remain, status):
 def modify(ctx, id, client, management, total, remain, status):
     session = ctx.obj['session']
 
-    contract_to_modify = session.scalar(
-        select(Contract).where(Contract.id == id))
+    try:
+        user_logged = session.scalar(
+            select(User).where(User.id == ctx.obj['user_id'].id))
 
-    if contract_to_modify:
+        contract_to_modify = session.scalar(
+            select(Contract).where(Contract.id == id))
 
-        if client is not None:
-            contract_to_modify.client_id = client
-        if management is not None:
-            contract_to_modify.management_contact_id = management
+        if contract_to_modify:
 
-        if total is not None:
-            contract_to_modify.total_amount = total
+            if client is not None:
+                contract_to_modify.client_id = client
+            if management is not None:
+                contract_to_modify.management_contact_id = management
 
-        if remain is not None:
-            contract_to_modify.remaining_amount = remain
+            if total is not None:
+                contract_to_modify.total_amount = total
 
-        if status is not None:
-            status = True if status == 'true' else False
-            contract_to_modify.status = status
+            if remain is not None:
+                contract_to_modify.remaining_amount = remain
 
-        session.commit()
-        modification_done(contract_to_modify)
-    else:
-        contract_not_found(id)
+            if status is not None:
+                status = True if status == 'true' else False
+                contract_to_modify.status = status
+
+            session.commit()
+            modification_done(contract_to_modify)
+        else:
+            contract_not_found(id)
+
+    except KeyError:
+        invalid_token()
+        pass
 
 
 @contract.command()
@@ -114,14 +128,21 @@ def modify(ctx, id, client, management, total, remain, status):
 @has_permission(['management', 'commercial'])
 def delete(ctx, id):
     session = ctx.obj['session']
+    try:
+        user_logged = session.scalar(
+            select(User).where(User.id == ctx.obj['user_id'].id))
 
-    contract_to_delete = session.scalar(
-        select(Contract).where(Contract.id == id))
+        contract_to_delete = session.scalar(
+            select(Contract).where(Contract.id == id))
 
-    if contract_to_delete:
-        session.delete(contract_to_delete)
-        session.commit()
-        deleted_success(id, contract_to_delete)
+        if contract_to_delete:
+            session.delete(contract_to_delete)
+            session.commit()
+            deleted_success(id, contract_to_delete)
 
-    else:
-        contract_not_found(id)
+        else:
+            contract_not_found(id)
+
+    except KeyError:
+        invalid_token()
+        pass

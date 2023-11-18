@@ -17,11 +17,11 @@ def client(ctx):
     pass
 
 
-@client.command()
+@client.command(name='list')
 @click.option('--id', '-i', help='ID of client to query', required=False)
 @click.pass_context
 @has_permission(['management', 'support', 'commercial'])
-def list(ctx, id):
+def list_client(ctx, id):
     session = ctx.obj['session']
     try:
         user_logged = session.scalar(
@@ -34,8 +34,7 @@ def list(ctx, id):
             else:
                 clients_table([client])
         else:
-            clients_list = session.scalars(
-                select(Client).order_by(Client.id)).all()
+            clients_list = session.scalars(select(Client).order_by(Client.id)).all()
 
             clients_table(clients_list)
             logged_as(user_logged.name, user_logged.role.name)
@@ -46,7 +45,9 @@ def list(ctx, id):
 
 
 @client.command()
-@click.option('--name', '-n', help='Full name for the new object',
+@click.option('--name',
+              '-n',
+              help='Full name for the new object',
               required=True)
 @click.option('--email', '-e', help='Email for the new object', required=True)
 @click.option('--phone', '-ph', help='Phone nummber', required=True)
@@ -55,22 +56,34 @@ def list(ctx, id):
 @has_permission(['commercial'])
 def create(ctx, name, email, phone, company):
     session = ctx.obj['session']
+    try:
+        user_logged = session.scalar(
+            select(User).where(User.id == ctx.obj['user_id'].id))
 
-    creation = datetime.now()
-    last_contact = datetime.now()
-    company_name = None if company is None else company
+        creation = datetime.utcnow()
+        last_contact = datetime.utcnow()
+        company_name = None if company is None else company
 
-    new_client = Client(full_name=name, email=email,
-                        phone=phone, company_name=company_name,
-                        creation_date=str(creation),
-                        last_contact_date=str(last_contact))
-    session.add(new_client)
-    session.commit()
-    created_succes(new_client)
+        new_client = Client(full_name=name,
+                            email=email,
+                            phone=phone,
+                            company_name=company_name,
+                            creation_date=creation,
+                            last_contact_date=last_contact)
+
+        session.add(new_client)
+        session.commit()
+        created_succes(new_client)
+
+    except KeyError:
+        invalid_token()
+        pass
 
 
 @client.command()
-@click.option('--id', '-i', help='Id of the user you want to modify',
+@click.option('--id',
+              '-i',
+              help='Id of the user you want to modify',
               required=True)
 @click.option('--name', '-n', help='Full name for the new object')
 @click.option('--email', '-e', help='Email for the new object')
@@ -80,44 +93,59 @@ def create(ctx, name, email, phone, company):
 @has_permission(['management', 'commercial'])
 def modify(ctx, id, name, email, phone, company):
     session = ctx.obj['session']
+    try:
+        user_logged = session.scalar(
+            select(User).where(User.id == ctx.obj['user_id'].id))
 
-    client_to_modify = session.scalar(select(Client).where(Client.id == id))
+        client_to_modify = session.scalar(select(Client).where(Client.id == id))
 
-    if client_to_modify:
+        if client_to_modify:
 
-        if name is not None:
-            client_to_modify.full_name = name
-        if email is not None:
-            client_to_modify.email = email
+            if name is not None:
+                client_to_modify.full_name = name
+            if email is not None:
+                client_to_modify.email = email
 
-        if phone is not None:
-            client_to_modify.phone = phone
+            if phone is not None:
+                client_to_modify.phone = phone
 
-        if company is not None:
-            client_to_modify.company_name = company
+            if company is not None:
+                client_to_modify.company_name = company
 
-        client_to_modify.last_contact_date = datetime.now()
+            client_to_modify.last_contact_date = datetime.now()
 
-        session.commit()
-        modification_done(client_to_modify)
-    else:
-        client_not_found(id)
+            session.commit()
+            modification_done(client_to_modify)
+        else:
+            client_not_found(id)
+    except KeyError:
+        invalid_token()
+        pass
 
 
 @client.command()
-@click.option('--id', '-i', help='Id of the client you want to delete',
+@click.option('--id',
+              '-i',
+              help='Id of the client you want to delete',
               required=True)
 @click.pass_context
 @has_permission(['management', 'commercial'])
 def delete(ctx, id):
     session = ctx.obj['session']
+    try:
+        user_logged = session.scalar(
+            select(User).where(User.id == ctx.obj['user_id'].id))
 
-    client_to_delete = session.scalar(select(Client).where(Client.id == id))
+        client_to_delete = session.scalar(select(Client).where(Client.id == id))
 
-    if client_to_delete:
-        session.delete(client_to_delete)
-        session.commit()
-        deleted_success(id, client_to_delete)
+        if client_to_delete:
+            session.delete(client_to_delete)
+            session.commit()
+            deleted_success(id, client_to_delete)
 
-    else:
-        client_not_found(id)
+        else:
+            client_not_found(id)
+
+    except KeyError:
+        invalid_token()
+        pass
