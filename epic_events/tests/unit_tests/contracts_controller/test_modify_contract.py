@@ -74,3 +74,29 @@ def test_modify_contract_status(runner, mocked_session):
     assert new_contract.status != old_contract_client_id
     assert new_contract.status == True
     assert result.exit_code == 0
+
+
+def test_modify_contract_client_without_authentication(runner, mocked_session):
+    result = runner.invoke(
+        modify,
+        ["-i", "1", "-c", "2"],
+        obj={
+            "session": mocked_session,
+
+        })
+    assert result.exit_code == 0
+    assert "\n' Invalid Token  please logged in again' \n" in result.output
+
+
+
+def test_modify_contract_whitout_permission(runner, mocked_session):
+    user_logged = mocked_session.scalar(select(User).where(User.id == 1))
+    result = runner.invoke(
+        modify,
+        ["-i", "1", "-c", "2"],
+        obj={
+            "session": mocked_session,
+            "user_id": user_logged
+        })
+    assert "\n' You're not allowed to use this command'\n\n" in result.output
+    assert result.exit_code == 0
