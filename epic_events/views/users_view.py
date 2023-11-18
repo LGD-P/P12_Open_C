@@ -58,9 +58,9 @@ def username_not_found(name):
 
 
 def login_success(name):
-    Console().print(
-        f"\n[blue] Welcome '[bold green]{name}[/bold green]' you're logged.\n")
-
+    message =  f"\n[blue] Welcome '[bold green]{name}[/bold green]' you're logged.\n"
+    Console().print(message)
+    return message
 
 def param_not_required():
     Console().print(
@@ -124,8 +124,9 @@ def new_pass():
 
 
 def wrong_pass():
-    Console().print(
-        "\n[bold red '[bold red] You enter a wrong password[/bold red]' \n")
+    message = "\n'[bold red] You enter a wrong password[/bold red]' \n"
+    Console().print(message)
+    return message
 
 
 def wrong_confirm_pass():
@@ -147,7 +148,7 @@ def expired_token():
 
 def logout_success():
     Console().print(
-        "\n'[bold green]You have been successfully logout out[/bold green]'\n")
+        f"\n'[bold green] You have been successfully logout out[/bold green]'\n")
 
 
 def logged_as(user, role):
