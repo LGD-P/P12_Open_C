@@ -78,7 +78,7 @@ def created_succes(contract):
 def deleted_success(id, contract):
     Console().print(
         f"\n[blue] Client with ID '[bold red]{id}[/bold red]', UUID "
-        "'[bold red]N°{str(contract.uuid)}[/bold red]' "
+        f"'[bold red]N°{str(contract.uuid)}[/bold red]' "
         "has been '[bold red]deleted[/bold red]'.\n")
 
 
