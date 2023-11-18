@@ -1,5 +1,5 @@
 from epic_events.models.base import Base
-from sqlalchemy import (Column, Integer, DateTime, ForeignKey, Boolean, func,
+from sqlalchemy import (Column, Integer, DateTime, ForeignKey, Boolean, func, String,
                         )
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
@@ -9,7 +9,7 @@ from sqlalchemy.orm import relationship
 class Contract(Base):
     __tablename__ = 'contracts'
     id = Column(Integer, primary_key=True)
-    uuid = Column(UUID(as_uuid=True), default=uuid.uuid4, unique=True)
+    uuid = Column(String, unique=True)
     client_id = Column(Integer, ForeignKey('clients.id'))
     management_contact_id = Column(Integer, ForeignKey('users.id'))
     total_amount = Column(Integer, nullable=False)
