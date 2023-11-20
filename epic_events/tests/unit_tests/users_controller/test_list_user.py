@@ -13,10 +13,11 @@ def test_list_users(runner, mocked_session):
                                "session": mocked_session,
                                "user_id": user_logged
                            })
+
     assert result.exit_code == 0
-    assert "1  │ Kevin         │ kevin@epicevent.com   │  ID : 1 - type :     │ ****" in result.output
-    assert "Denis Chamart │ Denis                 │  ID : 2 - type :     │ ****" in result.output
-    assert "3  │ Pierre        │ Pierre@epicevent.com  │  ID : 3 - type :     │ ****" in result.output
+    assert "│ 1  │ Kevin              │ keven@epicevent.c… │  ID : 1 - type :   │ ****" in result.output
+    assert "│ 2  │ Denis Chamart      │ Denis              │  ID : 2 - type :   │ ****" in result.output
+    assert "│ 3  │ Pierre             │ Pierre@epicevent.… │  ID : 3 - type :   │ **** " in result.output
 
 
 def test_list_user_not_allowed(runner, mocked_session):
@@ -41,9 +42,9 @@ def test_list_user_single(runner, mocked_session):
                                "user_id": user_logged
                            })
 
-
+    print(result.output)
     assert result.exit_code == 0
-    assert "1  │ Kevin │ kevin@epicevent.com │  ID : 1 - type : support │ ****" in result.output
+    assert "│ 1  │ Kevin │ keven@epicevent.com │  ID : 1 - type : support │ ****" in result.output
 
 
 def test_list_user_not_found(runner, mocked_session):
