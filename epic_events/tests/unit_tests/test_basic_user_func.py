@@ -3,7 +3,6 @@ from unittest.mock import patch
 import click
 import passlib.hash
 
-
 import pytest
 
 from epic_events.models.user import User
@@ -52,13 +51,13 @@ def test_change_password_wrong_entry(mock_specific_user, capsys):
     user_input = "wrong_pass"
 
     with patch('epic_events.models.user.input_old_pass', return_value=user_input):
-
         with pytest.raises(click.UsageError):
             with patch.object(User, 'confirm_pass', return_value=False):
                 change_password(user, None)
 
     capture = capsys.readouterr()
     assert "\n' You enter a wrong password' \n\n" in capture.out
+
 
 # Vérifier
 def test_change_password_valid(mock_specific_user, capsys):
@@ -85,6 +84,3 @@ def test_change_password_confirm_wrong(mock_specific_user, capsys):
 
         capture = capsys.readouterr()
         assert "\n' You enter a wrong password' \n\n" in capture.out
-
-
-
