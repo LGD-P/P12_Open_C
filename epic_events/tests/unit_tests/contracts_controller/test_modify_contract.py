@@ -88,7 +88,6 @@ def test_modify_contract_client_without_authentication(runner, mocked_session):
     assert "\n' Invalid Token  please logged in again' \n" in result.output
 
 
-
 def test_modify_contract_whitout_permission(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 1))
     result = runner.invoke(

@@ -46,3 +46,5 @@ def test_delete_contrat_without_permission(runner, mocked_session):
 
     assert "\n' You're not allowed to use this command'\n\n" in result.output
     assert result.exit_code == 0
+
+
