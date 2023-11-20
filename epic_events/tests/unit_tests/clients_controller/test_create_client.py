@@ -5,8 +5,7 @@ from epic_events.controllers.clients_controller import create
 from sqlalchemy import select
 
 
-# Vérifier que les modifications apportées aux models et au controller ne pose
-# pas de problèmes
+
 def test_create_client(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 3))
 
@@ -59,7 +58,6 @@ def test_create_client_without_permission(runner, mocked_session):
     assert result.exit_code == 0
 
 
-# Modifier la création rajouter le try except pour empecher l'usage par des user non loggué VERIFIER POUR TOUTES LES COMMANDES
 def test_create_client_without_authentication(runner, mocked_session):
     result = runner.invoke(create, [
         "-n", 'Georges Piotr', "-e", "geogres-piotr@gpsas.com", "-ph",

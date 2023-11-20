@@ -13,8 +13,8 @@ def test_modify_client_full_name(runner, mocked_session):
                                "user_id": user_logged
                            })
 
-    client_modifyed = mocked_session.scalar(select(Client).where(Client.id == 1))
-    assert client_modifyed.full_name == "Adrien Lelièvre"
+    client_modified = mocked_session.scalar(select(Client).where(Client.id == 1))
+    assert client_modified.full_name == "Adrien Lelièvre"
     assert result.exit_code == 0
     assert "\n 'ADRIEN LELIÈVRE' successfully modified.\n\n" in result.output
 
@@ -28,9 +28,9 @@ def test_modify_client_email(runner, mocked_session):
                                "user_id": user_logged
                            })
 
-    client_modifyed = mocked_session.scalar(select(Client).where(Client.id == 1))
-    assert client_modifyed.email != "lelièvre.adrien-client@epicevent.com"
-    assert client_modifyed.email == "Adrien.lelièvre@epicevents.com"
+    client_modified = mocked_session.scalar(select(Client).where(Client.id == 1))
+    assert client_modified.email != "lelièvre.adrien-client@epicevent.com"
+    assert client_modified.email == "Adrien.lelièvre@epicevents.com"
     assert result.exit_code == 0
     assert "\n 'ADRIEN LELIÈVRE DE COSTE' successfully modified.\n\n" in result.output
 
@@ -43,9 +43,9 @@ def test_modify_client_phone(runner, mocked_session):
                                "user_id": user_logged
                            })
 
-    client_modifyed = mocked_session.scalar(select(Client).where(Client.id == 1))
-    assert client_modifyed.phone != "+33 6 98 31 70 48"
-    assert client_modifyed.phone == "+33 7 58 41 00 50"
+    client_modified = mocked_session.scalar(select(Client).where(Client.id == 1))
+    assert client_modified.phone != "+33 6 98 31 70 48"
+    assert client_modified.phone == "+33 7 58 41 00 50"
     assert result.exit_code == 0
     assert "\n 'ADRIEN LELIÈVRE DE COSTE' successfully modified.\n\n" in result.output
 

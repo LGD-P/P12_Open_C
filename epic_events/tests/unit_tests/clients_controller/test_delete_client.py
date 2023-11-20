@@ -16,7 +16,7 @@ def test_delete_client(runner, mocked_session):
     assert "\n Client with ID '1', 'ADRIEN LELIÈVRE DE COSTE' has been 'deleted'.\n" in result.output
 
 
-def test_delete_client_not_allowed(runner, mocked_session):
+def test_delete_client_without_permission(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 1))
     result = runner.invoke(delete, ["-i", "3"], obj={
         "session": mocked_session,
@@ -38,7 +38,7 @@ def test_delete_client_wrong_id(runner, mocked_session):
     assert "\n Client with ID '30' is 'not found'.\n\n" in result.output
 
 
-def test_delete_client_whitout_authentication(runner, mocked_session):
+def test_delete_client_without_authentication(runner, mocked_session):
     result = runner.invoke(delete, ["-i", "30"], obj={
         "session": mocked_session,
 

@@ -5,7 +5,7 @@ from sqlalchemy import select
 
 
 # Récupérer les ASSERT OUTPUT
-def test_list_all_client(runner, mocked_session):
+def test_list_all_clients(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 2))
     result = runner.invoke(list_client,
                            obj={
