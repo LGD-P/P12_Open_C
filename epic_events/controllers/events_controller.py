@@ -18,11 +18,11 @@ def event(ctx):
     pass
 
 
-@event.command()
+@event.command(name='list')
 @click.option('--id', '-i', help='Id of the event to query')
 @click.pass_context
 @has_permission(['management', 'support', 'commercial'])
-def list(ctx, id):
+def list_event(ctx, id):
     session = ctx.obj['session']
     try:
         user_logged = session.scalar(
@@ -61,28 +61,36 @@ def list(ctx, id):
 def create(ctx, name, contract, support, starting, ending, location, attendees,
            notes):
     session = ctx.obj['session']
-
     try:
-        starting = datetime.strptime(starting, '%Y-%m-%d - %H:%M')
-    except ValueError:
-        return date_param()
+      user_logged = session.scalar(
+        select(User).where(User.id == ctx.obj['user_id'].id)
+    )
+    
+  
+      try:
+          starting = datetime.strptime(starting, '%Y-%m-%d - %H:%M')
+      except ValueError:
+          return date_param()
+  
+      try:
+          ending = datetime.strptime(ending, '%Y-%m-%d - %H:%M')
+      except ValueError:
+          return date_param()
+  
+      if ending < starting:
+          return end_date_error()
+  
+      new_event = Event(name=name, contract_id=contract,
+                        support_contact_id=support, start_date=starting,
+                        end_date=ending, location=location,
+                        attendees=attendees, notes=notes)
+  
+      session.add(new_event)
+      session.commit()
+      created_succes(new_event)
 
-    try:
-        ending = datetime.strptime(ending, '%Y-%m-%d - %H:%M')
-    except ValueError:
-        return date_param()
-
-    if ending < starting:
-        return end_date_error()
-
-    new_event = Event(name=name, contract_id=contract,
-                      support_contact_id=support, start_date=starting,
-                      end_date=ending, location=location,
-                      attendees=attendees, notes=notes)
-
-    session.add(new_event)
-    session.commit()
-    created_succes(new_event)
+    except KeyError:
+      invalid_token()
 
 
 @event.command()
@@ -101,39 +109,55 @@ def create(ctx, name, contract, support, starting, ending, location, attendees,
 def modify(ctx, id, name, contract, support, starting, ending,
            location, attendees, notes):
     session = ctx.obj['session']
+    try:
+      user_logged = session.scalar(
+      select(User).where(User.id == ctx.obj['user_id'].id)
+  )
 
-    event_to_modify = session.scalar(select(Event).where(Event.id == id))
+      event_to_modify = session.scalar(select(Event).where(Event.id == id))
+  
+      if event_to_modify:
+  
+          if name is not None:
+              event_to_modify.name = name
+            
+          if contract is not None:
+              event_to_modify.contact_id = contract
+  
+          if support is not None:
+              event_to_modify.support_contact_id = support
+  
+          if starting is not None:
+            try:
+              starting = datetime.strptime(starting, '%Y-%m-%d - %H:%M')
+              event_to_modify.start_date = starting
+            except ValueError:
+              return date_param()
+  
+          if ending is not None:
+            try:
+              ending = datetime.strptime(ending, '%Y-%m-%d - %H:%M')
+              event_to_modify.end_date = ending
+            except ValueError:
+              return date_param()
+              
+          if location is not None:
+              event_to_modify.location = location
+  
+          if attendees is not None:
+              event_to_modify.attendees = attendees
+  
+          if notes is not None:
+              event_to_modify.notes = notes
+  
+          session.commit()
+          modification_done(event_to_modify)
+      else:
+          event_not_found(id)
 
-    if event_to_modify:
-
-        if name is not None:
-            event_to_modify.name = name
-        if contract is not None:
-            event_to_modify.contact_id = contract
-
-        if support is not None:
-            event_to_modify.support_contact_id = support
-
-        if starting is not None:
-            event_to_modify.start_date = starting
-
-        if ending is not None:
-            event_to_modify.end_date = ending
-
-        if location is not None:
-            event_to_modify.location = location
-
-        if attendees is not None:
-            event_to_modify.attendees = attendees
-
-        if notes is not None:
-            event_to_modify.notes = notes
-
-        session.commit()
-        modification_done(event_to_modify)
-    else:
-        event_not_found(id)
-
+    except KeyError:
+      invalid_token()
+  
 
 @event.command()
 @click.option('--id', '-i', help='Id of the event you want to delete',
@@ -142,13 +166,20 @@ def modify(ctx, id, name, contract, support, starting, ending,
 @has_permission(['management', 'support', 'commercial'])
 def delete(ctx, id):
     session = ctx.obj['session']
+    try:
+        user_logged = session.scalar(
+        select(User).where(User.id == ctx.obj['user_id'].id)
+    )
 
-    event_to_delete = session.scalar(select(Event).where(Event.id == id))
-
-    if event_to_delete:
-        session.delete(event_to_delete)
-        session.commit()
-        deleted_success(id, event_to_delete)
-
-    else:
-        event_not_found(id)
+        event_to_delete = session.scalar(select(Event).where(Event.id == id))
+    
+        if event_to_delete:
+            session.delete(event_to_delete)
+            session.commit()
+            deleted_success(id, event_to_delete)
+    
+        else:
+            event_not_found(id)
+        
+    except KeyError:
+      invalid_token()

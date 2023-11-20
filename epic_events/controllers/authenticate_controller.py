@@ -1,6 +1,6 @@
 from epic_events.models.user import User
 from epic_events.views.users_view import (
-    wrong_pass, username_not_found, login_success, logout_success)
+    wrong_pass, username_not_found, login_success, logout_success, invalid_token)
 
 from epic_events.utils import (
     generate_token, write_token_in_temp)
@@ -46,14 +46,20 @@ def login(ctx, name, password):
 @authenticate.command()
 @click.pass_context
 def logout(ctx):
-    ctx.obj['session']
+    session = ctx.obj['session']
+    try:
+        user_logged = session.scalar(
+            select(User).where(User.id == ctx.obj['user_id'].id))
 
-    folder_path = 'temp'
+        folder_path = 'temp'
 
-    file_path_to_delete = os.path.join(folder_path, 'temporary.txt')
+        file_path_to_delete = os.path.join(folder_path, 'temporary.txt')
 
-    for filename in os.listdir(folder_path):
-        file_path_to_delete = os.path.join(folder_path, filename)
-        os.unlink(file_path_to_delete)
+        for filename in os.listdir(folder_path):
+            file_path_to_delete = os.path.join(folder_path, filename)
+            os.unlink(file_path_to_delete)
 
-    logout_success()
+        logout_success()
+
+    except KeyError:
+        invalid_token()

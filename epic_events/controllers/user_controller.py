@@ -109,24 +109,28 @@ def list_user(ctx, id):
 @has_permission(['management'])
 def create(ctx, name, email, role, password):
     session = ctx.obj['session']
+    try:
+        user_logged = session.scalar(
+            select(User).where(User.id == ctx.obj['user_id'].id))
 
-    role_to_fill = session.scalars(
-        select(Role).where(Role.name == role)).one()
+        role_to_fill = session.scalars(
+            select(Role).where(Role.name == role)).one()
 
-    hashed_password = User().hash_pass(password)
+        hashed_password = User().hash_pass(password)
 
-    new_user = User(name=name, email=email,
-                    role=role_to_fill, password=hashed_password)
+        new_user = User(name=name, email=email,
+                        role=role_to_fill, password=hashed_password)
 
-    session.add(new_user)
-    session.commit()
+        session.add(new_user)
+        session.commit()
 
-    role_to_fill.users.append(new_user)
-    session.add(role_to_fill)
-    session.commit()
+        role_to_fill.users.append(new_user)
+        session.add(role_to_fill)
+        session.commit()
 
-    created_succes(new_user)
-
+        created_succes(new_user)
+    except KeyError:
+        invalid_token()
 
 @user.command()
 @click.option('--id', '-i', help='Id of the user you want to modify',
@@ -140,32 +144,36 @@ def create(ctx, name, email, role, password):
 @has_permission(['management'])
 def modify(ctx, id, name, email, role, password):
     session = ctx.obj['session']
+    try:
+        user_logged = session.scalar(
+            select(User).where(User.id == ctx.obj['user_id'].id))
 
-    user_to_modify = session.scalar(select(User).where(User.id == id))
-    if user_to_modify:
+        user_to_modify = session.scalar(select(User).where(User.id == id))
+        if user_to_modify:
 
-        if name is not None:
-            user_to_modify.name = name
+            if name is not None:
+                user_to_modify.name = name
 
-        if email is not None:
-            email = email_is_valid(ctx, None, email)
-            user_to_modify.email = email
+            if email is not None:
+                email = email_is_valid(ctx, None, email)
+                user_to_modify.email = email
 
-        if role is not None:
-            role = Role().role_is_valid(ctx, role)
-            role_to_give = session.scalar(select(Role).where(
-                Role.name == role))
-            user_to_modify.role_id = role_to_give.id
+            if role is not None:
+                role = Role().role_is_valid(ctx, role)
+                role_to_give = session.scalar(select(Role).where(
+                    Role.name == role))
+                user_to_modify.role_id = role_to_give.id
 
-        if password is not None:
-            new_password = change_password(user_to_modify, ctx)
-            user_to_modify.password = new_password
+            if password is not None:
+                new_password = change_password(user_to_modify, ctx)
+                user_to_modify.password = new_password
 
-        session.commit()
-        modification_done(user_to_modify)
-    else:
-        user_not_found(id)
-
+            session.commit()
+            modification_done(user_to_modify)
+        else:
+            user_not_found(id)
+    except KeyError:
+        invalid_token()
 
 @user.command()
 @click.option('--id', '-i', help='Id of the user you want to delete',
@@ -174,13 +182,19 @@ def modify(ctx, id, name, email, role, password):
 @has_permission(['management'])
 def delete(ctx, id):
     session = ctx.obj['session']
+    try:
+        user_logged = session.scalar(
+            select(User).where(User.id == ctx.obj['user_id'].id))
 
-    user_to_delete = session.scalar(select(User).where(User.id == id))
+        user_to_delete = session.scalar(select(User).where(User.id == id))
 
-    if user_to_delete:
-        session.delete(user_to_delete)
-        session.commit()
-        deleted_success(id, user_to_delete)
+        if user_to_delete:
+            session.delete(user_to_delete)
+            session.commit()
+            deleted_success(id, user_to_delete)
 
-    else:
-        user_not_found(id)
+        else:
+            user_not_found(id)
+
+    except KeyError:
+        invalid_token()
