@@ -73,14 +73,16 @@ def generate_client(id):
     phone = f.phone_number()
     company_name = f.company().replace(' ', '-') + " & Co."
     creation_date = f.date_time(tzinfo=timezone).strftime('%d-%m-%Y - %H:%M')
-    last_contact_date = f.date_time(tzinfo=timezone).strftime('%d-%m-%Y - %H:%M')
+    last_contact_date = f.date_time(
+        tzinfo=timezone).strftime('%d-%m-%Y - %H:%M')
     client = Client(id=id,
                     full_name=full_name,
                     email=email,
                     phone=phone,
                     company_name=company_name,
                     creation_date=creation_date,
-                    last_contact_date=last_contact_date)
+                    last_contact_date=last_contact_date,
+                    commercial_contract_id=None)
     return client
 
 # To generate fake clients dict for conftest
@@ -143,7 +145,3 @@ def generate_event(id, contract_id):
 # print(vars(event1))
 # print(vars(event2))
 # print(vars(event3))
-
-
-
-
