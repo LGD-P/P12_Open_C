@@ -4,11 +4,23 @@ from epic_events.utils import has_permission
 from epic_events.views.users_view import logged_as, invalid_token
 from epic_events.views.clients_views import (clients_table, created_succes,
                                              deleted_success, client_not_found,
-                                             modification_done)
+                                             modification_done, commercial_not_found
+                                             )
 
 from datetime import datetime
 import click
 from sqlalchemy import select
+
+
+def check_commercial_id(ctx, param, value):
+    session = ctx.obj['session']
+    if value is None:
+        return [False, value]
+    user_list = session.scalars(select(User).order_by(User.id)).all()
+    for element in user_list:
+        if element.id == int(value) and element.role.name == "commercial":
+            return value
+        return [False, value]
 
 
 @click.group()
@@ -50,15 +62,23 @@ def list_client(ctx, id):
               help='Full name for the new object',
               required=True)
 @click.option('--email', '-e', help='Email for the new object', required=True)
-@click.option('--phone', '-ph', help='Phone nummber', required=True)
+@click.option('--phone', '-ph', help='Phone number', required=True)
 @click.option('--company', '-c', help='Company name')
+@click.option('--comid', '-ci', help='Commercial id')
 @click.pass_context
-@has_permission(['commercial'])
-def create(ctx, name, email, phone, company):
+@has_permission(['commercial', 'management'])
+def create(ctx, name, email, phone, company, comid):
     session = ctx.obj['session']
     try:
         user_logged = session.scalar(
             select(User).where(User.id == ctx.obj['user_id'].id))
+
+        if comid is not None:
+            user_list = session.scalars(select(User).order_by(User.id)).all()
+            for element in user_list:
+                if element.id == int(comid) and element.role.name == "commercial":
+                    return comid
+            return commercial_not_found(comid)
 
         creation = datetime.utcnow()
         last_contact = datetime.utcnow()
@@ -69,7 +89,8 @@ def create(ctx, name, email, phone, company):
                             phone=phone,
                             company_name=company_name,
                             creation_date=creation,
-                            last_contact_date=last_contact)
+                            last_contact_date=last_contact,
+                            commercial_contact_id=comid)
 
         session.add(new_client)
         session.commit()
@@ -89,13 +110,21 @@ def create(ctx, name, email, phone, company):
 @click.option('--email', '-e', help='Email for the new object')
 @click.option('--phone', '-ph', help='Phone nummber')
 @click.option('--company', '-c', help='Company name')
+@click.option('--comid', '-ci', help='Commercial id')
 @click.pass_context
 @has_permission(['management', 'commercial'])
-def modify(ctx, id, name, email, phone, company):
+def modify(ctx, id, name, email, phone, company, comid):
     session = ctx.obj['session']
     try:
         user_logged = session.scalar(
             select(User).where(User.id == ctx.obj['user_id'].id))
+
+        if comid is not None:
+            user_list = session.scalars(select(User).order_by(User.id)).all()
+            for element in user_list:
+                if element.id == int(comid) and element.role.name == "commercial":
+                    return comid
+            return commercial_not_found(comid)
 
         client_to_modify = session.scalar(select(Client).where(Client.id == id))
 
@@ -113,6 +142,10 @@ def modify(ctx, id, name, email, phone, company):
                 client_to_modify.company_name = company
 
             client_to_modify.last_contact_date = datetime.now()
+
+            client_to_modify.commercial_contact_id = comid
+
+
 
             session.commit()
             modification_done(client_to_modify)
