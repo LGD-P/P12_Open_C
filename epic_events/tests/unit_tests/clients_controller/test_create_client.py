@@ -43,7 +43,7 @@ def test_create_client_with_missing_argument(runner, mocked_session):
 
 
 def test_create_client_without_permission(runner, mocked_session):
-    user_logged = mocked_session.scalar(select(User).where(User.id == 2))
+    user_logged = mocked_session.scalar(select(User).where(User.id == 1))
 
     result = runner.invoke(create, [
         "-n", 'Georges Piotr', "-e", "geogres-piotr@gpsas.com", "-ph",

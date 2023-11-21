@@ -126,7 +126,9 @@ def sqlalchemy_mock_config():
             'phone': '+33 6 98 31 70 48',
             'company_name': 'Laroche & Co.',
             'creation_date': datetime(2023, 6, 24, 14, 0),
-            'last_contact_date': datetime(2023, 7, 24, 15, 0)
+            'last_contact_date': datetime(2023, 7, 24, 15, 0),
+            'commercial_contact_id':None
+
         }, {
             'id': '2',
             'full_name': 'Noël Masson',
@@ -134,7 +136,8 @@ def sqlalchemy_mock_config():
             'phone': '+33 (0)4 88 80 55 52',
             'company_name': 'Bouvet-S.A.R.L & Co.',
             'creation_date': datetime(2023, 10, 24, 10, 0),
-            'last_contact_date': datetime(2023, 11, 10, 14, 0)
+            'last_contact_date': datetime(2023, 11, 10, 14, 0),
+            'commercial_contact_id':None
         }, {
             'id': '3',
             'full_name': 'Alix Peron',
@@ -142,7 +145,8 @@ def sqlalchemy_mock_config():
             'phone': '0298994244',
             'company_name': 'Mathilde-Roger-Costa & Co.',
             'creation_date': datetime(2023, 3, 10, 11, 32),
-            'last_contact_date': datetime(2023, 11, 14, 18, 0)
+            'last_contact_date': datetime(2023, 11, 14, 18, 0),
+            'commercial_contact_id':None
         }]),
         ("contracts", [{
             'id': '1',
