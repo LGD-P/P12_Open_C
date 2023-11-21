@@ -18,8 +18,6 @@ def test_modify_client_full_name(runner, mocked_session):
                            })
 
     client_modified = mocked_session.scalar(select(Client).where(Client.id == 1))
-    print(client_modified.full_name)
-    print(result.output)
     assert client_modified.full_name == "Adrien Lelièvre"
     assert result.exit_code == 0
     assert "\n 'ADRIEN LELIÈVRE' successfully modified.\n\n" in result.output
@@ -54,6 +52,24 @@ def test_modify_client_phone(runner, mocked_session):
     assert client_modified.phone == "+33 7 58 41 00 50"
     assert result.exit_code == 0
     assert "\n 'ADRIEN LELIÈVRE DE COSTE' successfully modified.\n\n" in result.output
+
+
+def test_modify_client_commercial_contrat_id(runner, mocked_session):
+    user_logged = mocked_session.scalar(select(User).where(User.id == 3))
+    client_modified = mocked_session.scalar(select(Client).where(Client.id == 1))
+    print(client_modified.commercial_contact_id)
+    result = runner.invoke(modify,
+                           ["-i", "1", "-ci", "6"],
+                           obj={
+                               "session": mocked_session,
+                               "user_id": user_logged
+                           })
+
+    assert client_modified.commercial_contact_id is not None
+    assert client_modified.commercial_contact_id == 6
+    assert "\n 'ADRIEN LELIÈVRE DE COSTE' successfully modified.\n\n" in result.output
+    assert result.exit_code == 0
+
 
 
 def test_not_allowed_to_modify_client(runner, mocked_session):

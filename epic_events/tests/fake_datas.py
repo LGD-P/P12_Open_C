@@ -58,7 +58,9 @@ def generate_user(role, id, password, ):
 # role_list = generate_roles()
 
 # To generate fake users dict for conftest
-# user1, user2, user3 = generate_user(role_list[0],'4','S3CRET@26'), generate_user(role_list[1],'5','S3CRET@27'), generate_user(role_list[2],'6','S3CRET@28')
+# user1, user2, user3 = generate_user(role_list[0],'4','S3CRET@26'),
+# generate_user(role_list[1],'5','S3CRET@27'),
+# generate_user(role_list[2],'6','S3CRET@28')
 # print('')
 # print(vars(user1))
 # print('')
@@ -88,7 +90,8 @@ def generate_client(id):
 # To generate fake clients dict for conftest
 # note that date format must be  : datetime(2024, 12, 24, 19, 20)
 
-# client1, client2, client3 = generate_client('1'), generate_client('2'), generate_client('3')
+# client1, client2, client3 = generate_client('1'), generate_client('2'),
+# generate_client('3')
 # print(vars(client1))
 # print('')
 # print(vars(client2))
@@ -110,7 +113,9 @@ def generate_contract(id, client_id, management_contact_id):
     return contract
 
 # To generate fake contracts dict for conftest
-# contract1,contract2,contract3 = generate_contract("1","1","3"),generate_contract("2","2","3"),generate_contract("3","3","3")
+# contract1,contract2,contract3 = generate_contract("1","1","3"),
+# generate_contract("2","2","3"),
+# generate_contract("3","3","3")
 # print(vars(contract1))
 # print('')
 # print(vars(contract2))
@@ -141,7 +146,8 @@ def generate_event(id, contract_id):
 # To generate fake events dict for conftest
 # note that date format must be  : datetime(2024, 12, 24, 19, 20)
 
-# event1,event2,event3 = generate_event("1","3"),generate_event("2","3"),generate_event("3","3")
+# event1,event2,event3 = generate_event("1","3"),generate_event("2","3"),
+# generate_event("3","3")
 # print(vars(event1))
 # print(vars(event2))
 # print(vars(event3))

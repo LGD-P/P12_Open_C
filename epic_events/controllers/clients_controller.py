@@ -12,7 +12,6 @@ import click
 from sqlalchemy import select
 
 
-
 @click.group()
 @click.pass_context
 def client(ctx):
@@ -100,7 +99,7 @@ def create(ctx, name, email, phone, company, comid):
 @click.option('--email', '-e', help='Email for the new object')
 @click.option('--phone', '-ph', help='Phone nummber')
 @click.option('--company', '-c', help='Company name')
-@click.option('--comid', '-ci', help='Commercial id')
+@click.option('--comid', '-ci', help='User id of your commercial')
 @click.pass_context
 @has_permission(['management', 'commercial'])
 def modify(ctx, id, name, email, phone, company, comid):
@@ -108,13 +107,6 @@ def modify(ctx, id, name, email, phone, company, comid):
     try:
         user_logged = session.scalar(
             select(User).where(User.id == ctx.obj['user_id'].id))
-
-        if comid is not None:
-            user_list = session.scalars(select(User).order_by(User.id)).all()
-            for element in user_list:
-                if element.id == int(comid) and element.role.name == "commercial":
-                    return comid
-            return commercial_not_found(comid)
 
         client_to_modify = session.scalar(select(Client).where(Client.id == id))
 
@@ -133,9 +125,15 @@ def modify(ctx, id, name, email, phone, company, comid):
 
             client_to_modify.last_contact_date = datetime.now()
 
-            client_to_modify.commercial_contact_id = comid
-
-
+            if comid is not None:
+                commercial_found = False
+                user_list = session.scalars(select(User).order_by(User.id)).all()
+                for element in user_list:
+                    if element.id == int(comid) and element.role.name == "commercial":
+                        client_to_modify.commercial_contact_id = comid
+                        commercial_found = True
+                if not commercial_found:
+                    return commercial_not_found(comid)
 
             session.commit()
             modification_done(client_to_modify)
