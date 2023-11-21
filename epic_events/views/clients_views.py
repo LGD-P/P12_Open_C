@@ -47,7 +47,7 @@ def clients_table(clients):
         last_contact_date = client.last_contact_date.strftime(
             '%d-%m-%Y - %H:%M')
         commercial_contact_id = "❌" if client.commercial_contact_id is None \
-            else client.commercial_contact_id
+            else str(client.commercial_contact_id)
         company_name = "❌" if client.company_name is None or \
             client.company_name == 'None' else client.company_name
 
@@ -82,6 +82,12 @@ def deleted_success(id, client):
 def client_not_found(id):
     Console().print(
         f"\n[blue] Client with ID '[bold red]{id}[/bold red]' is "
+        "'[bold red]not found[/bold red]'.\n")
+
+
+def commercial_not_found(id):
+    Console().print(
+        f"\n[blue] Commercial ID '[bold red]{id}[/bold red]' is "
         "'[bold red]not found[/bold red]'.\n")
 
 
