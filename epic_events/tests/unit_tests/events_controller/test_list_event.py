@@ -16,8 +16,9 @@ def test_list_all_events(runner, mocked_session):
                            })
 
     print(result.output)
-    assert '│ 1  │ Michè… │   3    │   1    │ 10-10… │ 11-10-… │  60,   │   476   │  Côte ' in result.output
-    assert '│ 2  │ René-… │   3    │  None  │ 12-01… │ 13-01-… │ avenue │   204   │ Claire ' in result.output
+    assert '│ 1  │ Alix-… │   3    │   1    │ 10-10… │ 11-10-… │  60,   │   476   │  Côte  │' in result.output
+    assert '│ 2  │ Noël-… │   2    │  None  │ 12-01… │ 13-01-… │ avenue │   204   │ Claire │' in result.output
+    assert '│ 3  │ Adrie… │   1    │  None  │ 24-12… │ 02-12-… │  62,   │   117   │  Main  │' in result.output
     assert result.exit_code == 0
 
 
@@ -30,7 +31,7 @@ def test_list_single_event(runner, mocked_session):
                                "user_id": user_logged
                            })
 
-    assert '│ 3  │ René-… │   3    │  None  │ 24-12… │ 02-12-… │  62,   │   117   │  Main ' in result.output
+    assert '│ 3  │ Adrie… │   1    │  None  │ 24-12… │ 02-12-… │  62,   │   117   │  Main  │' in result.output
     assert result.exit_code == 0
 
 

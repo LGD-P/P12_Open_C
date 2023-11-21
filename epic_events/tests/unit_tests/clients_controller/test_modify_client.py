@@ -1,6 +1,6 @@
 from epic_events.models.user import User
 from epic_events.models.client import Client
-from epic_events.controllers.clients_controller import modify
+from epic_events.controllers.clients_controller import modify_client
 
 from sqlalchemy import select
 from unittest.mock import patch
@@ -11,7 +11,7 @@ def test_modify_client_full_name(runner, mocked_session):
     client_modified = mocked_session.scalar(select(Client).where(Client.id == 1))
     print(client_modified.full_name)
 
-    result = runner.invoke(modify, ["-i", "1", "-n", "Adrien Lelièvre"],
+    result = runner.invoke(modify_client, ["-i", "1", "-n", "Adrien Lelièvre"],
                            obj={
                                "session": mocked_session,
                                "user_id": user_logged
@@ -25,7 +25,7 @@ def test_modify_client_full_name(runner, mocked_session):
 
 def test_modify_client_email(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 3))
-    result = runner.invoke(modify,
+    result = runner.invoke(modify_client,
                            ["-i", "1", "-e", "Adrien.lelièvre@epicevents.com"],
                            obj={
                                "session": mocked_session,
@@ -41,7 +41,7 @@ def test_modify_client_email(runner, mocked_session):
 
 def test_modify_client_phone(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 3))
-    result = runner.invoke(modify, ["-i", "1", "-ph", "+33 7 58 41 00 50"],
+    result = runner.invoke(modify_client, ["-i", "1", "-ph", "+33 7 58 41 00 50"],
                            obj={
                                "session": mocked_session,
                                "user_id": user_logged
@@ -57,8 +57,7 @@ def test_modify_client_phone(runner, mocked_session):
 def test_modify_client_commercial_contrat_id(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 3))
     client_modified = mocked_session.scalar(select(Client).where(Client.id == 1))
-    print(client_modified.commercial_contact_id)
-    result = runner.invoke(modify,
+    result = runner.invoke(modify_client,
                            ["-i", "1", "-ci", "6"],
                            obj={
                                "session": mocked_session,
@@ -75,7 +74,7 @@ def test_modify_client_commercial_contrat_id(runner, mocked_session):
 def test_not_allowed_to_modify_client(runner, mocked_session):
     user_logged_as_support = mocked_session.scalar(
         select(User).where(User.id == 1))
-    result = runner.invoke(modify, ["-i", "1", "-ph", "+33 7 58 41 00 50"],
+    result = runner.invoke(modify_client, ["-i", "1", "-ph", "+33 7 58 41 00 50"],
                            obj={
                                "session": mocked_session,
                                "user_id": user_logged_as_support
@@ -86,7 +85,7 @@ def test_not_allowed_to_modify_client(runner, mocked_session):
 
 
 def test_modify_client_without_authentication(runner, mocked_session):
-    result = runner.invoke(modify, ["-i", "1", "-ph", "+33 7 58 41 00 50"],
+    result = runner.invoke(modify_client, ["-i", "1", "-ph", "+33 7 58 41 00 50"],
                            obj={
                                "session": mocked_session,
                            })
@@ -97,7 +96,7 @@ def test_modify_client_without_authentication(runner, mocked_session):
 
 def test_modify_client_wrong_id(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 3))
-    result = runner.invoke(modify, ["-i", "12", "-ph", "+33 7 58 41 00 50"],
+    result = runner.invoke(modify_client, ["-i", "12", "-ph", "+33 7 58 41 00 50"],
                            obj={
                                "session": mocked_session,
                                "user_id": user_logged
@@ -112,7 +111,7 @@ def test_modify_client_missing_argument(
         mocked_session,
 ):
     user_logged = mocked_session.scalar(select(User).where(User.id == 3))
-    result = runner.invoke(modify, ["-i", "1", "-ph"],
+    result = runner.invoke(modify_client, ["-i", "1", "-ph"],
                            obj={
                                "session": mocked_session,
                                "user_id": user_logged

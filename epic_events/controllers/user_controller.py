@@ -63,7 +63,7 @@ def change_password(user_to_modify, ctx):
     return new_password
 
 
-@user.command(name="list")
+@user.command()
 @click.option('--id', '-i', help='Id of the user to query')
 @click.pass_context
 @has_permission(['management'])
@@ -107,7 +107,7 @@ def list_user(ctx, id):
               default=None, callback=pass_is_valid)
 @click.pass_context
 @has_permission(['management'])
-def create(ctx, name, email, role, password):
+def create_user(ctx, name, email, role, password):
     session = ctx.obj['session']
     try:
         user_logged = session.scalar(
@@ -142,7 +142,7 @@ def create(ctx, name, email, role, password):
 @click.option('--password', '-P', help='-P without argument', nargs=0)
 @click.pass_context
 @has_permission(['management'])
-def modify(ctx, id, name, email, role, password):
+def modify_user(ctx, id, name, email, role, password):
     session = ctx.obj['session']
     try:
         user_logged = session.scalar(
@@ -180,7 +180,7 @@ def modify(ctx, id, name, email, role, password):
               required=True)
 @click.pass_context
 @has_permission(['management'])
-def delete(ctx, id):
+def delete_user(ctx, id):
     session = ctx.obj['session']
     try:
         user_logged = session.scalar(

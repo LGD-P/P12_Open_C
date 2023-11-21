@@ -2,14 +2,14 @@ from datetime import datetime
 from sqlalchemy import select
 from epic_events.models.user import User
 from epic_events.models.event import Event
-from epic_events.controllers.events_controller import modify
+from epic_events.controllers.events_controller import modify_event
 
 
 def test_modify_event_name(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 2))
     event = mocked_session.scalar(select(Event).where(Event.id == 1))
     name_to_change = event.name
-    result = runner.invoke(modify, ["-i", "1", "-n", "Maryse-Event"],
+    result = runner.invoke(modify_event, ["-i", "1", "-n", "Maryse-Event"],
                            obj={
                                "session": mocked_session,
                                "user_id": user_logged
@@ -24,14 +24,14 @@ def test_modify_event_support(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 2))
     event = mocked_session.scalar(select(Event).where(Event.id == 1))
     support_to_change = event.support_contact_id
-    result = runner.invoke(modify, ["-i", "1", "-su", "4"],
+    result = runner.invoke(modify_event, ["-i", "1", "-su", "4"],
                            obj={
                                "session": mocked_session,
                                "user_id": user_logged
                            })
 
     assert event.support_contact_id != support_to_change
-    assert "\n Event 'Michèle-Event' successfully modified.\n\n" in result.output
+    assert "\n Event 'Alix-Event' successfully modified.\n\n" in result.output
     assert result.exit_code == 0
 
 
@@ -42,14 +42,14 @@ def test_modify_event_start_date(runner, mocked_session):
     new_date = datetime(2024, 10, 10, 15)
     new_date_str = new_date.strftime("%Y-%m-%d - %H:%M")
 
-    result = runner.invoke(modify, ["-i", "1", "-sd", new_date_str],
+    result = runner.invoke(modify_event, ["-i", "1", "-sd", new_date_str],
                            obj={
                                "session": mocked_session,
                                "user_id": user_logged
                            })
 
     assert event.start_date != start_date_to_change
-    assert "\n Event 'Michèle-Event' successfully modified.\n\n" in result.output
+    assert "\n Event 'Alix-Event' successfully modified.\n\n" in result.output
     assert result.exit_code == 0
 
 
@@ -58,7 +58,7 @@ def test_modify_event_start_date_with_wrong_format_args(runner, mocked_session):
     new_date = datetime(2024, 10, 10, 15)
     new_date_str = new_date.strftime("%Y-%m-%d %H:%M")
 
-    result = runner.invoke(modify, ["-i", "1", "-sd", new_date_str],
+    result = runner.invoke(modify_event, ["-i", "1", "-sd", new_date_str],
                            obj={
                                "session": mocked_session,
                                "user_id": user_logged
@@ -75,14 +75,14 @@ def test_modify_event_end_date(runner, mocked_session):
     new_date = datetime(2024, 10, 11, 15)
     new_date_str = new_date.strftime("%Y-%m-%d - %H:%M")
 
-    result = runner.invoke(modify, ["-i", "1", "-sd", new_date_str],
+    result = runner.invoke(modify_event, ["-i", "1", "-sd", new_date_str],
                            obj={
                                "session": mocked_session,
                                "user_id": user_logged
                            })
 
     assert event.start_date != end_date_to_change
-    assert "\n Event 'Michèle-Event' successfully modified.\n\n" in result.output
+    assert "\n Event 'Alix-Event' successfully modified.\n\n" in result.output
     assert result.exit_code == 0
 
 
@@ -91,7 +91,7 @@ def test_modify_event_end_date_wrong_format_args(runner, mocked_session):
     new_date = datetime(2024, 10, 11, 15)
     new_date_str = new_date.strftime("%Y/%m/%d - %H:%M")
 
-    result = runner.invoke(modify, ["-i", "1", "-sd", new_date_str],
+    result = runner.invoke(modify_event, ["-i", "1", "-sd", new_date_str],
                            obj={
                                "session": mocked_session,
                                "user_id": user_logged
@@ -106,14 +106,14 @@ def test_modify_event_location(runner, mocked_session):
     event = mocked_session.scalar(select(Event).where(Event.id == 1))
     old_location = event.location
 
-    result = runner.invoke(modify, ["-i", "1", "-l", "Nantes"],
+    result = runner.invoke(modify_event, ["-i", "1", "-l", "Nantes"],
                            obj={
                                "session": mocked_session,
                                "user_id": user_logged
                            })
 
     assert event.location != old_location
-    assert "\n Event 'Michèle-Event' successfully modified.\n\n" in result.output
+    assert "\n Event 'Alix-Event' successfully modified.\n\n" in result.output
     assert result.exit_code == 0
 
 
@@ -122,20 +122,20 @@ def test_modify_event_attendees(runner, mocked_session):
     event = mocked_session.scalar(select(Event).where(Event.id == 1))
     old_attendees = event.attendees
 
-    result = runner.invoke(modify, ["-i", "1", "-a", "358"],
+    result = runner.invoke(modify_event, ["-i", "1", "-a", "358"],
                            obj={
                                "session": mocked_session,
                                "user_id": user_logged
                            })
 
     assert event.attendees != old_attendees
-    assert "\n Event 'Michèle-Event' successfully modified.\n\n" in result.output
+    assert "\n Event 'Alix-Event' successfully modified.\n\n" in result.output
     assert result.exit_code == 0
 
 
 def test_modify_event_without_authentication(runner, mocked_session):
     event = mocked_session.scalar(select(Event).where(Event.id == 1))
-    result = runner.invoke(modify, ["-i", "1", "-n", "Maryse-Event"],
+    result = runner.invoke(modify_event, ["-i", "1", "-n", "Maryse-Event"],
                            obj={
                                "session": mocked_session,
                            })

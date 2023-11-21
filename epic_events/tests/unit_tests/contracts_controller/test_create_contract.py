@@ -1,13 +1,13 @@
 from sqlalchemy import select
 from epic_events.models.contract import Contract
 from epic_events.models.user import User
-from epic_events.controllers.contracts_controller import create
+from epic_events.controllers.contracts_controller import create_contract
 
 
 def test_create_contract(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 2))
     result = runner.invoke(
-        create,
+        create_contract,
         ["-c", "2", "-m", "3", "-ta", "2000", "-r", "1000", "-s", "true"],
         obj={
             "session": mocked_session,
@@ -21,7 +21,7 @@ def test_create_contract(runner, mocked_session):
 
 def test_create_contract_without_authentication(runner, mocked_session):
     result = runner.invoke(
-        create,
+        create_contract,
         ["-c", "2", "-m", "3", "-ta", "2000", "-r", "1000", "-s", "true"],
         obj={
             "session": mocked_session,
@@ -34,7 +34,7 @@ def test_create_contract_without_authentication(runner, mocked_session):
 def test_create_contract_without_permission(runner, mocked_session):
     user_logged_as_support = mocked_session.scalar(select(User).where(User.id == 1))
     result = runner.invoke(
-        create,
+        create_contract,
         ["-c", "2", "-m", "3", "-ta", "2000", "-r", "1000", "-s", "true"],
         obj={
             "session": mocked_session,
@@ -48,7 +48,7 @@ def test_create_contract_without_permission(runner, mocked_session):
 def test_create_contract_with_missing_argument(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 2))
     result = runner.invoke(
-        create,
+        create_contract,
         ["-c", "2", "-m", "3", "-ta", "2000", "-r", "-s", "true"],
         obj={
             "session": mocked_session,

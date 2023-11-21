@@ -39,7 +39,6 @@ def test_list_role_without_authentication(runner, mocked_session):
     assert result.exit_code == 0
 
 
-
 def test_list_all_roles_without_permission(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 1))
     result = runner.invoke(list_role,

@@ -1,13 +1,13 @@
 from sqlalchemy import select
 from unittest.mock import patch
-from epic_events.controllers.user_controller import create
+from epic_events.controllers.user_controller import create_user
 from epic_events.models.user import User
 
 
 def test_create_user(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 2))
 
-    result = runner.invoke(create, [
+    result = runner.invoke(create_user, [
         "-n",
         "Charles Henri",
         "-e",
@@ -34,7 +34,7 @@ def test_create_user(runner, mocked_session):
 def test_create_user_with_wrong_role(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 2))
 
-    result = runner.invoke(create, [
+    result = runner.invoke(create_user, [
         "-n",
         "Charles Henri",
         "-e",
@@ -54,7 +54,7 @@ def test_create_user_with_wrong_role(runner, mocked_session):
 def test_create_user_with_wrong_email(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 2))
 
-    result = runner.invoke(create, [
+    result = runner.invoke(create_user, [
         "-n",
         "Charles Henri",
         "-e",
@@ -74,7 +74,7 @@ def test_create_user_with_wrong_email(runner, mocked_session):
 def test_create_user_without_permission(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 1))
 
-    result = runner.invoke(create, [
+    result = runner.invoke(create_user, [
         "-n",
         "Charles Henri",
         "-e",
@@ -92,7 +92,7 @@ def test_create_user_without_permission(runner, mocked_session):
 
 
 def test_create_without_authentication(runner, mocked_session):
-    result = runner.invoke(create, [
+    result = runner.invoke(create_user, [
         "-n",
         "Charles Henri",
         "-e",

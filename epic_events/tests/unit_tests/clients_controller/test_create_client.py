@@ -1,6 +1,6 @@
 from epic_events.models.user import User
 from epic_events.models.client import Client
-from epic_events.controllers.clients_controller import create
+from epic_events.controllers.clients_controller import create_client
 
 from sqlalchemy import select
 
@@ -9,7 +9,7 @@ from sqlalchemy import select
 def test_create_client(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 3))
 
-    result = runner.invoke(create, [
+    result = runner.invoke(create_client, [
         "-n", 'Georges Piotr', "-e", "geogres-piotr@gpsas.com", "-ph",
         "+33 6 98 31 70 48", "-c", "GP-SAS & Co."
     ],
@@ -29,7 +29,7 @@ def test_create_client(runner, mocked_session):
 def test_create_client_with_missing_argument(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 3))
 
-    result = runner.invoke(create, [
+    result = runner.invoke(create_client, [
         "-n", "-e", "geogres-piotr@gpsas.com", "-ph", "+33 6 98 31 70 48", "-c",
         "GP-SAS & Co."
     ],
@@ -45,7 +45,7 @@ def test_create_client_with_missing_argument(runner, mocked_session):
 def test_create_client_without_permission(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 1))
 
-    result = runner.invoke(create, [
+    result = runner.invoke(create_client, [
         "-n", 'Georges Piotr', "-e", "geogres-piotr@gpsas.com", "-ph",
         "+33 6 98 31 70 48", "-c", "GP-SAS & Co."
     ],
@@ -59,7 +59,7 @@ def test_create_client_without_permission(runner, mocked_session):
 
 
 def test_create_client_without_authentication(runner, mocked_session):
-    result = runner.invoke(create, [
+    result = runner.invoke(create_client, [
         "-n", 'Georges Piotr', "-e", "geogres-piotr@gpsas.com", "-ph",
         "+33 6 98 31 70 48", "-c", "GP-SAS & Co."
     ],

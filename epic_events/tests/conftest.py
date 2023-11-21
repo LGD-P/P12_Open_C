@@ -169,7 +169,7 @@ def sqlalchemy_mock_config():
         }, {
             'id': '3',
             'uuid': '374e5575-35c1-4810-afbe-bf3c28365fdz',
-            'client_id': '2',
+            'client_id': '3',
             'management_contact_id': '3',
             'total_amount': 8664,
             'remaining_amount': 3464,
@@ -180,7 +180,7 @@ def sqlalchemy_mock_config():
             'id':
                 '1',
             'name':
-                'Michèle-Event',
+                'Alix-Event',
             'contract_id':
                 '3',
             'support_contact_id':
@@ -199,9 +199,9 @@ def sqlalchemy_mock_config():
             'id':
                 '2',
             'name':
-                'René-Event',
+                'Noël-Event',
             'contract_id':
-                '3',
+                '2',
             'support_contact_id':
                 None,
             'start_date':
@@ -218,9 +218,9 @@ def sqlalchemy_mock_config():
             'id':
                 '3',
             'name':
-                'René-Event',
+                'Adrien-Event',
             'contract_id':
-                '3',
+                '1',
             'support_contact_id':
                 None,
             'start_date':

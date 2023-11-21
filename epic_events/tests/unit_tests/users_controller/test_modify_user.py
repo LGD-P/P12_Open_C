@@ -1,6 +1,6 @@
 from sqlalchemy import select
 from unittest.mock import patch
-from epic_events.controllers.user_controller import modify
+from epic_events.controllers.user_controller import modify_user
 from epic_events.models.user import User
 import passlib.hash
 
@@ -8,7 +8,7 @@ import passlib.hash
 def test_modify_user_name(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 2))
 
-    result = runner.invoke(modify, ["-i", "1", "-n", "Kevin Marley"],
+    result = runner.invoke(modify_user, ["-i", "1", "-n", "Kevin Marley"],
                            obj={
                                "session": mocked_session,
                                "user_id": user_logged
@@ -23,7 +23,7 @@ def test_modify_user_name(runner, mocked_session):
 def test_modify_user_email(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 2))
 
-    result = runner.invoke(modify,
+    result = runner.invoke(modify_user,
                            ["-i", "1", "-e", "Kevin.Marley@epicevents.com"],
                            obj={
                                "session": mocked_session,
@@ -38,7 +38,7 @@ def test_modify_user_email(runner, mocked_session):
 
 def test_modify_user_role(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 2))
-    result = runner.invoke(modify, ["-i", "1", "-r", "management"],
+    result = runner.invoke(modify_user, ["-i", "1", "-r", "management"],
                            obj={
                                "session": mocked_session,
                                "user_id": user_logged
@@ -63,7 +63,7 @@ def test_modify_user_password(runner, mocked_session):
 
     with patch("epic_events.controllers.user_controller.change_password",
                return_value=hash_new_password):
-        result = runner.invoke(modify, ["-i", "1", "-P"],
+        result = runner.invoke(modify_user, ["-i", "1", "-P"],
                                obj={
                                    "session": mocked_session,
                                    "user_id": user_logged
@@ -81,7 +81,7 @@ def test_modify_user_password(runner, mocked_session):
 
 def test_modify_user_wrong_id(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 2))
-    result = runner.invoke(modify, ["-i", "12", "-n", "Jacques André"],
+    result = runner.invoke(modify_user, ["-i", "12", "-n", "Jacques André"],
                            obj={
                                "session": mocked_session,
                                "user_id": user_logged
@@ -91,7 +91,7 @@ def test_modify_user_wrong_id(runner, mocked_session):
 
 
 def test_modify_user_name_without_authentication(runner, mocked_session):
-    result = runner.invoke(modify, ["-i", "1", "-n", "Kevin Marley"],
+    result = runner.invoke(modify_user, ["-i", "1", "-n", "Kevin Marley"],
                            obj={
                                "session": mocked_session,
                            })
@@ -103,7 +103,7 @@ def test_modify_user_name_without_authentication(runner, mocked_session):
 def test_modify_user_name_without_permission(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 1))
 
-    result = runner.invoke(modify, ["-i", "1", "-n", "Kevin Marley"],
+    result = runner.invoke(modify_user, ["-i", "1", "-n", "Kevin Marley"],
                            obj={
                                "session": mocked_session,
                                "user_id": user_logged

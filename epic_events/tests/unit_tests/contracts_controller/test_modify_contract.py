@@ -1,7 +1,7 @@
 from sqlalchemy import select
 from epic_events.models.contract import Contract
 from epic_events.models.user import User
-from epic_events.controllers.contracts_controller import modify
+from epic_events.controllers.contracts_controller import modify_contract
 
 
 def test_modify_contract_client(runner, mocked_session):
@@ -9,7 +9,7 @@ def test_modify_contract_client(runner, mocked_session):
     contract = mocked_session.scalar(select(Contract).where(Contract.id == 1))
     old_contract_client_id = contract.client_id
     result = runner.invoke(
-        modify,
+        modify_contract,
         ["-i", "1", "-c", "2"],
         obj={
             "session": mocked_session,
@@ -27,7 +27,7 @@ def test_modify_contract_total_amount(runner, mocked_session):
     contract = mocked_session.scalar(select(Contract).where(Contract.id == 1))
     old_contract_client_id = contract.total_amount
     result = runner.invoke(
-        modify,
+        modify_contract,
         ["-i", "1", "-ta", "50000"],
         obj={
             "session": mocked_session,
@@ -45,7 +45,7 @@ def test_modify_contract_remaining_amount(runner, mocked_session):
     contract = mocked_session.scalar(select(Contract).where(Contract.id == 1))
     old_contract_client_id = contract.remaining_amount
     result = runner.invoke(
-        modify,
+        modify_contract,
         ["-i", "1", "-r", "10000"],
         obj={
             "session": mocked_session,
@@ -63,7 +63,7 @@ def test_modify_contract_status(runner, mocked_session):
     contract = mocked_session.scalar(select(Contract).where(Contract.id == 1))
     old_contract_client_id = contract.status
     result = runner.invoke(
-        modify,
+        modify_contract,
         ["-i", "1", "-s", "true"],
         obj={
             "session": mocked_session,
@@ -78,7 +78,7 @@ def test_modify_contract_status(runner, mocked_session):
 
 def test_modify_contract_client_without_authentication(runner, mocked_session):
     result = runner.invoke(
-        modify,
+        modify_contract,
         ["-i", "1", "-c", "2"],
         obj={
             "session": mocked_session,
@@ -91,7 +91,7 @@ def test_modify_contract_client_without_authentication(runner, mocked_session):
 def test_modify_contract_whitout_permission(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 1))
     result = runner.invoke(
-        modify,
+        modify_contract,
         ["-i", "1", "-c", "2"],
         obj={
             "session": mocked_session,

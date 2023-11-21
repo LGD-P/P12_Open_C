@@ -18,7 +18,7 @@ def event(ctx):
     pass
 
 
-@event.command(name='list')
+@event.command()
 @click.option('--id', '-i', help='Id of the event to query')
 @click.pass_context
 @has_permission(['management', 'support', 'commercial'])
@@ -58,7 +58,7 @@ def list_event(ctx, id):
 @click.option('--notes', '-nt', help='Notes')
 @click.pass_context
 @has_permission(['commercial'])
-def create(ctx, name, contract, support, starting, ending, location, attendees,
+def create_event(ctx, name, contract, support, starting, ending, location, attendees,
            notes):
     session = ctx.obj['session']
     try:
@@ -106,7 +106,7 @@ def create(ctx, name, contract, support, starting, ending, location, attendees,
 @click.option('--notes', '-nt', help='Notes')
 @click.pass_context
 @has_permission(['management', 'support', 'commercial'])
-def modify(ctx, id, name, contract, support, starting, ending,
+def modify_event(ctx, id, name, contract, support, starting, ending,
            location, attendees, notes):
     session = ctx.obj['session']
     try:
@@ -164,7 +164,7 @@ def modify(ctx, id, name, contract, support, starting, ending,
               required=True)
 @click.pass_context
 @has_permission(['management', 'support', 'commercial'])
-def delete(ctx, id):
+def delete_event(ctx, id):
     session = ctx.obj['session']
     try:
         user_logged = session.scalar(

@@ -1,13 +1,13 @@
 from epic_events.models.user import User
 from epic_events.models.client import Client
-from epic_events.controllers.clients_controller import delete
+from epic_events.controllers.clients_controller import delete_client
 
 from sqlalchemy import select
 
 
 def test_delete_client(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 3))
-    result = runner.invoke(delete, ["-i", "1"], obj={
+    result = runner.invoke(delete_client, ["-i", "1"], obj={
         "session": mocked_session,
         "user_id": user_logged
     })
@@ -18,7 +18,7 @@ def test_delete_client(runner, mocked_session):
 
 def test_delete_client_without_permission(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 1))
-    result = runner.invoke(delete, ["-i", "3"], obj={
+    result = runner.invoke(delete_client, ["-i", "3"], obj={
         "session": mocked_session,
         "user_id": user_logged
     })
@@ -29,7 +29,7 @@ def test_delete_client_without_permission(runner, mocked_session):
 
 def test_delete_client_wrong_id(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 2))
-    result = runner.invoke(delete, ["-i", "30"], obj={
+    result = runner.invoke(delete_client, ["-i", "30"], obj={
         "session": mocked_session,
         "user_id": user_logged
     })
@@ -39,7 +39,7 @@ def test_delete_client_wrong_id(runner, mocked_session):
 
 
 def test_delete_client_without_authentication(runner, mocked_session):
-    result = runner.invoke(delete, ["-i", "30"], obj={
+    result = runner.invoke(delete_client, ["-i", "30"], obj={
         "session": mocked_session,
 
     })

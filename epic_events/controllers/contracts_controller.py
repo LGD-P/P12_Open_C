@@ -20,7 +20,7 @@ def contract(ctx):
     pass
 
 
-@contract.command(name="list")
+@contract.command()
 @click.option("--id", "-i", help="id of the event to search", )
 @click.pass_context
 @has_permission(['management', 'commercial'])
@@ -55,7 +55,7 @@ def list_contract(ctx, id):
 @click.option('--status', '-s', help='Status: true or false', required=True)
 @click.pass_context
 @has_permission(['management'])
-def create(ctx, client, management, total, remain, status):
+def create_contract(ctx, client, management, total, remain, status):
     session = ctx.obj['session']
     try:
         user_logged = session.scalar(
@@ -84,7 +84,7 @@ def create(ctx, client, management, total, remain, status):
 @click.option('--status', '-s', help='Status: true or false')
 @click.pass_context
 @has_permission(['management', 'commercial'])
-def modify(ctx, id, client, management, total, remain, status):
+def modify_contract(ctx, id, client, management, total, remain, status):
     session = ctx.obj['session']
 
     try:
@@ -126,7 +126,7 @@ def modify(ctx, id, client, management, total, remain, status):
               required=True)
 @click.pass_context
 @has_permission(['management', 'commercial'])
-def delete(ctx, id):
+def delete_contract(ctx, id):
     session = ctx.obj['session']
     try:
         user_logged = session.scalar(

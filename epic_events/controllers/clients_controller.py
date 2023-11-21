@@ -18,7 +18,7 @@ def client(ctx):
     pass
 
 
-@client.command(name='list')
+@client.command()
 @click.option('--id', '-i', help='ID of client to query', required=False)
 @click.pass_context
 @has_permission(['management', 'support', 'commercial'])
@@ -56,7 +56,7 @@ def list_client(ctx, id):
 @click.option('--comid', '-ci', help='Commercial id')
 @click.pass_context
 @has_permission(['commercial', 'management'])
-def create(ctx, name, email, phone, company, comid):
+def create_client(ctx, name, email, phone, company, comid):
     session = ctx.obj['session']
     try:
         user_logged = session.scalar(
@@ -102,7 +102,7 @@ def create(ctx, name, email, phone, company, comid):
 @click.option('--comid', '-ci', help='User id of your commercial')
 @click.pass_context
 @has_permission(['management', 'commercial'])
-def modify(ctx, id, name, email, phone, company, comid):
+def modify_client(ctx, id, name, email, phone, company, comid):
     session = ctx.obj['session']
     try:
         user_logged = session.scalar(
@@ -151,7 +151,7 @@ def modify(ctx, id, name, email, phone, company, comid):
               required=True)
 @click.pass_context
 @has_permission(['management', 'commercial'])
-def delete(ctx, id):
+def delete_client(ctx, id):
     session = ctx.obj['session']
     try:
         user_logged = session.scalar(

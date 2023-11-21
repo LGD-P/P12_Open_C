@@ -1,12 +1,12 @@
 from sqlalchemy import select
 from epic_events.models.user import User
 from epic_events.models.event import Event
-from epic_events.controllers.events_controller import create
+from epic_events.controllers.events_controller import create_event
 
 
 def test_create_event(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 3))
-    result = runner.invoke(create, [
+    result = runner.invoke(create_event, [
         "-n", "John-Event", "-c", "2", "-su", "1", "-sd", "2024-01-01 - 19:00",
         "-ed", "2024-01-02 - 14:00", "-l", "Paris", "-a", "200", "-nt",
         "Epic Birthday"
@@ -23,7 +23,7 @@ def test_create_event(runner, mocked_session):
 
 def test_create_event_argument_missing(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 3))
-    result = runner.invoke(create, [
+    result = runner.invoke(create_event, [
         "-n", "John-Event", "-c", "2", "-su", "-sd", "2024-01-01 - 19:00",
         "-ed", "2024-01-02 - 14:00", "-l", "Paris", "-a", "200", "-nt",
         "Epic Birthday"
@@ -38,7 +38,7 @@ def test_create_event_argument_missing(runner, mocked_session):
 
 def test_create_event_without_permission(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 1))
-    result = runner.invoke(create, [
+    result = runner.invoke(create_event, [
         "-n", "John-Event", "-c", "2", "-su", "1", "-sd", "2024-01-01 - 19:00",
         "-ed", "2024-01-02 - 14:00", "-l", "Paris", "-a", "200", "-nt",
         "Epic Birthday"
@@ -54,7 +54,7 @@ def test_create_event_without_permission(runner, mocked_session):
 
 # Modifier le controller try except
 def test_create_event_without_authentication(runner, mocked_session):
-    result = runner.invoke(create, [
+    result = runner.invoke(create_event, [
         "-n", "John-Event", "-c", "2", "-su", "1", "-sd", "2024-01-01 - 19:00",
         "-ed", "2024-01-02 - 14:00", "-l", "Paris", "-a", "200", "-nt",
         "Epic Birthday"

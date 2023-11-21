@@ -52,7 +52,7 @@ def list_role(ctx, id):
 @click.option('--id', '-i', help='Id to query', required=True)
 @click.pass_context
 @has_permission(['management'])
-def create(ctx, name, id):
+def create_role(ctx, name, id):
     session = ctx.obj['session']
 
     is_id = session.scalar(select(User).where(
@@ -74,7 +74,7 @@ def create(ctx, name, id):
               required=True)
 @click.pass_context
 @has_permission(['management'])
-def delete(ctx, id):
+def delete_role(ctx, id):
     session = ctx.obj['session']
 
     role_to_delete = session.scalar(select(Role).where(Role.id == id))

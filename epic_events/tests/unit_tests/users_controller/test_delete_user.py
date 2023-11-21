@@ -1,14 +1,14 @@
 from sqlalchemy import select
 from sqlalchemy.orm import session
 
-from epic_events.controllers.user_controller import delete
+from epic_events.controllers.user_controller import delete_user
 from epic_events.models.user import User
 
 
 def test_delete_user(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 2))
 
-    result = runner.invoke(delete, ["-i", "3"],
+    result = runner.invoke(delete_user, ["-i", "3"],
                            obj={
                                "session": mocked_session,
                                "user_id": user_logged
@@ -21,7 +21,7 @@ def test_delete_user(runner, mocked_session):
 def test_delete_user_wrong_id(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 2))
 
-    result = runner.invoke(delete, ["-i", "9"],
+    result = runner.invoke(delete_user, ["-i", "9"],
                            obj={
                                "session": mocked_session,
                                "user_id": user_logged
@@ -34,7 +34,7 @@ def test_delete_user_wrong_id(runner, mocked_session):
 def test_delete_user_without_permission(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 1))
 
-    result = runner.invoke(delete, ["-i", "2"],
+    result = runner.invoke(delete_user, ["-i", "2"],
                            obj={
                                "session": mocked_session,
                                "user_id": user_logged
@@ -45,7 +45,7 @@ def test_delete_user_without_permission(runner, mocked_session):
 
 
 def test_delete_user_without_authentication(runner, mocked_session):
-    result = runner.invoke(delete, ["-i", "3"],
+    result = runner.invoke(delete_user, ["-i", "3"],
                            obj={
                                "session": mocked_session,
                            })
