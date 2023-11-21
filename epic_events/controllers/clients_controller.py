@@ -12,16 +12,6 @@ import click
 from sqlalchemy import select
 
 
-def check_commercial_id(ctx, param, value):
-    session = ctx.obj['session']
-    if value is None:
-        return [False, value]
-    user_list = session.scalars(select(User).order_by(User.id)).all()
-    for element in user_list:
-        if element.id == int(value) and element.role.name == "commercial":
-            return value
-        return [False, value]
-
 
 @click.group()
 @click.pass_context
