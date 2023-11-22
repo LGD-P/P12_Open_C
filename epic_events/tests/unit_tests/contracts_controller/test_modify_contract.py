@@ -6,8 +6,6 @@ from epic_events.controllers.contracts_controller import modify_contract
 
 def test_modify_contract_client(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 2))
-    contract = mocked_session.scalar(select(Contract).where(Contract.id == 1))
-    old_contract_client_id = contract.client_id
     result = runner.invoke(
         modify_contract,
         ["-i", "1", "-c", "2"],
@@ -17,8 +15,24 @@ def test_modify_contract_client(runner, mocked_session):
         })
 
     new_contract = mocked_session.scalar(select(Contract).where(Contract.id == 1))
-    assert new_contract.client_id != old_contract_client_id
+    assert new_contract.client_id != 1
     assert new_contract.client_id == 2
+    assert f"\n Contract 'N°{str(new_contract.uuid)}' successfully modified.\n\n"
+    assert result.exit_code == 0
+
+
+def test_modify_contract_client_with_wrong_commercial(runner, mocked_session):
+    user_logged = mocked_session.scalar(select(User).where(User.id == 2))
+    result = runner.invoke(
+        modify_contract,
+        ["-i", "1", "-m", "12"],
+        obj={
+            "session": mocked_session,
+            "user_id": user_logged
+        })
+
+    print(result.output)
+    assert f"\n User with ID '12' is 'not found'.\n\n"
     assert result.exit_code == 0
 
 
@@ -88,7 +102,7 @@ def test_modify_contract_client_without_authentication(runner, mocked_session):
     assert "\n' Invalid Token  please logged in again' \n" in result.output
 
 
-def test_modify_contract_whitout_permission(runner, mocked_session):
+def test_modify_contract_without_permission(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 1))
     result = runner.invoke(
         modify_contract,
