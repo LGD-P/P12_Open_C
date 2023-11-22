@@ -1,11 +1,12 @@
 from epic_events.models.user import User
 from epic_events.models.client import Client
 from epic_events.models.contract import Contract
+from epic_events.models.event import Event
 from epic_events.controllers.authenticate_controller import login, logout
 from epic_events.controllers.user_controller import list_user
 from epic_events.controllers.clients_controller import list_client, modify_client
 from epic_events.controllers.contracts_controller import list_contract, modify_contract
-from epic_events.controllers.events_controller import list_event
+from epic_events.controllers.events_controller import list_event, modify_event
 
 from sqlalchemy import select
 from unittest.mock import patch
@@ -90,7 +91,21 @@ def test_class_managerial_path(runner, mocked_session):
                                "session": mocked_session,
                                "user_id": manager
                            })
+    # Event N°2 as no support
     assert '│ 2  │ Noël-… │   2    │  None  │ 12-01… │ 13-01-… │ avenue │   204   │' in result.output
+    event_choose = mocked_session.scalar(select(Event).where(Event.id == 2))
+    assert event_choose.support_contact_id is None
+    assert result.exit_code == 0
+
+    # Manager assign support to Event N°2
+    result = runner.invoke(modify_event, ["-i", "2", "-su", "4"],
+                           obj={
+                               "session": mocked_session,
+                               "user_id": manager
+                           })
+
+    assert event_choose.support_contact_id is not None
+    assert "\n Event 'Noël-Event' successfully modified.\n\n" in result.output
     assert result.exit_code == 0
 
     # logout
