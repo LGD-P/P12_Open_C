@@ -17,6 +17,7 @@ import re
 @click.group()
 @click.pass_context
 def user(ctx):
+    """Allows only MANAGER, within the limits of their permissions, to access various operations of the User CRUD."""
     pass
 
 

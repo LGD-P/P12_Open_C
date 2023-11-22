@@ -18,6 +18,8 @@ from sqlalchemy import select
 @click.group()
 @click.pass_context
 def contract(ctx):
+    """Allows the MANAGEMENT & COMMERCIAL, within the limits of their permissions,
+     to access various operations of the Contracts CRUD ."""
     pass
 
 

@@ -17,6 +17,7 @@ from sqlalchemy import select
 @click.group()
 @click.pass_context
 def event(ctx):
+    """Allows all users, within the limits of their permissions, to access various operations of the Events CRUD."""
     pass
 
 

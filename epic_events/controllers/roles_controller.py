@@ -14,6 +14,7 @@ from sqlalchemy import select
 @click.group()
 @click.pass_context
 def role(ctx):
+    """Allows only MANAGER, in reading mode."""
     pass
 
 

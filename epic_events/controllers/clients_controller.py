@@ -15,6 +15,7 @@ from sqlalchemy import select
 @click.group()
 @click.pass_context
 def client(ctx):
+    """Allows all users, within the limits of their permissions, to access various operations of the Client CRUD."""
     pass
 
 

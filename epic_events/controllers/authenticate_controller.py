@@ -14,6 +14,7 @@ import os
 @click.group()
 @click.pass_context
 def authenticate(ctx):
+    """Manage user authentication, creating a token and logout deleting token"""
     pass
 
 
