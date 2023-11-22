@@ -1,17 +1,46 @@
 from functools import wraps
 from epic_events.models.user import User
 from epic_events.models.role import Role
-from epic_events.views.users_view import not_authorized
+from epic_events.models.client import Client
+from epic_events.views.clients_views import client_not_found
+from epic_events.views.users_view import not_authorized, user_not_found
 from sqlalchemy import select
-
 
 import jwt
 import os
 from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
 
-
 load_dotenv()
+
+
+def find_client_or_contract(ctx, Client_or_contract_class, client_or_contact_arg):
+    session = ctx.obj['session']
+    client_or_contact_arg_found = False
+    client_or_contact_arg_list = session.scalars(
+        select(Client).order_by(Client_or_contract_class.id)).all()
+    for element in client_or_contact_arg_list:
+        if element.id == int(client_or_contact_arg):
+            client_or_contact_arg = element.id
+            client_or_contact_arg_found = True
+            return client_or_contact_arg
+
+    if not client_or_contact_arg_found:
+        return client_not_found(client_or_contact_arg)
+
+
+def find_user_type(ctx, user_type, str_user_type):
+    session = ctx.obj['session']
+    user_type_found = False
+    user_type_list = session.scalars(select(User).order_by(User.id)).all()
+    for element in user_type_list:
+        if element.id == int(user_type) and element.role.name == str_user_type:
+            user_type = element.id
+            user_type_found = True
+            return user_type
+
+    if not user_type_found:
+        return user_not_found(user_type)
 
 
 def generate_token(user):
@@ -83,14 +112,13 @@ def check_authentication(func):
         if user_id:
             ctx.obj['user_id'] = user_id
         return func(ctx, *args, **kwargs)
+
     return if_token_valid
 
 
 def has_permission(allowed_roles):
     def decorator(function):
         @wraps(function)
-        # Pourquoi  raise orm_exc.DetachedInstanceError  si
-        # role_id = ctx.obj["user_id"].role.id
         def wrapper(ctx, *args, **kwargs):
             ctx.ensure_object(dict)
             session = ctx.obj['session']
@@ -98,27 +126,12 @@ def has_permission(allowed_roles):
                 role_id = ctx.obj["user_id"].role_id
                 user_role = session.scalar(
                     select(Role).where(Role.id == role_id))
-                # user_role = ctx.obj['user_id'].role
                 if user_role.name not in allowed_roles:
                     return not_authorized()
             except KeyError:
                 pass
             return function(ctx, *args, **kwargs)
+
         return wrapper
-    return decorator
 
-
-"""
-def has_permission(allowed_roles):
-    def decorator(function):
-        def fleche(ctx, *args, **kwargs):
-            ctx.ensure_object(dict)
-            session = ctx.obj['session']
-            role_id = ctx.obj["user_id"].role_id
-            user_role = session.scalar(select(Role).where(Role.id == role_id))
-            if user_role not in allowed_roles:
-                return not_authorized()
-            return function(ctx, *args, **kwargs)
-        return fleche
     return decorator
-"""

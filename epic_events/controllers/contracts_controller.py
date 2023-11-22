@@ -2,6 +2,7 @@ import uuid
 from epic_events.models.client import Client
 from epic_events.models.user import User
 from epic_events.models.contract import Contract
+from epic_events.utils import find_user_type
 from epic_events.utils import has_permission
 from epic_events.views.clients_views import client_not_found
 from epic_events.views.users_view import logged_as, invalid_token, user_not_found
@@ -13,6 +14,30 @@ from epic_events.views.contracts_views import (contracts_table, created_succes,
 import click
 
 from sqlalchemy import select
+
+
+
+
+
+
+def find_commercial(ctx, commercial):
+    session = ctx.obj['session']
+    commercial_found = False
+    commercial_list = session.scalars(select(User).order_by(User.id)).all()
+    for element in commercial_list:
+        if element.id == int(commercial) and element.role.name == "commercial":
+            commercial = element.id
+            commercial_found = True
+            return commercial
+
+    if not commercial_found:
+        return user_not_found(commercial)
+
+
+
+
+
+
 
 
 @click.group()
@@ -50,6 +75,7 @@ def list_contract(ctx, id):
         pass
 
 
+
 @contract.command()
 @click.option('--client', '-c', help='Client ID', required=True)
 @click.option('--management', '-m', help='Management ID', required=True)
@@ -66,27 +92,11 @@ def create_contract(ctx, client, management, total, remain, status):
 
         status = True if status == 'true' else False
 
-        client_found = False
-        client_list = session.scalars(select(Client).order_by(Client.id)).all()
-        for element in client_list:
-            if element.id == int(client):
-                client = element.id
-                client_found = True
+        client_found = find_client(ctx, client)
 
-        if not client_found:
-            return client_not_found(client)
+        commercial_found = find_user_type(ctx, management, 'management')
 
-        commercial_found = False
-        commercial_list = session.scalars(select(User).order_by(User.id)).all()
-        for element in commercial_list:
-            if element.id == int(management) and element.role.name == "commercial":
-                management = element.id
-                commercial_found = True
-
-        if not commercial_found:
-            return user_not_found(management)
-
-        new_contract = Contract(client_id=client, uuid=str(uuid.uuid4()), management_contact_id=management,
+        new_contract = Contract(client_id=client_found, uuid=str(uuid.uuid4()), management_contact_id=commercial_found,
                                 total_amount=total, remaining_amount=remain,
                                 status=status)
 
@@ -121,26 +131,12 @@ def modify_contract(ctx, id, client, management, total, remain, status):
         if contract_to_modify:
 
             if client is not None:
-                client_found = False
-                client_list = session.scalars(select(Client).order_by(Client.id)).all()
-                for element in client_list:
-                    if element.id == int(client):
-                        contract_to_modify.client_id = element.id
-                        client_found = True
-
-                if not client_found:
-                    return client_not_found(client)
+                client_found = find_client(ctx, client)
+                contract_to_modify.client_id = client_found
 
             if management is not None:
-                commercial_found = False
-                commercial_list = session.scalars(select(User).order_by(User.id)).all()
-                for element in commercial_list:
-                    if element.id == int(management) and element.role.name == "commercial":
-                        contract_to_modify.management_contact_id = element.id
-                        commercial_found = True
-
-                if not commercial_found:
-                    return user_not_found(management)
+                commercial_found = find_user_type(ctx, management, 'management')
+                contract_to_modify.management_contact_id = commercial_found
 
             if total is not None:
                 contract_to_modify.total_amount = total

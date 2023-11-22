@@ -24,7 +24,6 @@ click.rich_click.COMMAND_GROUPS = {
 }
 
 
-
 @click.group()
 @click.pass_context
 @database

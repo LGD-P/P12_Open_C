@@ -1,3 +1,4 @@
+from epic_events.utils import find_user_type, find_client_or_contract
 from epic_events.models.user import User
 from epic_events.models.event import Event
 from epic_events.models.contract import Contract
@@ -91,18 +92,10 @@ def create_event(ctx, name, contract, support, starting, ending, location, atten
         if not contract_found:
             return contract_not_found(contract)
 
-        support_found = False
-        support_list = session.scalars(select(User).order_by(User.id)).all()
-        for element in support_list:
-            if element.id == int(support) and element.role.name == 'support':
-                support = element.id
-                support_found = True
-
-        if not support_found:
-            return user_not_found(support)
+        support_found = find_user_type(ctx, support, 'support')
 
         new_event = Event(name=name, contract_id=contract,
-                          support_contact_id=support, start_date=starting,
+                          support_contact_id=support_found, start_date=starting,
                           end_date=ending, location=location,
                           attendees=attendees, notes=notes)
 
@@ -153,15 +146,8 @@ def modify_event(ctx, id, name, contract, support, starting, ending,
                     return contract_not_found(contract)
 
             if support is not None:
-                support_found = False
-                support_list = session.scalars(select(User).order_by(User.id)).all()
-                for element in support_list:
-                    if element.id == int(support) and element.role.name == 'support':
-                        event_to_modify.support_contact_id = element.id
-                        support_found = True
-
-                if not support_found:
-                    return user_not_found(support)
+                support_found = find_user_type(ctx, support, 'support')
+                event_to_modify.support_contact_id = support_found
 
 
             if starting is not None:

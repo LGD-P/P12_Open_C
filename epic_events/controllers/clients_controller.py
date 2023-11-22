@@ -7,6 +7,10 @@ from epic_events.views.clients_views import (clients_table, created_succes,
                                              modification_done, commercial_not_found
                                              )
 
+from epic_events.utils import find_user_type
+
+
+
 from datetime import datetime
 import click
 from sqlalchemy import select
@@ -64,11 +68,8 @@ def create_client(ctx, name, email, phone, company, comid):
             select(User).where(User.id == ctx.obj['user_id'].id))
 
         if comid is not None:
-            user_list = session.scalars(select(User).order_by(User.id)).all()
-            for element in user_list:
-                if element.id == int(comid) and element.role.name == "commercial":
-                    return comid
-            return commercial_not_found(comid)
+            comid_found = find_user_type(ctx,comid,'commercial')
+            return comid == comid_found
 
         creation = datetime.utcnow()
         last_contact = datetime.utcnow()
@@ -127,14 +128,8 @@ def modify_client(ctx, id, name, email, phone, company, comid):
             client_to_modify.last_contact_date = datetime.now()
 
             if comid is not None:
-                commercial_found = False
-                user_list = session.scalars(select(User).order_by(User.id)).all()
-                for element in user_list:
-                    if element.id == int(comid) and element.role.name == "commercial":
-                        client_to_modify.commercial_contact_id = comid
-                        commercial_found = True
-                if not commercial_found:
-                    return commercial_not_found(comid)
+                commercial_found = find_user_type(ctx,comid, 'commercial')
+                client_to_modify.commercial_contact_id = commercial_found
 
             session.commit()
             modification_done(client_to_modify)
