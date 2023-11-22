@@ -21,6 +21,44 @@ def test_create_event(runner, mocked_session):
     assert "\n ID N° 'N°4' Event 'John-Event'created successfully.\n\n" in result.output
 
 
+
+
+def test_create_event_with_wrong_contract(runner, mocked_session):
+    user_logged = mocked_session.scalar(select(User).where(User.id == 3))
+    result = runner.invoke(create_event, [
+        "-n", "John-Event", "-c", "12", "-su", "1", "-sd", "2024-01-01 - 19:00",
+        "-ed", "2024-01-02 - 14:00", "-l", "Paris", "-a", "200", "-nt",
+        "Epic Birthday"
+    ],
+                           obj={
+                               "session": mocked_session,
+                               "user_id": user_logged
+                           })
+
+    assert result.exit_code == 0
+    assert "\n Contract with ID '12' is 'not found'.\n\n" in result.output
+
+
+
+
+def test_create_event_with_wrong_support(runner, mocked_session):
+    user_logged = mocked_session.scalar(select(User).where(User.id == 3))
+    result = runner.invoke(create_event, [
+        "-n", "John-Event", "-c", "2", "-su", "18", "-sd", "2024-01-01 - 19:00",
+        "-ed", "2024-01-02 - 14:00", "-l", "Paris", "-a", "200", "-nt",
+        "Epic Birthday"
+    ],
+                           obj={
+                               "session": mocked_session,
+                               "user_id": user_logged
+                           })
+
+    assert result.exit_code == 0
+    assert "\n User with ID '18' is 'not found'.\n\n" in result.output
+
+
+
+
 def test_create_event_argument_missing(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 3))
     result = runner.invoke(create_event, [

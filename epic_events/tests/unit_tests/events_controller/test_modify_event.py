@@ -20,6 +20,30 @@ def test_modify_event_name(runner, mocked_session):
     assert result.exit_code == 0
 
 
+def test_modify_event_with_wrong_support(runner, mocked_session):
+    user_logged = mocked_session.scalar(select(User).where(User.id == 2))
+    result = runner.invoke(modify_event, ["-i", "1", "-su", "42"],
+                           obj={
+                               "session": mocked_session,
+                               "user_id": user_logged
+                           })
+
+    assert "\n User with ID '42' is 'not found'.\n\n" in result.output
+    assert result.exit_code == 0
+
+
+def test_modify_event_with_wrong_contract(runner, mocked_session):
+    user_logged = mocked_session.scalar(select(User).where(User.id == 2))
+    result = runner.invoke(modify_event, ["-i", "1", "-c", "50"],
+                           obj={
+                               "session": mocked_session,
+                               "user_id": user_logged
+                           })
+
+    assert "\n Contract with ID '50' is 'not found'.\n\n" in result.output
+    assert result.exit_code == 0
+
+
 def test_modify_event_support(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 2))
     event = mocked_session.scalar(select(Event).where(Event.id == 1))
