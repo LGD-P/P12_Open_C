@@ -3,6 +3,7 @@ from epic_events.models.user import User
 from epic_events.models.role import Role
 from epic_events.models.client import Client
 from epic_events.views.clients_views import client_not_found
+from epic_events.views.contracts_views import contract_not_found
 from epic_events.views.users_view import not_authorized, user_not_found
 from sqlalchemy import select
 
@@ -16,31 +17,25 @@ load_dotenv()
 
 def find_client_or_contract(ctx, Client_or_contract_class, client_or_contact_arg):
     session = ctx.obj['session']
-    client_or_contact_arg_found = False
-    client_or_contact_arg_list = session.scalars(
-        select(Client).order_by(Client_or_contract_class.id)).all()
-    for element in client_or_contact_arg_list:
+    client_or_contact_list = session.scalars(
+        select(Client_or_contract_class).order_by(Client_or_contract_class.id)).all()
+    for element in client_or_contact_list:
         if element.id == int(client_or_contact_arg):
-            client_or_contact_arg = element.id
-            client_or_contact_arg_found = True
-            return client_or_contact_arg
+            return element.id
 
-    if not client_or_contact_arg_found:
-        return client_not_found(client_or_contact_arg)
+    if Client_or_contract_class == Client:
+        raise ValueError(client_not_found(client_or_contact_arg))
+    else:
+        raise ValueError(contract_not_found(client_or_contact_arg))
 
 
 def find_user_type(ctx, user_type, str_user_type):
     session = ctx.obj['session']
-    user_type_found = False
     user_type_list = session.scalars(select(User).order_by(User.id)).all()
     for element in user_type_list:
         if element.id == int(user_type) and element.role.name == str_user_type:
-            user_type = element.id
-            user_type_found = True
-            return user_type
-
-    if not user_type_found:
-        return user_not_found(user_type)
+            return element.id  #
+    raise ValueError(user_not_found(user_type))
 
 
 def generate_token(user):
@@ -57,29 +52,22 @@ def generate_token(user):
 def write_token_in_temp(token):
     folder_path = 'temp'
 
-    file_path = os.path.join(folder_path, 'temporary.txt')
-
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
 
-    if not os.listdir(folder_path):
-        with open(file_path, 'w') as file:
-            file.write(f"TOKEN={token}\n")
-    else:
-        for filename in os.listdir(folder_path):
-            file_path_to_delete = os.path.join(folder_path, filename)
-            os.unlink(file_path_to_delete)
+    if os.environ.get("TEMP_TOKEN_PATH"):
+        token_path = os.environ.get("TEMP_TOKEN_PATH")
 
-        with open(file_path, 'w') as file:
+        if os.path.exists(token_path):
+            os.remove(token_path)
+
+        with open(token_path, 'w') as file:
             file.write(f"TOKEN={token}\n")
 
 
 def check_authentication(func):
     def _get_user(session):
-        script_directory = os.path.dirname(os.path.abspath(__file__))
-        temp_path = os.environ.get("TEMP_TOKEN_PATH")
-        token = os.path.join(
-            script_directory, temp_path)
+        token = os.environ.get("TEMP_TOKEN_PATH")
 
         if not os.path.exists(token) or not os.path.isfile(token):
             return None
