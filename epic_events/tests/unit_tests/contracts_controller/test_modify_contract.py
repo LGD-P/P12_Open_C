@@ -31,9 +31,9 @@ def test_modify_contract_client_with_wrong_commercial(runner, mocked_session):
             "user_id": user_logged
         })
 
-    print(result.output)
+
     assert f"\n User with ID '12' is 'not found'.\n\n"
-    assert result.exit_code == 0
+    assert result.exit_code == 1
 
 
 def test_modify_contract_total_amount(runner, mocked_session):

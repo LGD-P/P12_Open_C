@@ -30,7 +30,6 @@ def test_login(runner, mocked_session):
                 token = line.split("=", 1)[1].strip()
                 secret = os.environ.get("SECRET_KEY")
                 decode = jwt.decode(token, secret, algorithms=["HS256"])
-                print(decode)
                 user_id = decode['user_id']
                 assert decode is not None
                 assert user_id == user_to_log.id

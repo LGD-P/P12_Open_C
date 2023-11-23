@@ -64,6 +64,7 @@ def test_modify_client_commercial_contrat_id(runner, mocked_session):
                                "user_id": user_logged
                            })
 
+    print(result.output)
     assert client_modified.commercial_contact_id is not None
     assert client_modified.commercial_contact_id == 6
     assert "\n 'ADRIEN LELIÈVRE DE COSTE' successfully modified.\n\n" in result.output

@@ -11,7 +11,7 @@ def test_create_client(runner, mocked_session):
 
     result = runner.invoke(create_client, [
         "-n", 'Georges Piotr', "-e", "geogres-piotr@gpsas.com", "-ph",
-        "+33 6 98 31 70 48", "-c", "GP-SAS & Co."
+        "+33 6 98 31 70 48", "-c", "GP-SAS & Co.", "-ci","3"
     ],
                            obj={
                                "session": mocked_session,
@@ -20,6 +20,7 @@ def test_create_client(runner, mocked_session):
 
     user_created = mocked_session.scalar(
         select(Client).where(Client.full_name == "Georges Piotr"))
+
 
     assert user_created.full_name == "Georges Piotr"
     assert "\n 'GEORGES PIOTR'created successfully.\n" in result.output

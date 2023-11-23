@@ -4,7 +4,7 @@ from epic_events.utils import has_permission
 from epic_events.views.users_view import logged_as, invalid_token
 from epic_events.views.clients_views import (clients_table, created_succes,
                                              deleted_success, client_not_found,
-                                             modification_done, commercial_not_found
+                                             modification_done
                                              )
 
 from epic_events.utils import find_user_type
@@ -69,7 +69,7 @@ def create_client(ctx, name, email, phone, company, comid):
 
         if comid is not None:
             comid_found = find_user_type(ctx,comid,'commercial')
-            return comid == comid_found
+
 
         creation = datetime.utcnow()
         last_contact = datetime.utcnow()
@@ -81,7 +81,7 @@ def create_client(ctx, name, email, phone, company, comid):
                             company_name=company_name,
                             creation_date=creation,
                             last_contact_date=last_contact,
-                            commercial_contact_id=comid)
+                            commercial_contact_id=comid_found)
 
         session.add(new_client)
         session.commit()

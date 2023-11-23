@@ -8,12 +8,12 @@ def test_create_contract(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 2))
     result = runner.invoke(
         create_contract,
-        ["-c", "2", "-m", "3", "-ta", "2000", "-r", "1000", "-s", "true"],
+        ["-c", "2", "-m", "2", "-ta", "2000", "-r", "1000", "-s", "true"],
         obj={
             "session": mocked_session,
             "user_id": user_logged
         })
-    print(result.output)
+
     assert result.exit_code == 0
     contract = mocked_session.scalar(select(Contract).where(Contract.id == 4))
 
@@ -30,7 +30,8 @@ def test_create_contract_with_wrong_client_id(runner, mocked_session):
             "user_id": user_logged
         })
 
-    assert result.exit_code == 0
+    print(result.output)
+    assert result.exit_code == 1
     assert f"\n Client with ID '12' is 'not found'.\n\n" in result.output
 
 

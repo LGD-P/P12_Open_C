@@ -29,7 +29,7 @@ def test_modify_event_with_wrong_support(runner, mocked_session):
                            })
 
     assert "\n User with ID '42' is 'not found'.\n\n" in result.output
-    assert result.exit_code == 0
+    assert result.exit_code == 1
 
 
 def test_modify_event_with_wrong_contract(runner, mocked_session):
@@ -41,7 +41,7 @@ def test_modify_event_with_wrong_contract(runner, mocked_session):
                            })
 
     assert "\n Contract with ID '50' is 'not found'.\n\n" in result.output
-    assert result.exit_code == 0
+    assert result.exit_code == 1
 
 
 def test_modify_event_support(runner, mocked_session):

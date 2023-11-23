@@ -3,12 +3,12 @@ from epic_events.models.user import User
 from epic_events.models.event import Event
 from epic_events.models.contract import Contract
 from epic_events.utils import has_permission
-from epic_events.views.users_view import logged_as, invalid_token, user_not_found
+from epic_events.views.users_view import logged_as, invalid_token
 from epic_events.views.events_views import (end_date_error, events_table,
                                             created_succes, deleted_success,
                                             event_not_found, modification_done,
                                             date_param)
-from epic_events.views.contracts_views import contract_not_found
+
 
 from datetime import datetime
 import click
@@ -83,18 +83,11 @@ def create_event(ctx, name, contract, support, starting, ending, location, atten
         if ending < starting:
             return end_date_error()
 
-        contract_found = False
-        contract_list = session.scalars(select(Contract).order_by(Contract.id)).all()
-        for element in contract_list:
-            if element.id == int(contract):
-                contract = element.id
-                contract_found = True
-        if not contract_found:
-            return contract_not_found(contract)
+        contract_found = find_client_or_contract(ctx, Contract, contract)
 
         support_found = find_user_type(ctx, support, 'support')
 
-        new_event = Event(name=name, contract_id=contract,
+        new_event = Event(name=name, contract_id=contract_found,
                           support_contact_id=support_found, start_date=starting,
                           end_date=ending, location=location,
                           attendees=attendees, notes=notes)
@@ -136,14 +129,9 @@ def modify_event(ctx, id, name, contract, support, starting, ending,
                 event_to_modify.name = name
 
             if contract is not None:
-                contract_found = False
-                contract_list = session.scalars(select(Contract).order_by(Contract.id)).all()
-                for element in contract_list:
-                    if element.id == int(contract):
-                        event_to_modify.contract_id = element.id
-                        contract_found = True
-                if not contract_found:
-                    return contract_not_found(contract)
+                contract_found = find_client_or_contract(ctx, Contract, contract)
+                event_to_modify.contract_id = contract_found
+
 
             if support is not None:
                 support_found = find_user_type(ctx, support, 'support')

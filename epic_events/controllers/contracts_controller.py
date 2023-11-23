@@ -2,10 +2,9 @@ import uuid
 from epic_events.models.client import Client
 from epic_events.models.user import User
 from epic_events.models.contract import Contract
-from epic_events.utils import find_user_type
+from epic_events.utils import find_user_type, find_client_or_contract
 from epic_events.utils import has_permission
-from epic_events.views.clients_views import client_not_found
-from epic_events.views.users_view import logged_as, invalid_token, user_not_found
+from epic_events.views.users_view import logged_as, invalid_token
 from epic_events.views.contracts_views import (contracts_table, created_succes,
                                                deleted_success,
                                                contract_not_found,
@@ -14,29 +13,6 @@ from epic_events.views.contracts_views import (contracts_table, created_succes,
 import click
 
 from sqlalchemy import select
-
-
-
-
-
-
-def find_commercial(ctx, commercial):
-    session = ctx.obj['session']
-    commercial_found = False
-    commercial_list = session.scalars(select(User).order_by(User.id)).all()
-    for element in commercial_list:
-        if element.id == int(commercial) and element.role.name == "commercial":
-            commercial = element.id
-            commercial_found = True
-            return commercial
-
-    if not commercial_found:
-        return user_not_found(commercial)
-
-
-
-
-
 
 
 
@@ -92,7 +68,7 @@ def create_contract(ctx, client, management, total, remain, status):
 
         status = True if status == 'true' else False
 
-        client_found = find_client(ctx, client)
+        client_found = find_client_or_contract(ctx, Client, client)
 
         commercial_found = find_user_type(ctx, management, 'management')
 
@@ -131,7 +107,7 @@ def modify_contract(ctx, id, client, management, total, remain, status):
         if contract_to_modify:
 
             if client is not None:
-                client_found = find_client(ctx, client)
+                client_found = find_client_or_contract(ctx, Client, client)
                 contract_to_modify.client_id = client_found
 
             if management is not None:

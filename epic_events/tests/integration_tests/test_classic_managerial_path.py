@@ -2,17 +2,19 @@ from epic_events.models.user import User
 from epic_events.models.client import Client
 from epic_events.models.contract import Contract
 from epic_events.models.event import Event
-from epic_events.controllers.authenticate_controller import login, logout
+from epic_events.controllers.authenticate_controller import authenticate,login, logout
 from epic_events.controllers.user_controller import list_user
 from epic_events.controllers.clients_controller import list_client, modify_client
 from epic_events.controllers.contracts_controller import list_contract, modify_contract
 from epic_events.controllers.events_controller import list_event, modify_event
+from epic_events.controllers import app
 
 from sqlalchemy import select
 from unittest.mock import patch
 
 
 def test_class_managerial_path(runner, mocked_session):
+
     # Login
     manager = mocked_session.scalar(
         select(User).where(User.name == 'Gabrielle Mallet'))
@@ -20,6 +22,10 @@ def test_class_managerial_path(runner, mocked_session):
     with patch(
             "epic_events.controllers.authenticate_controller.User.confirm_pass",
             return_value=True):
+
+        # mocker le décorateur pour la db
+        # appeler nom de l'app et en arg fonction + nom de la commande + flag  + option
+
         result = runner.invoke(login, ['-n', manager.name],
                                obj={
                                    "session": mocked_session,
@@ -27,6 +33,7 @@ def test_class_managerial_path(runner, mocked_session):
 
     assert result.exit_code == 0
     assert "\n Welcome 'Gabrielle Mallet' you're logged.\n\n" in result.output
+
 
     # Check user list:
     result = runner.invoke(list_user,
