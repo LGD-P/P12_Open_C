@@ -1,5 +1,5 @@
 import rich_click as click
-from epic_events.database import database
+from epic_events.database import create_database
 from epic_events.controllers.user_controller import user
 from epic_events.controllers.clients_controller import client
 from epic_events.controllers.contracts_controller import contract
@@ -28,9 +28,9 @@ click.rich_click.COMMAND_GROUPS = {
 @click.pass_context
 def app(ctx):
     ctx.ensure_object(dict)
-    db_session = database(ctx)
+    db_session = create_database()
     user_id = check_token_to_get_user(db_session)
-    ctx.obj["session"] = db_session
+    ctx.obj['session'] = db_session
     if user_id:
         ctx.obj['user_id'] = user_id
 

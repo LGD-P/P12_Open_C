@@ -4,12 +4,11 @@ from sqlalchemy.orm import sessionmaker
 import os
 
 
-def database(ctx):
+def create_database():
     engine = create_engine(
         os.environ.get("DATABASE_URL"))
     Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
     with Session() as session:
-        ctx.obj['session'] = session
-    return session
+        return session
 
