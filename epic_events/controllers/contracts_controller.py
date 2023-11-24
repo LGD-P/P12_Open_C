@@ -10,7 +10,7 @@ from epic_events.views.contracts_views import (contracts_table, created_succes,
                                                contract_not_found,
                                                modification_done)
 
-import click
+import rich_click as click
 
 from sqlalchemy import select
 

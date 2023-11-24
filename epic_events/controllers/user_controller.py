@@ -9,7 +9,7 @@ from epic_events.views.users_view import (invalid_token, logged_as,
                                           invalid_email)
 
 
-import click
+import rich_click as click
 from sqlalchemy import select
 import re
 

@@ -11,7 +11,7 @@ from epic_events.views.events_views import (end_date_error, events_table,
 
 
 from datetime import datetime
-import click
+import rich_click as click
 from sqlalchemy import select
 
 

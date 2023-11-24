@@ -6,10 +6,9 @@ from epic_events.views.roles_views import (
     id_not_found, role_not_found, roles_table, created_succes, deleted_success)
 
 
-import click
+import rich_click as click
 from epic_events.views.users_view import logged_as
 from sqlalchemy import select
-
 
 @click.group()
 @click.pass_context
@@ -18,7 +17,7 @@ def role(ctx):
     pass
 
 
-@role.command(name='list')
+@role.command(name='list-role')
 @click.option('--id', '-i', help='Name of the table to query', required=False)
 @click.pass_context
 @has_permission(['management'])
@@ -69,21 +68,3 @@ def create_role(ctx, name, id):
         else:
             id_not_found(id)
 
-
-@role.command()
-@click.option('--id', '-i', help='Id of the role you want to delete',
-              required=True)
-@click.pass_context
-@has_permission(['management'])
-def delete_role(ctx, id):
-    session = ctx.obj['session']
-
-    role_to_delete = session.scalar(select(Role).where(Role.id == id))
-
-    if role_to_delete:
-        session.delete(role_to_delete)
-        session.commit()
-        deleted_success(id, role_to_delete)
-
-    else:
-        role_not_found(id)

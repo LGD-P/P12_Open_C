@@ -6,7 +6,7 @@ from epic_events.utils import (
     generate_token, write_token_in_temp)
 
 
-import click
+import rich_click as click
 from sqlalchemy import select
 import os
 

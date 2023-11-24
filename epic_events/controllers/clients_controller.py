@@ -12,7 +12,7 @@ from epic_events.utils import find_user_type
 
 
 from datetime import datetime
-import click
+import rich_click as click
 from sqlalchemy import select
 
 
