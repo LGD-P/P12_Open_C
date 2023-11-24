@@ -65,43 +65,33 @@ def write_token_in_temp(token):
             file.write(f"TOKEN={token}\n")
 
 
-def check_authentication(func):
-    def _get_user(session):
-        token = os.environ.get("TEMP_TOKEN_PATH")
+def check_token_to_get_user(session):
+    token = os.environ.get("TEMP_TOKEN_PATH")
 
-        if not os.path.exists(token) or not os.path.isfile(token):
-            return None
+    if not os.path.exists(token) or not os.path.isfile(token):
+        return None
 
-        with open(token, "r") as f:
-            for line in f:
-                if line.startswith("TOKEN="):
-                    token = line.split("=", 1)[1].strip()
-                    secret = os.environ.get("SECRET_KEY")
+    with open(token, "r") as f:
+        for line in f:
+            if line.startswith("TOKEN="):
+                token = line.split("=", 1)[1].strip()
+                secret = os.environ.get("SECRET_KEY")
 
-                if token is None:
-                    return None
+            if token is None:
+                return None
 
-                try:
-                    decode = jwt.decode(token, secret, algorithms=["HS256"])
-                    user_id = decode['user_id']
-                    user = session.scalar(
-                        select(User).where(User.id == user_id))
-                    return user
+            try:
+                decode = jwt.decode(token, secret, algorithms=["HS256"])
+                user_id = decode['user_id']
+                user = session.scalar(
+                    select(User).where(User.id == user_id))
+                return user
 
-                except jwt.exceptions.DecodeError:
-                    return None
+            except jwt.exceptions.DecodeError:
+                return None
 
-                except jwt.exceptions.ExpiredSignatureError:
-                    return None
-
-    def if_token_valid(ctx, *args, **kwargs):
-        ctx.ensure_object(dict)
-        user_id = _get_user(ctx.obj['session'])
-        if user_id:
-            ctx.obj['user_id'] = user_id
-        return func(ctx, *args, **kwargs)
-
-    return if_token_valid
+            except jwt.exceptions.ExpiredSignatureError:
+                return None
 
 
 def has_permission(allowed_roles):
