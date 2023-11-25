@@ -24,9 +24,11 @@ def event(ctx):
 
 @event.command()
 @click.option('--id', '-i', help='Id of the event to query')
+@click.option('--no-support', '-ns', is_flag=True, help='Only event without support')
+@click.option('--team-support', '-ts', is_flag=True, help="Only event that you're in charge")
 @click.pass_context
 @has_permission(['management', 'support', 'commercial'])
-def list_event(ctx, id):
+def list_event(ctx, id, no_support, team_support):
     session = ctx.obj['session']
     try:
         user_logged = session.scalar(
@@ -38,6 +40,14 @@ def list_event(ctx, id):
                 event_not_found(id)
             else:
                 events_table([event])
+        if no_support:
+            event = session.scalars(select(Event).where(Event.support_contact_id.is_(None))).all()
+            events_table(event)
+
+        if team_support:
+            event = session.scalars(select(Event).where(Event.support_contact_id == user_logged.id)).all()
+            events_table(event)
+
         else:
             event_list = session.scalars(
                 select(Event).order_by(Event.id)).all()

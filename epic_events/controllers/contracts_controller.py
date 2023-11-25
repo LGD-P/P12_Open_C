@@ -26,9 +26,11 @@ def contract(ctx):
 
 @contract.command()
 @click.option("--id", "-i", help="id of the event to search", )
+@click.option("--signed", "-s", is_flag=True, help="For Commercial-Team Only signed contract", )
+@click.option("--is_not_signed", "-ns", is_flag=True, help="For Commercial-Team Only not signed contract", )
 @click.pass_context
 @has_permission(['management', 'commercial'])
-def list_contract(ctx, id):
+def list_contract(ctx, id,signed, is_not_signed):
     session = ctx.obj['session']
     try:
         user_logged = session.scalar(
@@ -40,6 +42,13 @@ def list_contract(ctx, id):
                 contract_not_found(id)
             else:
                 contracts_table([contract])
+        if is_not_signed:
+            contract_list = session.scalars(select(Contract).where(Contract.status.is_(None))).all()
+            contracts_table(contract_list)
+
+        if signed:
+            contract_list = session.scalars(select(Contract).where(Contract.status)).all()
+            contracts_table(contract_list)
         else:
             contract_list = session.scalars(
                 select(Contract).order_by(Contract.id)).all()

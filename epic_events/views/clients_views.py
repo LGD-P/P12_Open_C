@@ -69,7 +69,7 @@ def clients_table(clients):
 def created_succes(client):
     Console().print(
         f"\n[bold green] '[bold blue]{client.full_name.upper()}"
-        "[/bold blue]'created successfully.\n")
+        "[/bold blue]' created successfully.\n")
 
 
 def deleted_success(id, client):
