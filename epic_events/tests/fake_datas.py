@@ -84,8 +84,10 @@ def generate_client(id):
                     company_name=company_name,
                     creation_date=creation_date,
                     last_contact_date=last_contact_date,
-                    commercial_contract_id=None)
+                    commercial_contact_id=None)
     return client
+
+
 
 # To generate fake clients dict for conftest
 # note that date format must be  : datetime(2024, 12, 24, 19, 20)

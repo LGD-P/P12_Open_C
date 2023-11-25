@@ -71,7 +71,6 @@ def test_modify_client_commercial_contrat_id(runner, mocked_session):
     assert result.exit_code == 0
 
 
-
 def test_not_allowed_to_modify_client(runner, mocked_session):
     user_logged_as_support = mocked_session.scalar(
         select(User).where(User.id == 1))
@@ -119,4 +118,4 @@ def test_modify_client_missing_argument(
                            })
 
     assert result.exit_code == 2
-    assert "Error: Option '-ph' requires an argument.\n" in result.output
+    assert "Option '-ph' requires an argument." in result.output

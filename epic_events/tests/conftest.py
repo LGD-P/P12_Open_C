@@ -1,8 +1,10 @@
 import pytest
 from click.testing import CliRunner
+from pytest_sqlalchemy_mock.base import mocked_session
 
 from epic_events.models.base import Base
 from epic_events.tests.fake_datas import (generate_user, generate_roles)
+from unittest.mock import  patch
 
 from datetime import datetime
 
@@ -10,6 +12,13 @@ from datetime import datetime
 @pytest.fixture
 def runner():
     return CliRunner()
+
+
+
+@pytest.fixture(scope="function")
+def mocked_create_database():
+    with patch('epic_events.controllers.click_app.create_database', return_value=mocked_session):
+        yield
 
 
 @pytest.fixture(scope="function")
@@ -127,7 +136,7 @@ def sqlalchemy_mock_config():
             'company_name': 'Laroche & Co.',
             'creation_date': datetime(2023, 6, 24, 14, 0),
             'last_contact_date': datetime(2023, 7, 24, 15, 0),
-            'commercial_contact_id':None
+            'commercial_contact_id': None
 
         }, {
             'id': '2',
@@ -137,7 +146,7 @@ def sqlalchemy_mock_config():
             'company_name': 'Bouvet-S.A.R.L & Co.',
             'creation_date': datetime(2023, 10, 24, 10, 0),
             'last_contact_date': datetime(2023, 11, 10, 14, 0),
-            'commercial_contact_id':None
+            'commercial_contact_id': None
         }, {
             'id': '3',
             'full_name': 'Alix Peron',
@@ -146,7 +155,7 @@ def sqlalchemy_mock_config():
             'company_name': 'Mathilde-Roger-Costa & Co.',
             'creation_date': datetime(2023, 3, 10, 11, 32),
             'last_contact_date': datetime(2023, 11, 14, 18, 0),
-            'commercial_contact_id':None
+            'commercial_contact_id': None
         }]),
         ("contracts", [{
             'id': '1',
@@ -156,7 +165,7 @@ def sqlalchemy_mock_config():
             'total_amount': 13757,
             'remaining_amount': 227,
             'creation_date': datetime(2023, 7, 25, 11, 32),
-            'status': False
+            'status': True
         }, {
             'id': '2',
             'uuid': '374e5575-35c1-4810-afbe-bf3c2836dfdd',
@@ -245,9 +254,8 @@ def role_list_mock():
 
 @pytest.fixture
 def mock_specific_user(role_list_mock):
-    user_manager = generate_user(role_list_mock[0], 1,"S3cret@23")
-    user_commercial = generate_user(role_list_mock[1], 2,"S3cret@23")
-    user_support = generate_user(role_list_mock[2], 3,"S3cret@23")
+    user_manager = generate_user(role_list_mock[0], 1, "S3cret@23")
+    user_commercial = generate_user(role_list_mock[1], 2, "S3cret@23")
+    user_support = generate_user(role_list_mock[2], 3, "S3cret@23")
     users_list = [user_manager, user_commercial, user_support]
     return users_list
-

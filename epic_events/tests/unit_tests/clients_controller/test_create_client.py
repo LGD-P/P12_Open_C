@@ -23,7 +23,7 @@ def test_create_client(runner, mocked_session):
 
 
     assert user_created.full_name == "Georges Piotr"
-    assert "\n 'GEORGES PIOTR'created successfully.\n" in result.output
+    assert "\n 'GEORGES PIOTR' created successfully.\n" in result.output
     assert result.exit_code == 0
 
 

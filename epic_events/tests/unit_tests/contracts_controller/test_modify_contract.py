@@ -74,19 +74,20 @@ def test_modify_contract_remaining_amount(runner, mocked_session):
 
 def test_modify_contract_status(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 2))
-    contract = mocked_session.scalar(select(Contract).where(Contract.id == 1))
-    old_contract_client_id = contract.status
+    contract_to_modify = mocked_session.scalar(select(Contract).where(Contract.id == 2))
+    old_contract_client_id = contract_to_modify.status
     result = runner.invoke(
         modify_contract,
-        ["-i", "1", "-s", "true"],
+        ["-i", "2", "-s", "true"],
         obj={
             "session": mocked_session,
             "user_id": user_logged
         })
 
-    new_contract = mocked_session.scalar(select(Contract).where(Contract.id == 1))
-    assert new_contract.status != old_contract_client_id
-    assert new_contract.status == True
+
+
+    assert contract_to_modify.status != old_contract_client_id
+    assert contract_to_modify.status is True
     assert result.exit_code == 0
 
 
