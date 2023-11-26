@@ -88,6 +88,12 @@ def contract_not_found(id):
         "'[bold red]not found[/bold red]'.\n")
 
 
+def contract_not_signed(id):
+    Console().print(
+        f"\n[blue] Contract with ID '[bold red]{id}[/bold red]' is "
+        "'[bold red]not signed[/bold red]'. Contract must be signed to create Event.\n")
+
+
 def modification_done(contract):
     Console().print(
         f"\n[bold green] Contract '[bold blue]N°{str(contract.uuid)}"

@@ -117,6 +117,10 @@ def event_not_found(id):
                   "'[bold red]not found[/bold red]'.\n")
 
 
+def not_in_charge_of_this_event(id):
+  Console().print(f"\n[blue] You are not in charge of the Event with ID '[bold red]{id}[/bold red]' "
+                  "'[bold red]contact support team in charge to apply modifications[/bold red]'.\n")
+
 def modification_done(event):
   Console().print(
       f"\n[bold green] Event '[bold blue]{event.name}[/bold blue]' "
