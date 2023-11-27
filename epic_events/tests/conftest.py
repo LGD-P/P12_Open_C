@@ -136,7 +136,7 @@ def sqlalchemy_mock_config():
             'company_name': 'Laroche & Co.',
             'creation_date': datetime(2023, 6, 24, 14, 0),
             'last_contact_date': datetime(2023, 7, 24, 15, 0),
-            'commercial_contact_id': None
+            'commercial_contact_id': 3
 
         }, {
             'id': '2',
@@ -155,7 +155,7 @@ def sqlalchemy_mock_config():
             'company_name': 'Mathilde-Roger-Costa & Co.',
             'creation_date': datetime(2023, 3, 10, 11, 32),
             'last_contact_date': datetime(2023, 11, 14, 18, 0),
-            'commercial_contact_id': None
+            'commercial_contact_id': 6
         }]),
         ("contracts", [{
             'id': '1',
@@ -231,7 +231,7 @@ def sqlalchemy_mock_config():
             'contract_id':
                 '1',
             'support_contact_id':
-                None,
+                '4',
             'start_date':
                 datetime(2024, 12, 24, 19, 20),
             'end_date':
