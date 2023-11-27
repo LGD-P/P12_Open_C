@@ -4,12 +4,10 @@ from epic_events.utils import has_permission
 from epic_events.views.users_view import logged_as, invalid_token
 from epic_events.views.clients_views import (clients_table, created_succes,
                                              deleted_success, client_not_found,
-                                             modification_done
+                                             modification_done, not_in_charge_of_this_client
                                              )
 
 from epic_events.utils import find_user_type
-
-
 
 from datetime import datetime
 import rich_click as click
@@ -68,8 +66,7 @@ def create_client(ctx, name, email, phone, company, comid):
             select(User).where(User.id == ctx.obj['user_id'].id))
 
         if comid is not None:
-            comid_found = find_user_type(ctx,comid,'commercial')
-
+            comid_found = find_user_type(ctx, comid, 'commercial')
 
         creation = datetime.utcnow()
         last_contact = datetime.utcnow()
@@ -113,6 +110,11 @@ def modify_client(ctx, id, name, email, phone, company, comid):
         client_to_modify = session.scalar(select(Client).where(Client.id == id))
 
         if client_to_modify:
+            if user_logged.role.name == 'commercial':
+                if client_to_modify.commercial_contact_id == user_logged.id:
+                    pass
+                else:
+                    raise ValueError(not_in_charge_of_this_client(client_to_modify.id))
 
             if name is not None:
                 client_to_modify.full_name = name
@@ -128,7 +130,7 @@ def modify_client(ctx, id, name, email, phone, company, comid):
             client_to_modify.last_contact_date = datetime.now()
 
             if comid is not None:
-                commercial_found = find_user_type(ctx,comid, 'commercial')
+                commercial_found = find_user_type(ctx, comid, 'commercial')
                 client_to_modify.commercial_contact_id = commercial_found
 
             session.commit()

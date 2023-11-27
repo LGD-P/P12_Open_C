@@ -8,7 +8,9 @@ from epic_events.views.users_view import logged_as, invalid_token
 from epic_events.views.contracts_views import (contracts_table, created_succes,
                                                deleted_success,
                                                contract_not_found,
-                                               modification_done)
+                                               modification_done,not_in_charge_of_this_client_contract)
+
+
 
 import rich_click as click
 
@@ -114,6 +116,12 @@ def modify_contract(ctx, id, client, management, total, remain, status):
             select(Contract).where(Contract.id == id))
 
         if contract_to_modify:
+            if user_logged.role.name == "commercial":
+                if contract_to_modify.total_amount == user_logged.id:
+                    pass
+                else:
+                    raise ValueError(not_in_charge_of_this_client_contract(contract_to_modify.client_id))
+
 
             if client is not None:
                 client_found = find_client_or_contract(ctx, Client, client)

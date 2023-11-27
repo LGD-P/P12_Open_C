@@ -7,7 +7,8 @@ from epic_events.views.users_view import logged_as, invalid_token
 from epic_events.views.events_views import (end_date_error, events_table,
                                             created_succes, deleted_success,
                                             event_not_found, modification_done,
-                                            date_param)
+                                            date_param,not_in_charge_of_this_event)
+from epic_events.views.contracts_views import contract_not_signed
 
 
 from datetime import datetime
@@ -42,11 +43,11 @@ def list_event(ctx, id, no_support, team_support):
                 events_table([event])
         if no_support:
             event = session.scalars(select(Event).where(Event.support_contact_id.is_(None))).all()
-            events_table(event)
+            return events_table(event)
 
         if team_support:
             event = session.scalars(select(Event).where(Event.support_contact_id == user_logged.id)).all()
-            events_table(event)
+            return events_table(event)
 
         else:
             event_list = session.scalars(
@@ -94,6 +95,10 @@ def create_event(ctx, name, contract, support, starting, ending, location, atten
             return end_date_error()
 
         contract_found = find_client_or_contract(ctx, Contract, contract)
+        contract = session.scalar(select(Contract).where(Contract.id == contract_found))
+        if contract.status is not True:
+            return contract_not_signed(contract.id)
+
 
         support_found = find_user_type(ctx, support, 'support')
 
@@ -134,6 +139,11 @@ def modify_event(ctx, id, name, contract, support, starting, ending,
         event_to_modify = session.scalar(select(Event).where(Event.id == id))
 
         if event_to_modify:
+            if user_logged.role.name == 'support':
+                if event_to_modify.support_contact_id == user_logged.id:
+                    pass
+                else:
+                    raise ValueError(not_in_charge_of_this_event(event_to_modify.id))
 
             if name is not None:
                 event_to_modify.name = name
