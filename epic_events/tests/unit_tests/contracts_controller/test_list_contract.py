@@ -1,5 +1,4 @@
 from sqlalchemy import select
-from epic_events.models.contract import Contract
 from epic_events.models.user import User
 from epic_events.controllers.contracts_controller import list_contract
 
@@ -18,7 +17,6 @@ def test_list_all_contracts(runner, mocked_session):
     assert result.exit_code == 0
 
 
-
 def test_list_all_unsigned_contracts_for_commercial_team(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 3))
     result = runner.invoke(list_contract, ["-ns"],
@@ -33,7 +31,7 @@ def test_list_all_unsigned_contracts_for_commercial_team(runner, mocked_session)
 
 def test_list_all_signed_contracts_for_commercial_team(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 3))
-    result = runner.invoke(list_contract,['-s'],
+    result = runner.invoke(list_contract, ['-s'],
                            obj={
                                "session": mocked_session,
                                "user_id": user_logged

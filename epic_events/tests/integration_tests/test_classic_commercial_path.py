@@ -2,7 +2,6 @@ from epic_events.controllers.click_app import app
 from epic_events.models.user import User
 from epic_events.models.client import Client
 
-
 from sqlalchemy import select
 from unittest.mock import patch
 
@@ -15,7 +14,6 @@ def test_classic_commercial_path(runner, mocked_session):
         with patch(
                 "epic_events.controllers.authenticate_controller.User.confirm_pass",
                 return_value=True):
-
             result = runner.invoke(app, ['authenticate', 'login', '-n', commercial.name],
                                    obj={"session": mocked_session})
 
@@ -25,7 +23,7 @@ def test_classic_commercial_path(runner, mocked_session):
             # Create a new client :
             result = runner.invoke(app, ['client', 'create-client',
                                          '-n', 'Hugues Devaux', '-e', 'devaux.hugues-client@epicevent.com',
-                                         '-ph','+33 (0)5 86 47 21 65',
+                                         '-ph', '+33 (0)5 86 47 21 65',
                                          '-c', 'Collin & Co.',
                                          '-ci', '6'],
                                    obj={
@@ -36,9 +34,8 @@ def test_classic_commercial_path(runner, mocked_session):
             assert "\n 'HUGUES DEVAUX' created successfully.\n\n" in result.output
             assert result.exit_code == 0
 
-
             # Modify client because error on phone number :
-            result = runner.invoke(app, ['client','modify-client', "-i", "4", "-ph", "+33 7 58 41 00 50"],
+            result = runner.invoke(app, ['client', 'modify-client', "-i", "4", "-ph", "+33 7 58 41 00 50"],
                                    obj={
                                        "session": mocked_session,
                                        "user_id": commercial
@@ -58,12 +55,9 @@ def test_classic_commercial_path(runner, mocked_session):
                                        "user_id": commercial
                                    })
 
-
             assert "\n As commercial you are 'not in charge' of Client : ID '1'. You're 'not allowed' "
             "\nto modify this client.\n\n" in result.output
             assert result.exit_code == 1
-
-
 
             # logout
             result = runner.invoke(app, ['authenticate', 'logout'], obj={
@@ -73,5 +67,3 @@ def test_classic_commercial_path(runner, mocked_session):
 
             assert result.exit_code == 0
             assert "\n' You have been successfully logout out'\n" in result.output
-
-

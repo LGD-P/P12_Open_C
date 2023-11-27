@@ -8,7 +8,6 @@ from epic_events.controllers.roles_controller import role
 from epic_events.controllers.authenticate_controller import authenticate
 from epic_events.utils import check_token_to_get_user
 
-
 click.rich_click.COMMAND_GROUPS = {
     "cli": [
         {
@@ -33,7 +32,6 @@ def app(ctx):
     ctx.obj['session'] = db_session
     if user_id:
         ctx.obj['user_id'] = user_id
-
 
 
 app.add_command(user)

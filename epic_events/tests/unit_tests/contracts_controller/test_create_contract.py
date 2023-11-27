@@ -32,7 +32,7 @@ def test_create_contract_with_wrong_client_id(runner, mocked_session):
 
     print(result.output)
     assert result.exit_code == 1
-    assert f"\n Client with ID '12' is 'not found'.\n\n" in result.output
+    assert "\n Client with ID '12' is 'not found'.\n\n" in result.output
 
 
 def test_create_contract_without_authentication(runner, mocked_session):

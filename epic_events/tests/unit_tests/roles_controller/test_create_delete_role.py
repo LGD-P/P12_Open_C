@@ -15,4 +15,3 @@ def test_create_roles(runner, mocked_session):
 
     assert result.exit_code == 0
     assert "\n 'SUPPORT'created successfully.\n\n" in result.output
-

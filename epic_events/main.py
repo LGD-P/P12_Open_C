@@ -1,7 +1,8 @@
 from epic_events.controllers.click_app import app
-
+"""
 import sentry_sdk
 import os
+"""
 from dotenv import load_dotenv
 
 
@@ -18,9 +19,3 @@ sentry_sdk.init(
 
 if __name__ == '__main__':
     application = app()
-
-
-
-
-
-

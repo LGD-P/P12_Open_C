@@ -15,6 +15,10 @@ def test_modify_event_name(runner, mocked_session):
                                "user_id": user_logged
                            })
 
+    assert name_to_change != event.name
+    assert "\n Event 'Maryse-Event' successfully modified.\n\n" in result.output
+    assert result.exit_code == 0
+
 
 def test_modify_wrong_support_team(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 4))
@@ -23,7 +27,6 @@ def test_modify_wrong_support_team(runner, mocked_session):
                                "session": mocked_session,
                                "user_id": user_logged
                            })
-
 
     assert "\n You are not in charge of the Event with ID '1' 'contact support team in charge "
     "to apply modifications'.\n\n" in result.output
@@ -168,7 +171,6 @@ def test_modify_event_attendees(runner, mocked_session):
 
 
 def test_modify_event_without_authentication(runner, mocked_session):
-    event = mocked_session.scalar(select(Event).where(Event.id == 1))
     result = runner.invoke(modify_event, ["-i", "1", "-n", "Maryse-Event"],
                            obj={
                                "session": mocked_session,

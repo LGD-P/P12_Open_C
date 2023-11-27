@@ -3,8 +3,6 @@ from epic_events.controllers.authenticate_controller import login, logout
 
 from sqlalchemy import select
 from unittest.mock import patch
-import os
-import jwt
 
 
 def test_login(runner, mocked_session):

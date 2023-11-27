@@ -1,8 +1,6 @@
 from epic_events.models.base import Base
-from sqlalchemy import (Column, Integer, DateTime, ForeignKey, Boolean, func, String,
-                        )
-from sqlalchemy.dialects.postgresql import UUID
-import uuid
+
+from sqlalchemy import (Column, Integer, DateTime, ForeignKey, Boolean, func, String)
 from sqlalchemy.orm import relationship
 
 

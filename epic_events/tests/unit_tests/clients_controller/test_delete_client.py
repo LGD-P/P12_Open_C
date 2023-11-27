@@ -1,5 +1,4 @@
 from epic_events.models.user import User
-from epic_events.models.client import Client
 from epic_events.controllers.clients_controller import delete_client
 
 from sqlalchemy import select

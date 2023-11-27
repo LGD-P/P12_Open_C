@@ -1,8 +1,7 @@
-from sqlalchemy import select
-from sqlalchemy.orm import session
-
 from epic_events.controllers.user_controller import delete_user
 from epic_events.models.user import User
+
+from sqlalchemy import select
 
 
 def test_delete_user(runner, mocked_session):

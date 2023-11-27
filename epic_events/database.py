@@ -11,4 +11,3 @@ def create_database():
     Session = sessionmaker(bind=engine)
     with Session() as session:
         return session
-

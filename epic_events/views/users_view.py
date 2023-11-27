@@ -31,8 +31,8 @@ def users_table(users):
     )
 
     for user in users:
-        roles = f"[bold blue] ID : [bold yellow]{user.role.id}[/bold yellow]"\
-            f" - type : [bold green]{user.role.name}[/bold green]"
+        roles = f"[bold blue] ID : [bold yellow]{user.role.id}[/bold yellow]" \
+                f" - type : [bold green]{user.role.name}[/bold green]"
         user.password = "****" if "$argon2" in user.password else user.password
         user_table.add_row(
             str(user.id),
@@ -58,9 +58,10 @@ def username_not_found(name):
 
 
 def login_success(name):
-    message =  f"\n[blue] Welcome '[bold green]{name}[/bold green]' you're logged.\n"
+    message = f"\n[blue] Welcome '[bold green]{name}[/bold green]' you're logged.\n"
     Console().print(message)
     return message
+
 
 def param_not_required():
     Console().print(
@@ -148,7 +149,7 @@ def expired_token():
 
 def logout_success():
     Console().print(
-        f"\n'[bold green] You have been successfully logout out[/bold green]'\n")
+        "\n'[bold green] You have been successfully logout out[/bold green]'\n")
 
 
 def logged_as(user, role):

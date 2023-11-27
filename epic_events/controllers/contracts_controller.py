@@ -6,16 +6,12 @@ from epic_events.utils import find_user_type, find_client_or_contract
 from epic_events.utils import has_permission
 from epic_events.views.users_view import logged_as, invalid_token
 from epic_events.views.contracts_views import (contracts_table, created_succes,
-                                               deleted_success,
-                                               contract_not_found,
-                                               modification_done,not_in_charge_of_this_client_contract)
-
-
+                                               deleted_success, contract_not_found,
+                                               modification_done, not_in_charge_of_this_client_contract)
 
 import rich_click as click
 
 from sqlalchemy import select
-
 
 
 @click.group()
@@ -32,18 +28,17 @@ def contract(ctx):
 @click.option("--is_not_signed", "-ns", is_flag=True, help="For Commercial-Team Only not signed contract", )
 @click.pass_context
 @has_permission(['management', 'commercial'])
-def list_contract(ctx, id,signed, is_not_signed):
+def list_contract(ctx, id, signed, is_not_signed):
     session = ctx.obj['session']
     try:
-        user_logged = session.scalar(
-            select(User).where(User.id == ctx.obj['user_id'].id))
+        user_logged = session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
         if id:
-            contract = session.scalar(
+            selected_contract = session.scalar(
                 select(Contract).where(Contract.id == id))
-            if contract is None:
+            if selected_contract is None:
                 contract_not_found(id)
             else:
-                contracts_table([contract])
+                contracts_table([selected_contract])
         if is_not_signed:
             contract_list = session.scalars(select(Contract).where(Contract.status.is_(None))).all()
             contracts_table(contract_list)
@@ -62,7 +57,6 @@ def list_contract(ctx, id,signed, is_not_signed):
         pass
 
 
-
 @contract.command()
 @click.option('--client', '-c', help='Client ID', required=True)
 @click.option('--management', '-m', help='Management ID', required=True)
@@ -74,8 +68,7 @@ def list_contract(ctx, id,signed, is_not_signed):
 def create_contract(ctx, client, management, total, remain, status):
     session = ctx.obj['session']
     try:
-        user_logged = session.scalar(
-            select(User).where(User.id == ctx.obj['user_id'].id))
+        session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
 
         status = True if status == 'true' else False
 
@@ -122,7 +115,6 @@ def modify_contract(ctx, id, client, management, total, remain, status):
                 else:
                     raise ValueError(not_in_charge_of_this_client_contract(contract_to_modify.client_id))
 
-
             if client is not None:
                 client_found = find_client_or_contract(ctx, Client, client)
                 contract_to_modify.client_id = client_found
@@ -159,8 +151,7 @@ def modify_contract(ctx, id, client, management, total, remain, status):
 def delete_contract(ctx, id):
     session = ctx.obj['session']
     try:
-        user_logged = session.scalar(
-            select(User).where(User.id == ctx.obj['user_id'].id))
+        session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
 
         contract_to_delete = session.scalar(
             select(Contract).where(Contract.id == id))

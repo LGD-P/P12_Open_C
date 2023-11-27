@@ -49,7 +49,7 @@ def clients_table(clients):
         commercial_contact_id = "❌" if client.commercial_contact_id is None \
             else str(client.commercial_contact_id)
         company_name = "❌" if client.company_name is None or \
-                              client.company_name == 'None' else client.company_name
+            client.company_name == 'None' else client.company_name
 
         clients_table.add_row(
             str(client.id),

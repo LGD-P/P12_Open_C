@@ -3,12 +3,12 @@ from epic_events.models.user import User
 from epic_events.utils import has_permission
 from epic_events.views.users_view import invalid_token
 from epic_events.views.roles_views import (
-    id_not_found, role_not_found, roles_table, created_succes, deleted_success)
-
+    id_not_found, role_not_found, roles_table, created_succes)
 
 import rich_click as click
 from epic_events.views.users_view import logged_as
 from sqlalchemy import select
+
 
 @click.group()
 @click.pass_context
@@ -67,4 +67,3 @@ def create_role(ctx, name, id):
             created_succes(new_role)
         else:
             id_not_found(id)
-

@@ -22,8 +22,6 @@ def test_create_event(runner, mocked_session):
     assert "\n ID N° 'N°4' Event 'John-Event'created successfully.\n\n" in result.output
 
 
-
-
 def test_create_event_with_wrong_contract(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 3))
     result = runner.invoke(create_event, [
@@ -37,8 +35,6 @@ def test_create_event_with_wrong_contract(runner, mocked_session):
                            })
     assert result.exit_code == 1
     assert "\n Contract with ID '12' is 'not found'.\n\n" in result.output
-
-
 
 
 def test_create_event_with_unsigned_contract(runner, mocked_session):
@@ -61,10 +57,6 @@ def test_create_event_with_unsigned_contract(runner, mocked_session):
     assert "\n Contract with ID '2' is 'not signed'. Contract must be signed to create Event.\n\n" in result.output
 
 
-
-
-
-
 def test_create_event_with_wrong_support(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 3))
     result = runner.invoke(create_event, [
@@ -77,11 +69,8 @@ def test_create_event_with_wrong_support(runner, mocked_session):
                                "user_id": user_logged
                            })
 
-
     assert result.exit_code == 1
     assert "\n User with ID '18' is 'not found'.\n\n" in result.output
-
-
 
 
 def test_create_event_argument_missing(runner, mocked_session):

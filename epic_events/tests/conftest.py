@@ -4,7 +4,7 @@ from pytest_sqlalchemy_mock.base import mocked_session
 
 from epic_events.models.base import Base
 from epic_events.tests.fake_datas import (generate_user, generate_roles)
-from unittest.mock import  patch
+from unittest.mock import patch
 
 from datetime import datetime
 
@@ -12,7 +12,6 @@ from datetime import datetime
 @pytest.fixture
 def runner():
     return CliRunner()
-
 
 
 @pytest.fixture(scope="function")
@@ -98,7 +97,8 @@ def sqlalchemy_mock_config():
                     'role_id':
                         1,
                     'password':
-                        '$argon2id$v=19$m=65536,t=12,p=4$dE5JaY1xDqEUYkxJ6V3LmQ$gt/S2lmFj6Gv14qf9Fzp+3bITy1VanYCA6kRnO/xVrM'
+                        '$argon2id$v=19$m=65536,t=12,p=4$dE5JaY1xDqEUYkxJ6V3LmQ$gt'
+                        '/S2lmFj6Gv14qf9Fzp+3bITy1VanYCA6kRnO/xVrM'
                     # S3CRET@26
                 },
                 {
@@ -111,7 +111,8 @@ def sqlalchemy_mock_config():
                     'role_id':
                         2,
                     'password':
-                        '$argon2id$v=19$m=65536,t=12,p=4$yDnnvNcagxDifE+pFcKYcw$2RX41/P7ZljWvAr5cgP0s5KfeNBce9akulDam8mahLY'
+                        '$argon2id$v=19$m=65536,t=12,p=4$yDnnvNcagxDifE+pFcKYcw$2RX41'
+                        '/P7ZljWvAr5cgP0s5KfeNBce9akulDam8mahLY'
                     # S3CRET@27
                 },
                 {
@@ -124,7 +125,8 @@ def sqlalchemy_mock_config():
                     'role_id':
                         3,
                     'password':
-                        '$argon2id$v=19$m=65536,t=12,p=4$htCaU4qRcu4dA8CYc+59zw$8gLiL/pGyNE9NukICpHQHf5yHSxgcSoeNQ0CD0yhqo0'
+                        '$argon2id$v=19$m=65536,t=12,p=4$htCaU4qRcu4dA8CYc+59zw$8gLiL'
+                        '/pGyNE9NukICpHQHf5yHSxgcSoeNQ0CD0yhqo0'
                     # S3CRET@28
                 }
             ]),

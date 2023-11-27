@@ -12,7 +12,7 @@ def test_classic_managerial_path(runner, mocked_session):
     manager = mocked_session.scalar(
         select(User).where(User.name == 'Gabrielle Mallet'))
 
-    with patch('epic_events.controllers.click_app.create_database', return_value=mocked_session):
+    with (patch('epic_events.controllers.click_app.create_database', return_value=mocked_session)):
         with patch(
                 "epic_events.controllers.authenticate_controller.User.confirm_pass",
                 return_value=True):
@@ -78,7 +78,7 @@ def test_classic_managerial_path(runner, mocked_session):
                                        "user_id": manager
                                    })
 
-            assert contract.status == True
+            assert contract.status is True
             assert result.exit_code == 0
 
             # Check Events list whitout support yet:
@@ -91,7 +91,8 @@ def test_classic_managerial_path(runner, mocked_session):
             assert result.exit_code == 0
             assert '│ 2  │ Noël-… │   2    │  None  │ 12-01… │ 13-01-… │ avenue │   204   │' in result.output
             # Event N°3 with support is not in résult.output
-            assert '│ 3  │ Adrie… │   1    │   4    │ 24-12… │ 02-12-… │  62,   │   117   │  Main ' not in result.output
+            assert '│ 3  │ Adrie… │   1    │   4    │ 24-12… │ 02-12-… │  62,   │   117   │  Main ' \
+                   not in result.output
             event_choose = mocked_session.scalar(select(Event).where(Event.id == 2))
             assert event_choose.support_contact_id is None
             assert result.exit_code == 0

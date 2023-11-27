@@ -77,7 +77,7 @@ def test_change_password_confirm_wrong(mock_specific_user, capsys):
     user_new_pass = "S3cret@24"
     with patch('epic_events.models.user.input_old_pass', return_value=user_old_pass):
         with patch('epic_events.controllers.user_controller.new_pass', return_value=user_new_pass):
-            hash = user.hash_pass(user_new_pass)
+            user.hash_pass(user_new_pass)
             with pytest.raises(click.UsageError):
                 with patch.object(User, 'confirm_pass', return_value=False):
                     change_password(user, None)

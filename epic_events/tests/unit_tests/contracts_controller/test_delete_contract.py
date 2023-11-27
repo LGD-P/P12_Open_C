@@ -26,7 +26,7 @@ def test_delete_contrat_with_wrong_id(runner, mocked_session):
                            obj={"session": mocked_session,
                                 "user_id": user_logged})
     assert result.exit_code == 0
-    assert f"\n Contract with ID '12' is 'not found'.\n" in result.output
+    assert "\n Contract with ID '12' is 'not found'.\n" in result.output
 
 
 def test_delete_contrat_without_authentication(runner, mocked_session):
@@ -46,5 +46,3 @@ def test_delete_contrat_without_permission(runner, mocked_session):
 
     assert "\n' You're not allowed to use this command'\n\n" in result.output
     assert result.exit_code == 0
-
-

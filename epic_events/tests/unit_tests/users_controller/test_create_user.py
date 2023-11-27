@@ -1,7 +1,7 @@
-from sqlalchemy import select
-from unittest.mock import patch
-from epic_events.controllers.user_controller import create_user
 from epic_events.models.user import User
+from epic_events.controllers.user_controller import create_user
+
+from sqlalchemy import select
 
 
 def test_create_user(runner, mocked_session):

@@ -7,9 +7,8 @@ from epic_events.views.users_view import logged_as, invalid_token
 from epic_events.views.events_views import (end_date_error, events_table,
                                             created_succes, deleted_success,
                                             event_not_found, modification_done,
-                                            date_param,not_in_charge_of_this_event)
+                                            date_param, not_in_charge_of_this_event)
 from epic_events.views.contracts_views import contract_not_signed
-
 
 from datetime import datetime
 import rich_click as click
@@ -77,9 +76,8 @@ def create_event(ctx, name, contract, support, starting, ending, location, atten
                  notes):
     session = ctx.obj['session']
     try:
-        user_logged = session.scalar(
-            select(User).where(User.id == ctx.obj['user_id'].id)
-        )
+        session.scalar(select(User).where(User.id == ctx.obj['user_id'].id)
+                       )
 
         try:
             starting = datetime.strptime(starting, '%Y-%m-%d - %H:%M')
@@ -98,7 +96,6 @@ def create_event(ctx, name, contract, support, starting, ending, location, atten
         contract = session.scalar(select(Contract).where(Contract.id == contract_found))
         if contract.status is not True:
             return contract_not_signed(contract.id)
-
 
         support_found = find_user_type(ctx, support, 'support')
 
@@ -152,11 +149,9 @@ def modify_event(ctx, id, name, contract, support, starting, ending,
                 contract_found = find_client_or_contract(ctx, Contract, contract)
                 event_to_modify.contract_id = contract_found
 
-
             if support is not None:
                 support_found = find_user_type(ctx, support, 'support')
                 event_to_modify.support_contact_id = support_found
-
 
             if starting is not None:
                 try:
@@ -198,9 +193,7 @@ def modify_event(ctx, id, name, contract, support, starting, ending,
 def delete_event(ctx, id):
     session = ctx.obj['session']
     try:
-        user_logged = session.scalar(
-            select(User).where(User.id == ctx.obj['user_id'].id)
-        )
+        session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
 
         event_to_delete = session.scalar(select(Event).where(Event.id == id))
 

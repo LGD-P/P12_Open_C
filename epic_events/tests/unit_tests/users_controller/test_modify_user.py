@@ -87,7 +87,7 @@ def test_modify_user_wrong_id(runner, mocked_session):
                                "user_id": user_logged
                            })
 
-    assert f"\n User with ID '12' is 'not found'.\n" in result.output
+    assert "\n User with ID '12' is 'not found'.\n" in result.output
 
 
 def test_modify_user_name_without_authentication(runner, mocked_session):

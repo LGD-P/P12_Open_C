@@ -49,8 +49,7 @@ def login(ctx, name, password):
 def logout(ctx):
     session = ctx.obj['session']
     try:
-        user_logged = session.scalar(
-            select(User).where(User.id == ctx.obj['user_id'].id))
+        session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
 
         folder_path = 'temp'
 

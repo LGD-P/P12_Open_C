@@ -54,6 +54,7 @@ def generate_user(role, id, password, ):
     user.hash_pass(password)
     return user
 
+
 # To generate fake roles  conftest
 # role_list = generate_roles()
 
@@ -88,7 +89,6 @@ def generate_client(id):
     return client
 
 
-
 # To generate fake clients dict for conftest
 # note that date format must be  : datetime(2024, 12, 24, 19, 20)
 
@@ -113,6 +113,7 @@ def generate_contract(id, client_id, management_contact_id):
                         remaining_amount=remaining_amount,
                         status=status)
     return contract
+
 
 # To generate fake contracts dict for conftest
 # contract1,contract2,contract3 = generate_contract("1","1","3"),

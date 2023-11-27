@@ -8,7 +8,6 @@ from epic_events.views.users_view import (invalid_token, logged_as,
                                           new_pass, invalid_pass,
                                           invalid_email)
 
-
 import rich_click as click
 from sqlalchemy import select
 import re
@@ -43,7 +42,6 @@ def pass_is_valid(ctx, param, value):
 
 
 def change_password(user_to_modify, ctx):
-
     checking = User().confirm_pass(user_to_modify.password)
 
     if not checking:
@@ -111,8 +109,7 @@ def list_user(ctx, id):
 def create_user(ctx, name, email, role, password):
     session = ctx.obj['session']
     try:
-        user_logged = session.scalar(
-            select(User).where(User.id == ctx.obj['user_id'].id))
+        session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
 
         role_to_fill = session.scalars(
             select(Role).where(Role.name == role)).one()
@@ -133,21 +130,21 @@ def create_user(ctx, name, email, role, password):
     except KeyError:
         invalid_token()
 
+
 @user.command()
 @click.option('--id', '-i', help='Id of the user you want to modify',
               required=True)
 @click.option('--name', '-n', help='New name of the user')
 @click.option('--email', '-e', help='New email of the user')
 @click.option('--role', '-r', help='New role of the user, must be: '
-              'support management or commercial')
+                                   'support management or commercial')
 @click.option('--password', '-P', help='-P without argument', nargs=0)
 @click.pass_context
 @has_permission(['management'])
 def modify_user(ctx, id, name, email, role, password):
     session = ctx.obj['session']
     try:
-        user_logged = session.scalar(
-            select(User).where(User.id == ctx.obj['user_id'].id))
+        session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
 
         user_to_modify = session.scalar(select(User).where(User.id == id))
         if user_to_modify:
@@ -176,6 +173,7 @@ def modify_user(ctx, id, name, email, role, password):
     except KeyError:
         invalid_token()
 
+
 @user.command()
 @click.option('--id', '-i', help='Id of the user you want to delete',
               required=True)
@@ -184,8 +182,7 @@ def modify_user(ctx, id, name, email, role, password):
 def delete_user(ctx, id):
     session = ctx.obj['session']
     try:
-        user_logged = session.scalar(
-            select(User).where(User.id == ctx.obj['user_id'].id))
+        session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
 
         user_to_delete = session.scalar(select(User).where(User.id == id))
 

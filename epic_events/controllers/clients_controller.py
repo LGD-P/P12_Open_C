@@ -62,8 +62,7 @@ def list_client(ctx, id):
 def create_client(ctx, name, email, phone, company, comid):
     session = ctx.obj['session']
     try:
-        user_logged = session.scalar(
-            select(User).where(User.id == ctx.obj['user_id'].id))
+        session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
 
         if comid is not None:
             comid_found = find_user_type(ctx, comid, 'commercial')
@@ -152,8 +151,7 @@ def modify_client(ctx, id, name, email, phone, company, comid):
 def delete_client(ctx, id):
     session = ctx.obj['session']
     try:
-        user_logged = session.scalar(
-            select(User).where(User.id == ctx.obj['user_id'].id))
+        session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
 
         client_to_delete = session.scalar(select(Client).where(Client.id == id))
 
