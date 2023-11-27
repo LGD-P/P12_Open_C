@@ -31,7 +31,6 @@ def test_modify_contract_client_with_wrong_commercial(runner, mocked_session):
             "user_id": user_logged
         })
 
-
     assert f"\n User with ID '12' is 'not found'.\n\n"
     assert result.exit_code == 1
 
@@ -84,8 +83,6 @@ def test_modify_contract_status(runner, mocked_session):
             "user_id": user_logged
         })
 
-
-
     assert contract_to_modify.status != old_contract_client_id
     assert contract_to_modify.status is True
     assert result.exit_code == 0
@@ -114,3 +111,18 @@ def test_modify_contract_without_permission(runner, mocked_session):
         })
     assert "\n' You're not allowed to use this command'\n\n" in result.output
     assert result.exit_code == 0
+
+
+def test_commercial_modify_contract_but_not_charge_of_client(runner, mocked_session):
+    user_logged = mocked_session.scalar(select(User).where(User.id == 6))
+    result = runner.invoke(
+        modify_contract,
+        ["-i", "1", "-c", "2"],
+        obj={
+            "session": mocked_session,
+            "user_id": user_logged
+        })
+
+    assert "\n' YAs commercial you are 'not in charge' of Client : ID '1'. You're 'not allowed' "
+    "to modify this Contract.\n\n" in result.output
+    assert result.exit_code == 1

@@ -49,7 +49,7 @@ def clients_table(clients):
         commercial_contact_id = "❌" if client.commercial_contact_id is None \
             else str(client.commercial_contact_id)
         company_name = "❌" if client.company_name is None or \
-            client.company_name == 'None' else client.company_name
+                              client.company_name == 'None' else client.company_name
 
         clients_table.add_row(
             str(client.id),
@@ -95,3 +95,10 @@ def modification_done(client):
     Console().print(
         f"\n[bold green] '[bold blue]{client.full_name.upper()}"
         "[/bold blue]' successfully modified.\n")
+
+
+def not_in_charge_of_this_client(id):
+    Console().print(
+        f"\n[blue] As commercial you are '[bold red]not in charge[/bold red]' "
+        f"of Client : ID '[bold red]{id}[/bold red]'. You're '[bold red]not allowed[/bold red]' "
+        "to modify this client.\n")

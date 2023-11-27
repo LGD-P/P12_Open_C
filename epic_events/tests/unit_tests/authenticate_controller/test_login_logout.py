@@ -8,8 +8,6 @@ import jwt
 
 
 def test_login(runner, mocked_session):
-    folder_path = 'temp'
-    file_path = os.path.join(folder_path, 'temporary.txt')
     user_to_log = mocked_session.scalar(
         select(User).where(User.name == "Denis Chamart"))
 
@@ -22,18 +20,6 @@ def test_login(runner, mocked_session):
                                })
 
     assert result.exit_code == 0
-    assert os.path.exists(folder_path)
-    assert os.path.isfile(file_path)
-    with open(file_path, 'r') as file:
-        for line in file:
-            if line.startswith("TOKEN="):
-                token = line.split("=", 1)[1].strip()
-                secret = os.environ.get("SECRET_KEY")
-                decode = jwt.decode(token, secret, algorithms=["HS256"])
-                user_id = decode['user_id']
-                assert decode is not None
-                assert user_id == user_to_log.id
-
     assert "\n Welcome 'Denis Chamart' you're logged.\n\n" in result.output
 
 

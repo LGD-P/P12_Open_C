@@ -9,7 +9,6 @@ from unittest.mock import patch
 def test_modify_client_full_name(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 3))
     client_modified = mocked_session.scalar(select(Client).where(Client.id == 1))
-    print(client_modified.full_name)
 
     result = runner.invoke(modify_client, ["-i", "1", "-n", "Adrien Lelièvre"],
                            obj={
@@ -23,6 +22,9 @@ def test_modify_client_full_name(runner, mocked_session):
     assert "\n 'ADRIEN LELIÈVRE' successfully modified.\n\n" in result.output
 
 
+
+
+
 def test_modify_client_email(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 3))
     result = runner.invoke(modify_client,
@@ -33,6 +35,8 @@ def test_modify_client_email(runner, mocked_session):
                            })
 
     client_modified = mocked_session.scalar(select(Client).where(Client.id == 1))
+    print(result.output)
+    print(client_modified.email)
     assert client_modified.email != "lelièvre.adrien-client@epicevent.com"
     assert client_modified.email == "Adrien.lelièvre@epicevents.com"
     assert result.exit_code == 0
@@ -82,6 +86,20 @@ def test_not_allowed_to_modify_client(runner, mocked_session):
 
     assert result.exit_code == 0
     assert "\n' You're not allowed to use this command'\n\n" in result.output
+
+
+def test_commercial_not_allowed_to_modify_client_not_in_charge(runner, mocked_session):
+    user_logged_as_support = mocked_session.scalar(
+        select(User).where(User.id == 3))
+    result = runner.invoke(modify_client, ["-i", "3", "-ph", "+33 7 58 41 00 50"],
+                           obj={
+                               "session": mocked_session,
+                               "user_id": user_logged_as_support
+                           })
+
+    assert result.exit_code == 1
+    assert "\n' As commercial you are 'not in charge' of Client : ID '1'. You're 'not allowed' "
+    "to modify this client.\n\n" in result.output
 
 
 def test_modify_client_without_authentication(runner, mocked_session):

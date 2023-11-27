@@ -98,3 +98,10 @@ def modification_done(contract):
     Console().print(
         f"\n[bold green] Contract '[bold blue]N°{str(contract.uuid)}"
         "[/bold blue]' successfully modified.\n")
+
+
+def not_in_charge_of_this_client_contract(id):
+    Console().print(
+        f"\n[blue] As commercial you are '[bold red]not in charge[/bold red]' "
+        f"of Client : ID '[bold red]{id}[/bold red]'. You're '[bold red]not allowed[/bold red]' "
+        "to modify this Contract.\n")
