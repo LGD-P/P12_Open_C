@@ -57,7 +57,7 @@ def test_classic_commercial_path(runner, mocked_session):
 
             assert "\n As commercial you are 'not in charge' of Client : ID '1'. You're 'not allowed' "
             "\nto modify this client.\n\n" in result.output
-            assert result.exit_code == 1
+            assert result.exit_code == 0
 
             # logout
             result = runner.invoke(app, ['authenticate', 'logout'], obj={

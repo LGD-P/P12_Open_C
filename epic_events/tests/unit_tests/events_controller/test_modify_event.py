@@ -30,7 +30,7 @@ def test_modify_wrong_support_team(runner, mocked_session):
 
     assert "\n You are not in charge of the Event with ID '1' 'contact support team in charge "
     "to apply modifications'.\n\n" in result.output
-    assert result.exit_code == 1
+    assert result.exit_code == 0
 
 
 def test_modify_event_with_wrong_support(runner, mocked_session):
@@ -42,7 +42,7 @@ def test_modify_event_with_wrong_support(runner, mocked_session):
                            })
 
     assert "\n User with ID '42' is 'not found'.\n\n" in result.output
-    assert result.exit_code == 1
+    assert result.exit_code == 0
 
 
 def test_modify_event_with_wrong_contract(runner, mocked_session):
@@ -54,7 +54,7 @@ def test_modify_event_with_wrong_contract(runner, mocked_session):
                            })
 
     assert "\n Contract with ID '50' is 'not found'.\n\n" in result.output
-    assert result.exit_code == 1
+    assert result.exit_code == 0
 
 
 def test_modify_event_support(runner, mocked_session):

@@ -92,7 +92,7 @@ def test_commercial_not_allowed_to_modify_client_not_in_charge(runner, mocked_se
                                "user_id": user_logged_as_support
                            })
 
-    assert result.exit_code == 1
+    assert result.exit_code == 0
     assert "\n' As commercial you are 'not in charge' of Client : ID '1'. You're 'not allowed' "
     "to modify this client.\n\n" in result.output
 

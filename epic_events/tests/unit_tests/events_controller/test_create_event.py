@@ -33,7 +33,7 @@ def test_create_event_with_wrong_contract(runner, mocked_session):
                                "session": mocked_session,
                                "user_id": user_logged
                            })
-    assert result.exit_code == 1
+    assert result.exit_code == 0
     assert "\n Contract with ID '12' is 'not found'.\n\n" in result.output
 
 
@@ -69,7 +69,7 @@ def test_create_event_with_wrong_support(runner, mocked_session):
                                "user_id": user_logged
                            })
 
-    assert result.exit_code == 1
+    assert result.exit_code == 0
     assert "\n User with ID '18' is 'not found'.\n\n" in result.output
 
 

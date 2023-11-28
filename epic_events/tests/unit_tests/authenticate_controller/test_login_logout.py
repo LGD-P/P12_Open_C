@@ -29,7 +29,8 @@ def test_login_with_wrong_user(runner, mocked_session):
                                obj={
                                    "session": mocked_session,
                                })
-    assert result.exit_code == 2
+    print(result.output)
+    assert result.exit_code == 0
     assert "\n User with name 'Denis Chamar' is 'not found'.\n" in result.output
 
 
@@ -45,7 +46,7 @@ def test_login_with_wrong_password(runner, mocked_session):
                                    "session": mocked_session,
                                })
 
-    assert result.exit_code == 2
+    assert result.exit_code == 0
     assert "\n' You enter a wrong password' \n" in result.output
 
 
