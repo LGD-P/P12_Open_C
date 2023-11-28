@@ -1,4 +1,3 @@
-import uuid
 from epic_events.models.client import Client
 from epic_events.models.user import User
 from epic_events.models.contract import Contract
@@ -10,8 +9,10 @@ from epic_events.views.contracts_views import (contracts_table, created_succes,
                                                modification_done, not_in_charge_of_this_client_contract)
 
 import rich_click as click
-
 from sqlalchemy import select
+import uuid
+import click
+import sentry_sdk
 
 
 @click.group()
@@ -35,8 +36,9 @@ def list_contract(ctx, id, signed, is_not_signed):
         if id:
             selected_contract = session.scalar(
                 select(Contract).where(Contract.id == id))
+
             if selected_contract is None:
-                contract_not_found(id)
+                raise click.UsageError(contract_not_found(id))
             else:
                 contracts_table([selected_contract])
         if is_not_signed:
@@ -52,9 +54,13 @@ def list_contract(ctx, id, signed, is_not_signed):
 
             contracts_table(contract_list)
             logged_as(user_logged.name, user_logged.role.name)
+
     except KeyError:
-        invalid_token()
-        pass
+        message = invalid_token()
+        sentry_sdk.capture_exception(message)
+
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
 
 
 @contract.command()
@@ -85,8 +91,11 @@ def create_contract(ctx, client, management, total, remain, status):
         created_succes(new_contract)
 
     except KeyError:
-        invalid_token()
-        pass
+        message = invalid_token()
+        sentry_sdk.capture_exception(message)
+
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
 
 
 @contract.command()
@@ -136,11 +145,14 @@ def modify_contract(ctx, id, client, management, total, remain, status):
             session.commit()
             modification_done(contract_to_modify)
         else:
-            contract_not_found(id)
+            raise click.UsageError(contract_not_found(id))
 
     except KeyError:
-        invalid_token()
-        pass
+        message = invalid_token()
+        sentry_sdk.capture_exception(message)
+
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
 
 
 @contract.command()
@@ -162,8 +174,11 @@ def delete_contract(ctx, id):
             deleted_success(id, contract_to_delete)
 
         else:
-            contract_not_found(id)
+            raise click.UsageError(contract_not_found(id))
 
     except KeyError:
-        invalid_token()
-        pass
+        message = invalid_token()
+        sentry_sdk.capture_exception(message)
+
+    except Exception as e:
+        sentry_sdk.capture_exception(e)

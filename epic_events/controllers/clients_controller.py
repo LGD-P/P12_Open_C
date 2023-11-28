@@ -6,12 +6,12 @@ from epic_events.views.clients_views import (clients_table, created_succes,
                                              deleted_success, client_not_found,
                                              modification_done, not_in_charge_of_this_client
                                              )
-
 from epic_events.utils import find_user_type
 
 from datetime import datetime
 import rich_click as click
 from sqlalchemy import select
+import sentry_sdk
 
 
 @click.group()
@@ -34,7 +34,7 @@ def list_client(ctx, id):
         if id:
             client = session.scalar(select(Client).where(Client.id == id))
             if client is None:
-                client_not_found(id)
+                raise click.UsageError(client_not_found(id))
             else:
                 clients_table([client])
         else:
@@ -44,8 +44,11 @@ def list_client(ctx, id):
             logged_as(user_logged.name, user_logged.role.name)
 
     except KeyError:
-        invalid_token()
-        pass
+        message = invalid_token()
+        sentry_sdk.capture_exception(message)
+
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
 
 
 @client.command()
@@ -84,8 +87,11 @@ def create_client(ctx, name, email, phone, company, comid):
         created_succes(new_client)
 
     except KeyError:
-        invalid_token()
-        pass
+        message = invalid_token()
+        sentry_sdk.capture_exception(message)
+
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
 
 
 @client.command()
@@ -135,10 +141,14 @@ def modify_client(ctx, id, name, email, phone, company, comid):
             session.commit()
             modification_done(client_to_modify)
         else:
-            client_not_found(id)
+            raise click.UsageError(client_not_found(id))
+
     except KeyError:
-        invalid_token()
-        pass
+        message = invalid_token()
+        sentry_sdk.capture_exception(message)
+
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
 
 
 @client.command()
@@ -161,8 +171,11 @@ def delete_client(ctx, id):
             deleted_success(id, client_to_delete)
 
         else:
-            client_not_found(id)
+            raise click.UsageError(client_not_found(id))
 
     except KeyError:
-        invalid_token()
-        pass
+        message = invalid_token()
+        sentry_sdk.capture_exception(message)
+
+    except Exception as e:
+        sentry_sdk.capture_exception(e)

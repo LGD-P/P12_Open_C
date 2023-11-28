@@ -13,7 +13,7 @@ from epic_events.views.contracts_views import contract_not_signed
 from datetime import datetime
 import rich_click as click
 from sqlalchemy import select
-
+import sentry_sdk
 
 @click.group()
 @click.pass_context
@@ -37,12 +37,12 @@ def list_event(ctx, id, no_support, team_support):
         if id:
             event = session.scalar(select(Event).where(Event.id == id))
             if event is None:
-                event_not_found(id)
+                raise click.UsageError(event_not_found(id))
             else:
                 events_table([event])
         if no_support:
             event = session.scalars(select(Event).where(Event.support_contact_id.is_(None))).all()
-            return events_table(event)
+            raise click.UsageError(events_table(event))
 
         if team_support:
             event = session.scalars(select(Event).where(Event.support_contact_id == user_logged.id)).all()
@@ -56,7 +56,11 @@ def list_event(ctx, id, no_support, team_support):
             logged_as(user_logged.name, user_logged.role.name)
 
     except KeyError:
-        invalid_token()
+        message = invalid_token()
+        sentry_sdk.capture_exception(message)
+
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
 
 
 @event.command()
@@ -82,20 +86,22 @@ def create_event(ctx, name, contract, support, starting, ending, location, atten
         try:
             starting = datetime.strptime(starting, '%Y-%m-%d - %H:%M')
         except ValueError:
-            return date_param()
+            sentry_sdk.capture_exception(date_param())
 
         try:
             ending = datetime.strptime(ending, '%Y-%m-%d - %H:%M')
         except ValueError:
-            return date_param()
+            sentry_sdk.capture_exception(date_param())
 
-        if ending < starting:
-            return end_date_error()
+        try:
+            ending < starting
+        except ValueError:
+            sentry_sdk.capture_exception(date_param())
 
         contract_found = find_client_or_contract(ctx, Contract, contract)
         contract = session.scalar(select(Contract).where(Contract.id == contract_found))
         if contract.status is not True:
-            return contract_not_signed(contract.id)
+            raise click.UsageError(contract_not_signed(contract.id))
 
         support_found = find_user_type(ctx, support, 'support')
 
@@ -109,7 +115,11 @@ def create_event(ctx, name, contract, support, starting, ending, location, atten
         created_succes(new_event)
 
     except KeyError:
-        invalid_token()
+        message = invalid_token()
+        sentry_sdk.capture_exception(message)
+
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
 
 
 @event.command()
@@ -179,10 +189,14 @@ def modify_event(ctx, id, name, contract, support, starting, ending,
             session.commit()
             modification_done(event_to_modify)
         else:
-            event_not_found(id)
+            raise click.UsageError(event_not_found(id))
 
     except KeyError:
-        invalid_token()
+        message = invalid_token()
+        sentry_sdk.capture_exception(message)
+
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
 
 
 @event.command()
@@ -203,7 +217,11 @@ def delete_event(ctx, id):
             deleted_success(id, event_to_delete)
 
         else:
-            event_not_found(id)
+            raise click.UsageError(event_not_found(id))
 
     except KeyError:
-        invalid_token()
+        message = invalid_token()
+        sentry_sdk.capture_exception(message)
+
+    except Exception as e:
+        sentry_sdk.capture_exception(e)

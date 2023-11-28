@@ -11,6 +11,7 @@ from epic_events.views.users_view import (invalid_token, logged_as,
 import rich_click as click
 from sqlalchemy import select
 import re
+import sentry_sdk
 
 
 @click.group()
@@ -77,7 +78,7 @@ def list_user(ctx, id):
             user = session.scalar(select(User).where(User.id == id))
 
             if user is None:
-                user_not_found(id)
+                raise click.UsageError(user_not_found(id))
             else:
                 users_table([user])
         else:
@@ -88,8 +89,11 @@ def list_user(ctx, id):
             logged_as(user_logged.name, user_logged.role.name)
 
     except KeyError:
-        invalid_token()
-        pass
+        message = invalid_token()
+        sentry_sdk.capture_exception(message)
+
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
 
 
 @user.command()
@@ -127,8 +131,13 @@ def create_user(ctx, name, email, role, password):
         session.commit()
 
         created_succes(new_user)
+
     except KeyError:
-        invalid_token()
+        message = invalid_token()
+        sentry_sdk.capture_exception(message)
+
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
 
 
 @user.command()
@@ -169,9 +178,14 @@ def modify_user(ctx, id, name, email, role, password):
             session.commit()
             modification_done(user_to_modify)
         else:
-            user_not_found(id)
+            raise click.UsageError(user_not_found(id))
+
     except KeyError:
-        invalid_token()
+        message = invalid_token()
+        sentry_sdk.capture_exception(message)
+
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
 
 
 @user.command()
@@ -192,7 +206,11 @@ def delete_user(ctx, id):
             deleted_success(id, user_to_delete)
 
         else:
-            user_not_found(id)
+            raise click.UsageError(user_not_found(id))
 
     except KeyError:
-        invalid_token()
+        message = invalid_token()
+        sentry_sdk.capture_exception(message)
+
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
