@@ -10,13 +10,14 @@ def test_classic_commercial_path(runner, mocked_session):
     commercial = mocked_session.scalar(
         select(User).where(User.name == 'Jules Evrard'))
 
-    with patch('epic_events.controllers.click_app.create_database', return_value=mocked_session):
+    with patch('epic_events.controllers.click_app.create_database', return_value=mocked_session) as mock_db:
         with patch(
                 "epic_events.controllers.authenticate_controller.User.confirm_pass",
                 return_value=True):
             result = runner.invoke(app, ['authenticate', 'login', '-n', commercial.name],
                                    obj={"session": mocked_session})
 
+            mock_db.assert_called_once()
             assert result.exit_code == 0
             assert "\n Welcome 'Jules Evrard' you're logged.\n\n" in result.output
 
