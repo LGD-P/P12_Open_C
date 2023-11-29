@@ -6,13 +6,14 @@ from epic_events.utils import has_permission
 from epic_events.views.users_view import logged_as, invalid_token
 from epic_events.views.contracts_views import (contracts_table, created_succes,
                                                deleted_success, contract_not_found,
-                                               modification_done, not_in_charge_of_this_client_contract)
+                                               modification_done, not_in_charge_of_this_client_contract,
+                                               sentry_contract_created_and_signed, sentry_contract_status_signed)
 
 import rich_click as click
 from sqlalchemy import select
 import uuid
-import click
 import sentry_sdk
+from sentry_sdk import capture_message
 
 
 @click.group()
@@ -74,9 +75,9 @@ def list_contract(ctx, id, signed, is_not_signed):
 def create_contract(ctx, client, management, total, remain, status):
     session = ctx.obj['session']
     try:
-        session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
+        user_logged = session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
 
-        status = True if status == 'true' else False
+        status = True if status.lower() == 'true' else False
 
         client_found = find_client_or_contract(ctx, Client, client)
 
@@ -89,6 +90,12 @@ def create_contract(ctx, client, management, total, remain, status):
         session.add(new_contract)
         session.commit()
         created_succes(new_contract)
+        if new_contract.status is True:
+            sentry_sdk.set_context("create_contract", {
+                "contract": new_contract,
+                "created_by": user_logged})
+
+            capture_message(sentry_contract_created_and_signed(user_logged, new_contract))
 
     except KeyError:
         message = invalid_token()
@@ -141,9 +148,16 @@ def modify_contract(ctx, id, client, management, total, remain, status):
             if status is not None:
                 status = True if status == 'true' else False
                 contract_to_modify.status = status
+                if status is True:
+                    sentry_sdk.set_context("create_contract", {
+                        "contract": contract_to_modify,
+                        "created_by": user_logged})
+
+                    capture_message(sentry_contract_status_signed(user_logged, contract_to_modify))
 
             session.commit()
             modification_done(contract_to_modify)
+
         else:
             raise click.UsageError(contract_not_found(id))
 

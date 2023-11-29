@@ -15,6 +15,7 @@ import rich_click as click
 from sqlalchemy import select
 import sentry_sdk
 
+
 @click.group()
 @click.pass_context
 def event(ctx):
@@ -96,7 +97,7 @@ def create_event(ctx, name, contract, support, starting, ending, location, atten
         try:
             ending < starting
         except ValueError:
-            sentry_sdk.capture_exception(date_param())
+            sentry_sdk.capture_exception(end_date_error())
 
         contract_found = find_client_or_contract(ctx, Contract, contract)
         contract = session.scalar(select(Contract).where(Contract.id == contract_found))

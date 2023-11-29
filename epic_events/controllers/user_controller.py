@@ -6,12 +6,13 @@ from epic_events.views.users_view import (invalid_token, logged_as,
                                           deleted_success, user_not_found,
                                           modification_done, wrong_pass,
                                           new_pass, invalid_pass,
-                                          invalid_email)
+                                          invalid_email, sentry_user_modification_message, sentry_user_created_message)
 
 import rich_click as click
 from sqlalchemy import select
 import re
 import sentry_sdk
+from sentry_sdk import capture_message
 
 
 @click.group()
@@ -113,7 +114,7 @@ def list_user(ctx, id):
 def create_user(ctx, name, email, role, password):
     session = ctx.obj['session']
     try:
-        session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
+        user_logged = session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
 
         role_to_fill = session.scalars(
             select(Role).where(Role.name == role)).one()
@@ -129,6 +130,11 @@ def create_user(ctx, name, email, role, password):
         role_to_fill.users.append(new_user)
         session.add(role_to_fill)
         session.commit()
+
+        sentry_sdk.set_context("create_user", {
+            "user_created": new_user,
+            "modification_done_by": user_logged})
+        capture_message(sentry_user_created_message(user_logged, new_user))
 
         created_succes(new_user)
 
@@ -153,7 +159,7 @@ def create_user(ctx, name, email, role, password):
 def modify_user(ctx, id, name, email, role, password):
     session = ctx.obj['session']
     try:
-        session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
+        user_logged = session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
 
         user_to_modify = session.scalar(select(User).where(User.id == id))
         if user_to_modify:
@@ -176,7 +182,14 @@ def modify_user(ctx, id, name, email, role, password):
                 user_to_modify.password = new_password
 
             session.commit()
+
             modification_done(user_to_modify)
+
+            sentry_sdk.set_context("modify_user", {
+                "modified_user": user_to_modify,
+                "modification_done_by": user_logged})
+
+            capture_message(sentry_user_modification_message(user_logged, user_to_modify))
         else:
             raise click.UsageError(user_not_found(id))
 
