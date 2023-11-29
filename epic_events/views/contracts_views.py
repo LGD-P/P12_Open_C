@@ -105,3 +105,13 @@ def not_in_charge_of_this_client_contract(id):
         f"\n[blue] As commercial you are '[bold red]not in charge[/bold red]' "
         f"of Client : ID '[bold red]{id}[/bold red]'. You're '[bold red]not allowed[/bold red]' "
         "to modify this Contract.\n")
+
+
+def sentry_contract_created_and_signed(user_logged, new_contract):
+    return (f"New Contract {new_contract.uuid} ID N°{new_contract.id} has been created by {user_logged.name}."
+            " Contract is signed")
+
+
+def sentry_contract_status_signed(user_logged, new_contract):
+    return (f"Contract {new_contract.uuid} ID N°{new_contract.id} has been signed"
+            f" Modification done by {user_logged.name}.")

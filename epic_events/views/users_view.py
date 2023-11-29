@@ -163,3 +163,11 @@ def not_authorized():
     Console().print(
         "\n[bold green]'[bold red] You're not allowed to use this command"
         "[/bold red]'\n")
+
+
+def sentry_user_created_message(user_logged, new_user):
+    return f"New User {new_user.name} ID N°{new_user.id} has been created by {user_logged.name}"
+
+
+def sentry_user_modification_message(user_logged, user_modified):
+    return f"User {user_modified.name} ID N°{user_modified.id} has been modified by {user_logged.name}"
