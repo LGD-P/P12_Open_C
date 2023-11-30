@@ -27,7 +27,7 @@ def test_delete_user_wrong_id(runner, mocked_session):
                            })
 
     assert "\n User with ID '9' is 'not found'.\n\n" in result.output
-    assert result.exit_code == 0
+    assert result.exit_code == 1
 
 
 def test_delete_user_without_permission(runner, mocked_session):
@@ -49,5 +49,5 @@ def test_delete_user_without_authentication(runner, mocked_session):
                                "session": mocked_session,
                            })
 
-    assert result.exit_code == 0
+    assert result.exit_code == 1
     assert "\n' Invalid Token  please logged in again' \n\n" in result.output

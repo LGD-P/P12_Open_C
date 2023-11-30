@@ -71,30 +71,24 @@ def change_password(user_to_modify, ctx):
 def list_user(ctx, id):
     session = ctx.obj['session']
 
-    try:
-        user_logged = session.scalar(
-            select(User).where(User.id == ctx.obj['user_id'].id))
+    user_logged = ctx.obj.get("user_id")
 
-        if id:
-            user = session.scalar(select(User).where(User.id == id))
+    if user_logged is None:
+        raise Exception(invalid_token())
 
-            if user is None:
-                raise click.UsageError(user_not_found(id))
-            else:
-                users_table([user])
+    if id:
+        user = session.scalar(select(User).where(User.id == id))
+
+        if user is None:
+            raise click.UsageError(user_not_found(id))
         else:
-            users_list = session.scalars(
-                select(User).order_by(User.id)).all()
+            users_table([user])
+    else:
+        users_list = session.scalars(
+            select(User).order_by(User.id)).all()
 
-            users_table(users_list)
-            logged_as(user_logged.name, user_logged.role.name)
-
-    except KeyError:
-        message = invalid_token()
-        sentry_sdk.capture_exception(message)
-
-    except Exception as e:
-        sentry_sdk.capture_exception(e)
+        users_table(users_list)
+        logged_as(user_logged.name, user_logged.role.name)
 
 
 @user.command()
@@ -113,37 +107,33 @@ def list_user(ctx, id):
 @has_permission(['management'])
 def create_user(ctx, name, email, role, password):
     session = ctx.obj['session']
-    try:
-        user_logged = session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
 
-        role_to_fill = session.scalars(
-            select(Role).where(Role.name == role)).one()
+    user_logged = ctx.obj.get("user_id")
 
-        hashed_password = User().hash_pass(password)
+    if user_logged is None:
+        raise Exception(invalid_token())
 
-        new_user = User(name=name, email=email,
-                        role=role_to_fill, password=hashed_password)
+    role_to_fill = session.scalars(
+        select(Role).where(Role.name == role)).one()
 
-        session.add(new_user)
-        session.commit()
+    hashed_password = User().hash_pass(password)
 
-        role_to_fill.users.append(new_user)
-        session.add(role_to_fill)
-        session.commit()
+    new_user = User(name=name, email=email,
+                    role=role_to_fill, password=hashed_password)
 
-        sentry_sdk.set_context("create_user", {
-            "user_created": new_user,
-            "modification_done_by": user_logged})
-        capture_message(sentry_user_created_message(user_logged, new_user))
+    session.add(new_user)
+    session.commit()
 
-        created_succes(new_user)
+    role_to_fill.users.append(new_user)
+    session.add(role_to_fill)
+    session.commit()
 
-    except KeyError:
-        message = invalid_token()
-        sentry_sdk.capture_exception(message)
+    sentry_sdk.set_context("create_user", {
+        "user_created": new_user,
+        "modification_done_by": user_logged})
+    capture_message(sentry_user_created_message(user_logged, new_user))
 
-    except Exception as e:
-        sentry_sdk.capture_exception(e)
+    created_succes(new_user)
 
 
 @user.command()
@@ -158,47 +148,46 @@ def create_user(ctx, name, email, role, password):
 @has_permission(['management'])
 def modify_user(ctx, id, name, email, role, password):
     session = ctx.obj['session']
-    try:
-        user_logged = session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
 
-        user_to_modify = session.scalar(select(User).where(User.id == id))
-        if user_to_modify:
+    user_logged = ctx.obj.get("user_id")
 
-            if name is not None:
-                user_to_modify.name = name
+    if user_logged is None:
+        raise Exception(invalid_token())
 
-            if email is not None:
-                email = email_is_valid(ctx, None, email)
-                user_to_modify.email = email
+    user_to_modify = session.scalar(select(User).where(User.id == id))
 
-            if role is not None:
-                role = Role().role_is_valid(ctx, role)
-                role_to_give = session.scalar(select(Role).where(
-                    Role.name == role))
-                user_to_modify.role_id = role_to_give.id
+    if user_to_modify is  None:
+        raise Exception(click.UsageError(user_not_found(id)))
 
-            if password is not None:
-                new_password = change_password(user_to_modify, ctx)
-                user_to_modify.password = new_password
+    if user_to_modify:
 
-            session.commit()
+        if name is not None:
+            user_to_modify.name = name
 
-            modification_done(user_to_modify)
+        if email is not None:
+            email = email_is_valid(ctx, None, email)
+            user_to_modify.email = email
 
-            sentry_sdk.set_context("modify_user", {
-                "modified_user": user_to_modify,
-                "modification_done_by": user_logged})
+        if role is not None:
+            role = Role().role_is_valid(ctx, role)
+            role_to_give = session.scalar(select(Role).where(
+                Role.name == role))
+            user_to_modify.role_id = role_to_give.id
 
-            capture_message(sentry_user_modification_message(user_logged, user_to_modify))
-        else:
-            raise click.UsageError(user_not_found(id))
+        if password is not None:
+            new_password = change_password(user_to_modify, ctx)
+            user_to_modify.password = new_password
 
-    except KeyError:
-        message = invalid_token()
-        sentry_sdk.capture_exception(message)
+        session.commit()
 
-    except Exception as e:
-        sentry_sdk.capture_exception(e)
+        modification_done(user_to_modify)
+
+        sentry_sdk.set_context("modify_user", {
+            "modified_user": user_to_modify,
+            "modification_done_by": user_logged})
+
+        capture_message(sentry_user_modification_message(user_logged, user_to_modify))
+
 
 
 @user.command()
@@ -208,22 +197,20 @@ def modify_user(ctx, id, name, email, role, password):
 @has_permission(['management'])
 def delete_user(ctx, id):
     session = ctx.obj['session']
-    try:
-        session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
 
-        user_to_delete = session.scalar(select(User).where(User.id == id))
+    user_logged = ctx.obj.get("user_id")
 
-        if user_to_delete:
-            session.delete(user_to_delete)
-            session.commit()
-            deleted_success(id, user_to_delete)
+    if user_logged is None:
+        raise Exception(invalid_token())
 
-        else:
-            raise click.UsageError(user_not_found(id))
+    user_to_delete = session.scalar(select(User).where(User.id == id))
 
-    except KeyError:
-        message = invalid_token()
-        sentry_sdk.capture_exception(message)
+    if user_to_delete:
+        session.delete(user_to_delete)
+        session.commit()
+        deleted_success(id, user_to_delete)
 
-    except Exception as e:
-        sentry_sdk.capture_exception(e)
+    else:
+        raise click.UsageError(user_not_found(id))
+
+

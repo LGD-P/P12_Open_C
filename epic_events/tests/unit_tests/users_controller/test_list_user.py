@@ -28,7 +28,7 @@ def test_list_user_not_allowed(runner, mocked_session):
                                "session": mocked_session,
                                "user_id": user_logged
                            })
-    print(result.output)
+
     assert result.exit_code == 0
     assert "\n' You're not allowed to use this command'\n" in result.output
 
@@ -58,7 +58,7 @@ def test_list_user_not_found(runner, mocked_session):
                                "user_id": user_logged
                            })
 
-    assert result.exit_code == 0
+    assert result.exit_code == 1
     assert "\n User with ID '12' is 'not found'.\n" in result.output
 
 
@@ -70,5 +70,5 @@ def test_list_user_invalid_token(runner, mocked_session):
                                "session": mocked_session,
                            })
 
-    assert result.exit_code == 0
+    assert result.exit_code == 1
     assert "\n' Invalid Token  please logged in again' \n" in result.output

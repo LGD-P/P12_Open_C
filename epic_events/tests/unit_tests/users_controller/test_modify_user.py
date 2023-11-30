@@ -13,6 +13,7 @@ def test_modify_user_name(runner, mocked_session):
                                "session": mocked_session,
                                "user_id": user_logged
                            })
+
     assert "\n 'KEVIN MARLEY' successfully modified.\n\n" in result.output
     assert result.exit_code == 0
 
@@ -96,7 +97,7 @@ def test_modify_user_name_without_authentication(runner, mocked_session):
                                "session": mocked_session,
                            })
 
-    assert result.exit_code == 0
+    assert result.exit_code == 1
     assert "\n' Invalid Token  please logged in again' \n\n" in result.output
 
 

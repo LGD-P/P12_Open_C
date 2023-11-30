@@ -56,6 +56,11 @@ def username_not_found(name):
         f"\n[blue] User with name '[bold red]{name}[/bold red]' is "
         "'[bold red]not found[/bold red]'.\n")
 
+def user_email_not_found(email):
+    Console().print(
+        f"\n[blue] User with email '[bold red]{email}[/bold red]' is "
+        "'[bold red]not found[/bold red]'.\n")
+
 
 def login_success(name):
     message = f"\n[blue] Welcome '[bold green]{name}[/bold green]' you're logged.\n"
@@ -136,7 +141,7 @@ def wrong_confirm_pass():
 
 
 def invalid_token():
-    Console().print(
+    return Console().print(
         "\n[bold green]'[bold red] Invalid Token [/bold red] please logged in "
         "again' \n")
 
