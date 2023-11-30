@@ -32,36 +32,32 @@ def contract(ctx):
 @has_permission(['management', 'commercial'])
 def list_contract(ctx, id, signed, is_not_signed):
     session = ctx.obj['session']
-    try:
-        user_logged = session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
-        if id:
-            selected_contract = session.scalar(
-                select(Contract).where(Contract.id == id))
+    user_logged = ctx.obj.get("user_id")
 
-            if selected_contract is None:
-                raise click.UsageError(contract_not_found(id))
-            else:
-                contracts_table([selected_contract])
-        if is_not_signed:
-            contract_list = session.scalars(select(Contract).where(Contract.status.is_(None))).all()
-            contracts_table(contract_list)
+    if user_logged is None:
+        raise Exception(invalid_token())
 
-        if signed:
-            contract_list = session.scalars(select(Contract).where(Contract.status)).all()
-            contracts_table(contract_list)
+    if id:
+        selected_contract = session.scalar(
+            select(Contract).where(Contract.id == id))
+
+        if selected_contract is None:
+            raise click.UsageError(contract_not_found(id))
         else:
-            contract_list = session.scalars(
-                select(Contract).order_by(Contract.id)).all()
+            contracts_table([selected_contract])
+    if is_not_signed:
+        contract_list = session.scalars(select(Contract).where(Contract.status.is_(None))).all()
+        contracts_table(contract_list)
 
-            contracts_table(contract_list)
-            logged_as(user_logged.name, user_logged.role.name)
+    if signed:
+        contract_list = session.scalars(select(Contract).where(Contract.status)).all()
+        contracts_table(contract_list)
+    else:
+        contract_list = session.scalars(
+            select(Contract).order_by(Contract.id)).all()
 
-    except KeyError:
-        message = invalid_token()
-        sentry_sdk.capture_exception(message)
-
-    except Exception as e:
-        sentry_sdk.capture_exception(e)
+        contracts_table(contract_list)
+        logged_as(user_logged.name, user_logged.role.name)
 
 
 @contract.command()
@@ -74,36 +70,31 @@ def list_contract(ctx, id, signed, is_not_signed):
 @has_permission(['management'])
 def create_contract(ctx, client, management, total, remain, status):
     session = ctx.obj['session']
-    try:
-        user_logged = session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
 
-        status = True if status.lower() == 'true' else False
+    user_logged = ctx.obj.get("user_id")
 
-        client_found = find_client_or_contract(ctx, Client, client)
+    if user_logged is None:
+        raise Exception(invalid_token())
 
-        commercial_found = find_user_type(ctx, management, 'management')
+    status = True if status.lower() == 'true' else False
 
-        new_contract = Contract(client_id=client_found, uuid=str(uuid.uuid4()), management_contact_id=commercial_found,
-                                total_amount=total, remaining_amount=remain,
-                                status=status)
+    client_found = find_client_or_contract(ctx, Client, client)
 
-        session.add(new_contract)
-        session.commit()
-        created_succes(new_contract)
-        if new_contract.status is True:
-            sentry_sdk.set_context("create_contract", {
-                "contract": new_contract,
-                "created_by": user_logged})
+    commercial_found = find_user_type(ctx, management, 'management')
 
-            capture_message(sentry_contract_created_and_signed(user_logged, new_contract))
+    new_contract = Contract(client_id=client_found, uuid=str(uuid.uuid4()), management_contact_id=commercial_found,
+                            total_amount=total, remaining_amount=remain,
+                            status=status)
 
-    except KeyError:
-        message = invalid_token()
-        sentry_sdk.capture_exception(message)
+    session.add(new_contract)
+    session.commit()
+    created_succes(new_contract)
+    if new_contract.status is True:
+        sentry_sdk.set_context("create_contract", {
+            "contract": new_contract,
+            "created_by": user_logged})
 
-    except Exception as e:
-        sentry_sdk.capture_exception(e)
-
+        capture_message(sentry_contract_created_and_signed(user_logged, new_contract))
 
 @contract.command()
 @click.option('--id', '-i', help='Contract ID')
@@ -117,56 +108,50 @@ def create_contract(ctx, client, management, total, remain, status):
 def modify_contract(ctx, id, client, management, total, remain, status):
     session = ctx.obj['session']
 
-    try:
-        user_logged = session.scalar(
-            select(User).where(User.id == ctx.obj['user_id'].id))
+    user_logged = ctx.obj.get("user_id")
 
-        contract_to_modify = session.scalar(
-            select(Contract).where(Contract.id == id))
+    if user_logged is None:
+        raise Exception(invalid_token())
 
-        if contract_to_modify:
-            if user_logged.role.name == "commercial":
-                if contract_to_modify.total_amount == user_logged.id:
-                    pass
-                else:
-                    raise ValueError(not_in_charge_of_this_client_contract(contract_to_modify.client_id))
+    contract_to_modify = session.scalar(
+        select(Contract).where(Contract.id == id))
 
-            if client is not None:
-                client_found = find_client_or_contract(ctx, Client, client)
-                contract_to_modify.client_id = client_found
+    if contract_to_modify:
+        if user_logged.role.name == "commercial":
+            if contract_to_modify.total_amount == user_logged.id:
+                pass
+            else:
+                raise ValueError(not_in_charge_of_this_client_contract(contract_to_modify.client_id))
 
-            if management is not None:
-                commercial_found = find_user_type(ctx, management, 'management')
-                contract_to_modify.management_contact_id = commercial_found
+        if client is not None:
+            client_found = find_client_or_contract(ctx, Client, client)
+            contract_to_modify.client_id = client_found
 
-            if total is not None:
-                contract_to_modify.total_amount = total
+        if management is not None:
+            commercial_found = find_user_type(ctx, management, 'management')
+            contract_to_modify.management_contact_id = commercial_found
 
-            if remain is not None:
-                contract_to_modify.remaining_amount = remain
+        if total is not None:
+            contract_to_modify.total_amount = total
 
-            if status is not None:
-                status = True if status == 'true' else False
-                contract_to_modify.status = status
-                if status is True:
-                    sentry_sdk.set_context("create_contract", {
-                        "contract": contract_to_modify,
-                        "created_by": user_logged})
+        if remain is not None:
+            contract_to_modify.remaining_amount = remain
 
-                    capture_message(sentry_contract_status_signed(user_logged, contract_to_modify))
+        if status is not None:
+            status = True if status == 'true' else False
+            contract_to_modify.status = status
+            if status is True:
+                sentry_sdk.set_context("create_contract", {
+                    "contract": contract_to_modify,
+                    "created_by": user_logged})
 
-            session.commit()
-            modification_done(contract_to_modify)
+                capture_message(sentry_contract_status_signed(user_logged, contract_to_modify))
 
-        else:
-            raise click.UsageError(contract_not_found(id))
+        session.commit()
+        modification_done(contract_to_modify)
 
-    except KeyError:
-        message = invalid_token()
-        sentry_sdk.capture_exception(message)
-
-    except Exception as e:
-        sentry_sdk.capture_exception(e)
+    else:
+        raise click.UsageError(contract_not_found(id))
 
 
 @contract.command()
@@ -176,23 +161,21 @@ def modify_contract(ctx, id, client, management, total, remain, status):
 @has_permission(['management', 'commercial'])
 def delete_contract(ctx, id):
     session = ctx.obj['session']
-    try:
-        session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
 
-        contract_to_delete = session.scalar(
-            select(Contract).where(Contract.id == id))
+    user_logged = ctx.obj.get("user_id")
 
-        if contract_to_delete:
-            session.delete(contract_to_delete)
-            session.commit()
-            deleted_success(id, contract_to_delete)
+    if user_logged is None:
+        raise Exception(invalid_token())
 
-        else:
-            raise click.UsageError(contract_not_found(id))
+    session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
 
-    except KeyError:
-        message = invalid_token()
-        sentry_sdk.capture_exception(message)
+    contract_to_delete = session.scalar(
+        select(Contract).where(Contract.id == id))
 
-    except Exception as e:
-        sentry_sdk.capture_exception(e)
+    if contract_to_delete:
+        session.delete(contract_to_delete)
+        session.commit()
+        deleted_success(id, contract_to_delete)
+
+    else:
+        raise click.UsageError(contract_not_found(id))

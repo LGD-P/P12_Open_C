@@ -32,7 +32,7 @@ def test_modify_contract_client_with_wrong_commercial(runner, mocked_session):
         })
 
     assert "\n User with ID '12' is 'not found'.\n\n"
-    assert result.exit_code == 0
+    assert result.exit_code == 1
 
 
 def test_modify_contract_total_amount(runner, mocked_session):
@@ -96,7 +96,7 @@ def test_modify_contract_client_without_authentication(runner, mocked_session):
             "session": mocked_session,
 
         })
-    assert result.exit_code == 0
+    assert result.exit_code == 1
     assert "\n' Invalid Token  please logged in again' \n" in result.output
 
 
@@ -125,4 +125,4 @@ def test_commercial_modify_contract_but_not_charge_of_client(runner, mocked_sess
 
     assert "\n' YAs commercial you are 'not in charge' of Client : ID '1'. You're 'not allowed' "
     "to modify this Contract.\n\n" in result.output
-    assert result.exit_code == 0
+    assert result.exit_code == 1

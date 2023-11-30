@@ -88,14 +88,13 @@ def test_classic_managerial_path(runner, mocked_session):
                                        "user_id": manager
                                    })
             # Event N°2 as no support
-            assert result.exit_code == 0
             assert '│ 2  │ Noël-… │   2    │  None  │ 12-01… │ 13-01-… │ avenue │   204   │' in result.output
             # Event N°3 with support is not in résult.output
             assert '│ 3  │ Adrie… │   1    │   4    │ 24-12… │ 02-12-… │  62,   │   117   │  Main ' \
                    not in result.output
             event_choose = mocked_session.scalar(select(Event).where(Event.id == 2))
             assert event_choose.support_contact_id is None
-            assert result.exit_code == 0
+            assert result.exit_code == 1
 
             # Manager assign support to Event N°2
             result = runner.invoke(app, ["event", "modify-event", "-i", "2", "-su", "4"],

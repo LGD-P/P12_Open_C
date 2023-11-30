@@ -30,8 +30,7 @@ def test_create_contract_with_wrong_client_id(runner, mocked_session):
             "user_id": user_logged
         })
 
-    print(result.output)
-    assert result.exit_code == 0
+    assert result.exit_code == 1
     assert "\n Client with ID '12' is 'not found'.\n\n" in result.output
 
 
@@ -39,12 +38,14 @@ def test_create_contract_without_authentication(runner, mocked_session):
     result = runner.invoke(
         create_contract,
         ["-c", "2", "-m", "3", "-ta", "2000", "-r", "1000", "-s", "true"],
+        catch_exceptions=KeyError,
         obj={
             "session": mocked_session,
         })
 
+    print(result.output)
     assert "\n' Invalid Token  please logged in again' \n\n" in result.output
-    assert result.exit_code == 0
+    assert result.exit_code == 1
 
 
 def test_create_contract_without_permission(runner, mocked_session):
