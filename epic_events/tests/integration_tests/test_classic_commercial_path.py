@@ -14,8 +14,7 @@ def test_classic_commercial_path(runner, mocked_session):
         with patch(
                 "epic_events.controllers.authenticate_controller.User.confirm_pass",
                 return_value=True):
-            result = runner.invoke(app, ['authenticate', 'login', '-n', commercial.name],
-                                   obj={"session": mocked_session})
+            result = runner.invoke(app, ['authenticate', 'login', '-e', commercial.email])
 
             mock_db.assert_called_once()
             assert result.exit_code == 0

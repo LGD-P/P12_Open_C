@@ -1,6 +1,6 @@
 from epic_events.models.user import User
 from epic_events.views.users_view import (
-    wrong_pass, username_not_found, login_success, logout_success, invalid_token)
+    wrong_pass, login_success, logout_success, invalid_token, user_email_not_found)
 from epic_events.utils import (
     generate_token, write_token_in_temp)
 
@@ -18,15 +18,16 @@ def authenticate(ctx):
 
 
 @authenticate.command()
-@click.option('--name', '-n', help='Id of the user you want to delete',
+@click.option('--email', '-e', help='Email of user that you want to login ',
               required=True)
 @click.option('--password', '-P',
               help='Password of the user you want to login', nargs=0)
 @click.pass_context
-def login(ctx, name, password):
+def login(ctx, email, password):
+    """User -e to enter your email, password will be asked automatically"""
     session = ctx.obj['session']
     try:
-        user = session.scalar(select(User).where(User.name == name))
+        user = session.scalar(select(User).where(User.email == email))
         if user:
             checking = User().confirm_pass(user.password)
 
@@ -40,7 +41,7 @@ def login(ctx, name, password):
                 write_token_in_temp(token)
 
         else:
-            username_not_found(name)
+            user_email_not_found(email)
             raise click.UsageError("User not found.")
 
     except Exception as e:
@@ -50,6 +51,7 @@ def login(ctx, name, password):
 @authenticate.command()
 @click.pass_context
 def logout(ctx):
+    """You juste have to you 'logout'"""
     session = ctx.obj['session']
     try:
         session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
@@ -67,6 +69,3 @@ def logout(ctx):
     except KeyError:
         message = invalid_token()
         sentry_sdk.capture_exception(message)
-
-    except Exception as e:
-        sentry_sdk.capture_exception(e)

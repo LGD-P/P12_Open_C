@@ -12,7 +12,7 @@ def test_login(runner, mocked_session):
     with patch(
             "epic_events.controllers.authenticate_controller.User.confirm_pass",
             return_value=True):
-        result = runner.invoke(login, ['-n', user_to_log.name],
+        result = runner.invoke(login, ['-e', user_to_log.email],
                                obj={
                                    "session": mocked_session,
                                })
@@ -25,23 +25,20 @@ def test_login_with_wrong_user(runner, mocked_session):
     with patch(
             "epic_events.controllers.authenticate_controller.User.confirm_pass",
             return_value=True):
-        result = runner.invoke(login, ['-n', "Denis Chamar"],
+        result = runner.invoke(login, ['-e', "Denis Chamartt@epic.com"],
                                obj={
                                    "session": mocked_session,
                                })
-    print(result.output)
+
     assert result.exit_code == 0
-    assert "\n User with name 'Denis Chamar' is 'not found'.\n" in result.output
+    assert "\n User with email 'Denis Chamartt@epic.com' is 'not found'.\n\n" in result.output
 
 
 def test_login_with_wrong_password(runner, mocked_session):
-    user_to_log = mocked_session.scalar(
-        select(User).where(User.name == "Denis Chamart"))
-
     with patch(
             "epic_events.controllers.authenticate_controller.User.confirm_pass",
             return_value=False):
-        result = runner.invoke(login, ['-n', user_to_log.name],
+        result = runner.invoke(login, ['-e', "Denis Chamartt@epicevent.com"],
                                obj={
                                    "session": mocked_session,
                                })
@@ -52,7 +49,7 @@ def test_login_with_wrong_password(runner, mocked_session):
 
 def test_logout(runner, mocked_session):
     user_logged = mocked_session.scalar(
-        select(User).where(User.name == "Denis Chamart"))
+        select(User).where(User.email == "Denis Chamartt@epicevent.com"))
 
     result = runner.invoke(logout, obj={
         "session": mocked_session,

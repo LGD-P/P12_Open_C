@@ -14,7 +14,7 @@ def test_classic_support_path(runner, mocked_session):
         with patch(
                 "epic_events.controllers.authenticate_controller.User.confirm_pass",
                 return_value=True):
-            result = runner.invoke(app, ['authenticate', 'login', '-n', support.name],
+            result = runner.invoke(app, ['authenticate', 'login', '-e', support.email],
                                    obj={"session": mocked_session})
 
             assert result.exit_code == 0

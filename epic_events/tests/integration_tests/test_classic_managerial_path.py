@@ -16,7 +16,7 @@ def test_classic_managerial_path(runner, mocked_session):
         with patch(
                 "epic_events.controllers.authenticate_controller.User.confirm_pass",
                 return_value=True):
-            result = runner.invoke(app, ['authenticate', 'login', '-n', manager.name], obj={"session": mocked_session})
+            result = runner.invoke(app, ['authenticate', 'login', '-e', manager.email], obj={"session": mocked_session})
 
             assert result.exit_code == 0
             assert "\n Welcome 'Gabrielle Mallet' you're logged.\n\n" in result.output
