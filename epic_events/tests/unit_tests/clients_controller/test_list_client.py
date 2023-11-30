@@ -35,7 +35,7 @@ def test_list_single_client_wrong_id(runner, mocked_session):
                                "user_id": user_logged
                            })
 
-    assert result.exit_code == 0
+    assert result.exit_code == 1
     assert "\n Client with ID '12' is 'not found'.\n" in result.output
 
 
@@ -43,4 +43,4 @@ def test_list_client_without_authentication(runner, mocked_session):
     result = runner.invoke(list_client, ["-i", "1"],
                            obj={"session": mocked_session})
     assert "\n' Invalid Token  please logged in again' \n" in result.output
-    assert result.exit_code == 0
+    assert result.exit_code == 1

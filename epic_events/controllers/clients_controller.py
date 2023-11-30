@@ -27,28 +27,23 @@ def client(ctx):
 @has_permission(['management', 'support', 'commercial'])
 def list_client(ctx, id):
     session = ctx.obj['session']
-    try:
-        user_logged = session.scalar(
-            select(User).where(User.id == ctx.obj['user_id'].id))
 
-        if id:
-            client = session.scalar(select(Client).where(Client.id == id))
-            if client is None:
-                raise click.UsageError(client_not_found(id))
-            else:
-                clients_table([client])
+    user_logged = ctx.obj.get("user_id")
+
+    if user_logged is None:
+        raise Exception(invalid_token())
+
+    if id:
+        client = session.scalar(select(Client).where(Client.id == id))
+        if client is None:
+            raise click.UsageError(client_not_found(id))
         else:
-            clients_list = session.scalars(select(Client).order_by(Client.id)).all()
+            clients_table([client])
+    else:
+        clients_list = session.scalars(select(Client).order_by(Client.id)).all()
 
-            clients_table(clients_list)
-            logged_as(user_logged.name, user_logged.role.name)
-
-    except KeyError:
-        message = invalid_token()
-        sentry_sdk.capture_exception(message)
-
-    except Exception as e:
-        sentry_sdk.capture_exception(e)
+        clients_table(clients_list)
+        logged_as(user_logged.name, user_logged.role.name)
 
 
 @client.command()
@@ -64,35 +59,30 @@ def list_client(ctx, id):
 @has_permission(['commercial', 'management'])
 def create_client(ctx, name, email, phone, company, comid):
     session = ctx.obj['session']
-    try:
-        session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
 
-        if comid is not None:
-            comid_found = find_user_type(ctx, comid, 'commercial')
+    user_logged = ctx.obj.get("user_id")
 
-        creation = datetime.utcnow()
-        last_contact = datetime.utcnow()
-        company_name = None if company is None else company
+    if user_logged is None:
+        raise Exception(invalid_token())
 
-        new_client = Client(full_name=name,
-                            email=email,
-                            phone=phone,
-                            company_name=company_name,
-                            creation_date=creation,
-                            last_contact_date=last_contact,
-                            commercial_contact_id=comid_found)
+    if comid is not None:
+        comid_found = find_user_type(ctx, comid, 'commercial')
 
-        session.add(new_client)
-        session.commit()
-        created_succes(new_client)
+    creation = datetime.utcnow()
+    last_contact = datetime.utcnow()
+    company_name = None if company is None else company
 
-    except KeyError:
-        message = invalid_token()
-        sentry_sdk.capture_exception(message)
+    new_client = Client(full_name=name,
+                        email=email,
+                        phone=phone,
+                        company_name=company_name,
+                        creation_date=creation,
+                        last_contact_date=last_contact,
+                        commercial_contact_id=comid_found)
 
-    except Exception as e:
-        sentry_sdk.capture_exception(e)
-
+    session.add(new_client)
+    session.commit()
+    created_succes(new_client)
 
 @client.command()
 @click.option('--id',
@@ -108,48 +98,42 @@ def create_client(ctx, name, email, phone, company, comid):
 @has_permission(['management', 'commercial'])
 def modify_client(ctx, id, name, email, phone, company, comid):
     session = ctx.obj['session']
-    try:
-        user_logged = session.scalar(
-            select(User).where(User.id == ctx.obj['user_id'].id))
 
-        client_to_modify = session.scalar(select(Client).where(Client.id == id))
+    user_logged = ctx.obj.get("user_id")
 
-        if client_to_modify:
-            if user_logged.role.name == 'commercial':
-                if client_to_modify.commercial_contact_id == user_logged.id:
-                    pass
-                else:
-                    raise ValueError(not_in_charge_of_this_client(client_to_modify.id))
+    if user_logged is None:
+        raise Exception(invalid_token())
 
-            if name is not None:
-                client_to_modify.full_name = name
-            if email is not None:
-                client_to_modify.email = email
+    client_to_modify = session.scalar(select(Client).where(Client.id == id))
 
-            if phone is not None:
-                client_to_modify.phone = phone
+    if client_to_modify:
+        if user_logged.role.name == 'commercial':
+            if client_to_modify.commercial_contact_id == user_logged.id:
+                pass
+            else:
+                raise ValueError(not_in_charge_of_this_client(client_to_modify.id))
 
-            if company is not None:
-                client_to_modify.company_name = company
+        if name is not None:
+            client_to_modify.full_name = name
+        if email is not None:
+            client_to_modify.email = email
 
-            client_to_modify.last_contact_date = datetime.now()
+        if phone is not None:
+            client_to_modify.phone = phone
 
-            if comid is not None:
-                commercial_found = find_user_type(ctx, comid, 'commercial')
-                client_to_modify.commercial_contact_id = commercial_found
+        if company is not None:
+            client_to_modify.company_name = company
 
-            session.commit()
-            modification_done(client_to_modify)
-        else:
-            raise click.UsageError(client_not_found(id))
+        client_to_modify.last_contact_date = datetime.now()
 
-    except KeyError:
-        message = invalid_token()
-        sentry_sdk.capture_exception(message)
+        if comid is not None:
+            commercial_found = find_user_type(ctx, comid, 'commercial')
+            client_to_modify.commercial_contact_id = commercial_found
 
-    except Exception as e:
-        sentry_sdk.capture_exception(e)
-
+        session.commit()
+        modification_done(client_to_modify)
+    else:
+        raise click.UsageError(client_not_found(id))
 
 @client.command()
 @click.option('--id',
@@ -160,22 +144,18 @@ def modify_client(ctx, id, name, email, phone, company, comid):
 @has_permission(['management', 'commercial'])
 def delete_client(ctx, id):
     session = ctx.obj['session']
-    try:
-        session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
+    user_logged = ctx.obj.get("user_id")
 
-        client_to_delete = session.scalar(select(Client).where(Client.id == id))
+    if user_logged is None:
+        raise Exception(invalid_token())
 
-        if client_to_delete:
-            session.delete(client_to_delete)
-            session.commit()
-            deleted_success(id, client_to_delete)
+    client_to_delete = session.scalar(select(Client).where(Client.id == id))
 
-        else:
-            raise click.UsageError(client_not_found(id))
+    if client_to_delete:
+        session.delete(client_to_delete)
+        session.commit()
+        deleted_success(id, client_to_delete)
 
-    except KeyError:
-        message = invalid_token()
-        sentry_sdk.capture_exception(message)
+    else:
+        raise click.UsageError(client_not_found(id))
 
-    except Exception as e:
-        sentry_sdk.capture_exception(e)
