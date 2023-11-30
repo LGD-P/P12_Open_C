@@ -31,37 +31,31 @@ def event(ctx):
 @has_permission(['management', 'support', 'commercial'])
 def list_event(ctx, id, no_support, team_support):
     session = ctx.obj['session']
-    try:
-        user_logged = session.scalar(
-            select(User).where(User.id == ctx.obj['user_id'].id)
-        )
-        if id:
-            event = session.scalar(select(Event).where(Event.id == id))
-            if event is None:
-                raise click.UsageError(event_not_found(id))
-            else:
-                events_table([event])
-        if no_support:
-            event = session.scalars(select(Event).where(Event.support_contact_id.is_(None))).all()
-            raise click.UsageError(events_table(event))
+    user_logged = ctx.obj.get("user_id")
 
-        if team_support:
-            event = session.scalars(select(Event).where(Event.support_contact_id == user_logged.id)).all()
-            return events_table(event)
+    if user_logged is None:
+        raise Exception(invalid_token())
 
+    if id:
+        event = session.scalar(select(Event).where(Event.id == id))
+        if event is None:
+            raise click.UsageError(event_not_found(id))
         else:
-            event_list = session.scalars(
-                select(Event).order_by(Event.id)).all()
+            events_table([event])
+    if no_support:
+        event = session.scalars(select(Event).where(Event.support_contact_id.is_(None))).all()
+        raise click.UsageError(events_table(event))
 
-            events_table(event_list)
-            logged_as(user_logged.name, user_logged.role.name)
+    if team_support:
+        event = session.scalars(select(Event).where(Event.support_contact_id == user_logged.id)).all()
+        return events_table(event)
 
-    except KeyError:
-        message = invalid_token()
-        sentry_sdk.capture_exception(message)
+    else:
+        event_list = session.scalars(
+            select(Event).order_by(Event.id)).all()
 
-    except Exception as e:
-        sentry_sdk.capture_exception(e)
+        events_table(event_list)
+        logged_as(user_logged.name, user_logged.role.name)
 
 
 @event.command()
@@ -80,47 +74,41 @@ def list_event(ctx, id, no_support, team_support):
 def create_event(ctx, name, contract, support, starting, ending, location, attendees,
                  notes):
     session = ctx.obj['session']
+    user_logged = ctx.obj.get("user_id")
+
+    if user_logged is None:
+        raise Exception(invalid_token())
+
     try:
-        session.scalar(select(User).where(User.id == ctx.obj['user_id'].id)
-                       )
+        starting = datetime.strptime(starting, '%Y-%m-%d - %H:%M')
+    except ValueError:
+        sentry_sdk.capture_exception(date_param())
 
-        try:
-            starting = datetime.strptime(starting, '%Y-%m-%d - %H:%M')
-        except ValueError:
-            sentry_sdk.capture_exception(date_param())
+    try:
+        ending = datetime.strptime(ending, '%Y-%m-%d - %H:%M')
+    except ValueError:
+        sentry_sdk.capture_exception(date_param())
 
-        try:
-            ending = datetime.strptime(ending, '%Y-%m-%d - %H:%M')
-        except ValueError:
-            sentry_sdk.capture_exception(date_param())
+    try:
+        ending < starting
+    except ValueError:
+        sentry_sdk.capture_exception(end_date_error())
 
-        try:
-            ending < starting
-        except ValueError:
-            sentry_sdk.capture_exception(end_date_error())
+    contract_found = find_client_or_contract(ctx, Contract, contract)
+    contract = session.scalar(select(Contract).where(Contract.id == contract_found))
+    if contract.status is not True:
+        raise click.UsageError(contract_not_signed(contract.id))
 
-        contract_found = find_client_or_contract(ctx, Contract, contract)
-        contract = session.scalar(select(Contract).where(Contract.id == contract_found))
-        if contract.status is not True:
-            raise click.UsageError(contract_not_signed(contract.id))
+    support_found = find_user_type(ctx, support, 'support')
 
-        support_found = find_user_type(ctx, support, 'support')
+    new_event = Event(name=name, contract_id=contract_found,
+                      support_contact_id=support_found, start_date=starting,
+                      end_date=ending, location=location,
+                      attendees=attendees, notes=notes)
 
-        new_event = Event(name=name, contract_id=contract_found,
-                          support_contact_id=support_found, start_date=starting,
-                          end_date=ending, location=location,
-                          attendees=attendees, notes=notes)
-
-        session.add(new_event)
-        session.commit()
-        created_succes(new_event)
-
-    except KeyError:
-        message = invalid_token()
-        sentry_sdk.capture_exception(message)
-
-    except Exception as e:
-        sentry_sdk.capture_exception(e)
+    session.add(new_event)
+    session.commit()
+    created_succes(new_event)
 
 
 @event.command()
@@ -139,65 +127,60 @@ def create_event(ctx, name, contract, support, starting, ending, location, atten
 def modify_event(ctx, id, name, contract, support, starting, ending,
                  location, attendees, notes):
     session = ctx.obj['session']
-    try:
-        user_logged = session.scalar(
-            select(User).where(User.id == ctx.obj['user_id'].id)
-        )
 
-        event_to_modify = session.scalar(select(Event).where(Event.id == id))
+    user_logged = ctx.obj.get("user_id")
 
-        if event_to_modify:
-            if user_logged.role.name == 'support':
-                if event_to_modify.support_contact_id == user_logged.id:
-                    pass
-                else:
-                    raise ValueError(not_in_charge_of_this_event(event_to_modify.id))
+    if user_logged is None:
+        raise Exception(invalid_token())
 
-            if name is not None:
-                event_to_modify.name = name
 
-            if contract is not None:
-                contract_found = find_client_or_contract(ctx, Contract, contract)
-                event_to_modify.contract_id = contract_found
+    event_to_modify = session.scalar(select(Event).where(Event.id == id))
 
-            if support is not None:
-                support_found = find_user_type(ctx, support, 'support')
-                event_to_modify.support_contact_id = support_found
+    if event_to_modify:
+        if user_logged.role.name == 'support':
+            if event_to_modify.support_contact_id == user_logged.id:
+                pass
+            else:
+                raise ValueError(not_in_charge_of_this_event(event_to_modify.id))
 
-            if starting is not None:
-                try:
-                    starting = datetime.strptime(starting, '%Y-%m-%d - %H:%M')
-                    event_to_modify.start_date = starting
-                except ValueError:
-                    return date_param()
+        if name is not None:
+            event_to_modify.name = name
 
-            if ending is not None:
-                try:
-                    ending = datetime.strptime(ending, '%Y-%m-%d - %H:%M')
-                    event_to_modify.end_date = ending
-                except ValueError:
-                    return date_param()
+        if contract is not None:
+            contract_found = find_client_or_contract(ctx, Contract, contract)
+            event_to_modify.contract_id = contract_found
 
-            if location is not None:
-                event_to_modify.location = location
+        if support is not None:
+            support_found = find_user_type(ctx, support, 'support')
+            event_to_modify.support_contact_id = support_found
 
-            if attendees is not None:
-                event_to_modify.attendees = attendees
+        if starting is not None:
+            try:
+                starting = datetime.strptime(starting, '%Y-%m-%d - %H:%M')
+                event_to_modify.start_date = starting
+            except ValueError:
+                return date_param()
 
-            if notes is not None:
-                event_to_modify.notes = notes
+        if ending is not None:
+            try:
+                ending = datetime.strptime(ending, '%Y-%m-%d - %H:%M')
+                event_to_modify.end_date = ending
+            except ValueError:
+                return date_param()
 
-            session.commit()
-            modification_done(event_to_modify)
-        else:
-            raise click.UsageError(event_not_found(id))
+        if location is not None:
+            event_to_modify.location = location
 
-    except KeyError:
-        message = invalid_token()
-        sentry_sdk.capture_exception(message)
+        if attendees is not None:
+            event_to_modify.attendees = attendees
 
-    except Exception as e:
-        sentry_sdk.capture_exception(e)
+        if notes is not None:
+            event_to_modify.notes = notes
+
+        session.commit()
+        modification_done(event_to_modify)
+    else:
+        raise click.UsageError(event_not_found(id))
 
 
 @event.command()
@@ -207,22 +190,20 @@ def modify_event(ctx, id, name, contract, support, starting, ending,
 @has_permission(['management', 'support', 'commercial'])
 def delete_event(ctx, id):
     session = ctx.obj['session']
-    try:
-        session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
 
-        event_to_delete = session.scalar(select(Event).where(Event.id == id))
+    user_logged = ctx.obj.get("user_id")
 
-        if event_to_delete:
-            session.delete(event_to_delete)
-            session.commit()
-            deleted_success(id, event_to_delete)
+    if user_logged is None:
+        raise Exception(invalid_token())
 
-        else:
-            raise click.UsageError(event_not_found(id))
+    event_to_delete = session.scalar(select(Event).where(Event.id == id))
 
-    except KeyError:
-        message = invalid_token()
-        sentry_sdk.capture_exception(message)
+    if event_to_delete:
+        session.delete(event_to_delete)
+        session.commit()
+        deleted_success(id, event_to_delete)
 
-    except Exception as e:
-        sentry_sdk.capture_exception(e)
+    else:
+        raise click.UsageError(event_not_found(id))
+
+

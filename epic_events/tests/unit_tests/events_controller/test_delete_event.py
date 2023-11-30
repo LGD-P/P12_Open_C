@@ -22,7 +22,7 @@ def test_delete_event_with_wrong_id(runner, mocked_session):
                                 'user_id': user_logged})
 
     assert "\n Event with ID '19' is 'not found'.\n\n" in result.output
-    assert result.exit_code == 0
+    assert result.exit_code == 1
 
 
 def test_delete_event_without_authentication(runner, mocked_session):
@@ -30,4 +30,4 @@ def test_delete_event_without_authentication(runner, mocked_session):
                            obj={"session": mocked_session})
 
     assert "\n' Invalid Token  please logged in again' \n\n" in result.output
-    assert result.exit_code == 0
+    assert result.exit_code == 1
