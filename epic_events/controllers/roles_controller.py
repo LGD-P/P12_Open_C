@@ -8,7 +8,6 @@ from epic_events.views.users_view import logged_as
 
 import rich_click as click
 from sqlalchemy import select
-import sentry_sdk
 
 
 @click.group()
@@ -23,6 +22,7 @@ def role(ctx):
 @click.pass_context
 @has_permission(['management'])
 def list_role(ctx, id):
+    """List Role : no flag = list all, -i + 'id' for spécific role"""
     session = ctx.obj['session']
 
     user_logged = ctx.obj.get('user_id')
@@ -44,6 +44,7 @@ def list_role(ctx, id):
         logged_as(user_logged.name, user_logged.role.name)
 
 
+
 @role.command()
 @click.option('--name', '-n',
               help='Must be "support" "commercial" or "manager"',
@@ -52,6 +53,7 @@ def list_role(ctx, id):
 @click.pass_context
 @has_permission(['management'])
 def create_role(ctx, name, id):
+    
     session = ctx.obj['session']
 
     user_logged = ctx.obj.get('user_id')
@@ -70,3 +72,4 @@ def create_role(ctx, name, id):
             created_succes(new_role)
         else:
             raise click.UsageError(id_not_found(id))
+

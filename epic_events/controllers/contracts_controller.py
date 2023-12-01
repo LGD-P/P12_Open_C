@@ -31,6 +31,8 @@ def contract(ctx):
 @click.pass_context
 @has_permission(['management', 'commercial'])
 def list_contract(ctx, id, signed, is_not_signed):
+    """List Contract : No flag = all, -i + id for specific contract, for Support-team -s = your signed contract 
+    -ns = not signed"""
     session = ctx.obj['session']
     user_logged = ctx.obj.get("user_id")
 
@@ -46,11 +48,13 @@ def list_contract(ctx, id, signed, is_not_signed):
         else:
             contracts_table([selected_contract])
     if is_not_signed:
-        contract_list = session.scalars(select(Contract).where(Contract.status.is_(None))).all()
+        contract_list = session.scalars(
+            select(Contract).where(Contract.status.is_(None))).all()
         contracts_table(contract_list)
 
     if signed:
-        contract_list = session.scalars(select(Contract).where(Contract.status)).all()
+        contract_list = session.scalars(
+            select(Contract).where(Contract.status)).all()
         contracts_table(contract_list)
     else:
         contract_list = session.scalars(
@@ -69,6 +73,8 @@ def list_contract(ctx, id, signed, is_not_signed):
 @click.pass_context
 @has_permission(['management'])
 def create_contract(ctx, client, management, total, remain, status):
+    """Creating contract : -c + related client id -m + commercial in charge, -ta + total amount 
+    -r + remaining amount and -s + status True or False for signed or not"""
     session = ctx.obj['session']
 
     user_logged = ctx.obj.get("user_id")
@@ -94,7 +100,9 @@ def create_contract(ctx, client, management, total, remain, status):
             "contract": new_contract,
             "created_by": user_logged})
 
-        capture_message(sentry_contract_created_and_signed(user_logged, new_contract))
+        capture_message(sentry_contract_created_and_signed(
+            user_logged, new_contract))
+
 
 @contract.command()
 @click.option('--id', '-i', help='Contract ID')
@@ -106,6 +114,8 @@ def create_contract(ctx, client, management, total, remain, status):
 @click.pass_context
 @has_permission(['management', 'commercial'])
 def modify_contract(ctx, id, client, management, total, remain, status):
+    """Modify contract : -i + id, -c + client id, -m + commercial in charge, -ta + total amount
+    -r + remaining amount -s + Status as true or false for signed or not"""
     session = ctx.obj['session']
 
     user_logged = ctx.obj.get("user_id")
@@ -121,7 +131,8 @@ def modify_contract(ctx, id, client, management, total, remain, status):
             if contract_to_modify.total_amount == user_logged.id:
                 pass
             else:
-                raise ValueError(not_in_charge_of_this_client_contract(contract_to_modify.client_id))
+                raise ValueError(not_in_charge_of_this_client_contract(
+                    contract_to_modify.client_id))
 
         if client is not None:
             client_found = find_client_or_contract(ctx, Client, client)
@@ -145,7 +156,8 @@ def modify_contract(ctx, id, client, management, total, remain, status):
                     "contract": contract_to_modify,
                     "created_by": user_logged})
 
-                capture_message(sentry_contract_status_signed(user_logged, contract_to_modify))
+                capture_message(sentry_contract_status_signed(
+                    user_logged, contract_to_modify))
 
         session.commit()
         modification_done(contract_to_modify)
@@ -160,6 +172,7 @@ def modify_contract(ctx, id, client, management, total, remain, status):
 @click.pass_context
 @has_permission(['management', 'commercial'])
 def delete_contract(ctx, id):
+    """Delete contract: -i '8' to delete contract with id 8"""
     session = ctx.obj['session']
 
     user_logged = ctx.obj.get("user_id")

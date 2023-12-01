@@ -26,6 +26,7 @@ def client(ctx):
 @click.pass_context
 @has_permission(['management', 'support', 'commercial'])
 def list_client(ctx, id):
+    """List Client : no flag to = all, -i + '2' to to see specificly client with id 2"""
     session = ctx.obj['session']
 
     user_logged = ctx.obj.get("user_id")
@@ -40,7 +41,8 @@ def list_client(ctx, id):
         else:
             clients_table([client])
     else:
-        clients_list = session.scalars(select(Client).order_by(Client.id)).all()
+        clients_list = session.scalars(
+            select(Client).order_by(Client.id)).all()
 
         clients_table(clients_list)
         logged_as(user_logged.name, user_logged.role.name)
@@ -58,6 +60,7 @@ def list_client(ctx, id):
 @click.pass_context
 @has_permission(['commercial', 'management'])
 def create_client(ctx, name, email, phone, company, comid):
+    """Creating client : -e + "email" -ph + "phone-number" -c + "company-name" -ci + "commercial id" """
     session = ctx.obj['session']
 
     user_logged = ctx.obj.get("user_id")
@@ -84,6 +87,7 @@ def create_client(ctx, name, email, phone, company, comid):
     session.commit()
     created_succes(new_client)
 
+
 @client.command()
 @click.option('--id',
               '-i',
@@ -97,6 +101,8 @@ def create_client(ctx, name, email, phone, company, comid):
 @click.pass_context
 @has_permission(['management', 'commercial'])
 def modify_client(ctx, id, name, email, phone, company, comid):
+    """Modify client: -i + "client id", -n + "name" -e + "email" -ph + "phone-number" -c + company-name
+    and -ci + "commercial id" """
     session = ctx.obj['session']
 
     user_logged = ctx.obj.get("user_id")
@@ -111,7 +117,8 @@ def modify_client(ctx, id, name, email, phone, company, comid):
             if client_to_modify.commercial_contact_id == user_logged.id:
                 pass
             else:
-                raise ValueError(not_in_charge_of_this_client(client_to_modify.id))
+                raise ValueError(
+                    not_in_charge_of_this_client(client_to_modify.id))
 
         if name is not None:
             client_to_modify.full_name = name
@@ -135,6 +142,7 @@ def modify_client(ctx, id, name, email, phone, company, comid):
     else:
         raise click.UsageError(client_not_found(id))
 
+
 @client.command()
 @click.option('--id',
               '-i',
@@ -143,6 +151,7 @@ def modify_client(ctx, id, name, email, phone, company, comid):
 @click.pass_context
 @has_permission(['management', 'commercial'])
 def delete_client(ctx, id):
+    """Delete clent : -i + "2" to delete client with id 2"""
     session = ctx.obj['session']
     user_logged = ctx.obj.get("user_id")
 
@@ -158,4 +167,3 @@ def delete_client(ctx, id):
 
     else:
         raise click.UsageError(client_not_found(id))
-

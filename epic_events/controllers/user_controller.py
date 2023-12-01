@@ -69,6 +69,7 @@ def change_password(user_to_modify, ctx):
 @click.pass_context
 @has_permission(['management'])
 def list_user(ctx, id):
+    """List User: no flag = list all, -i + 'id' for specific user"""
     session = ctx.obj['session']
 
     user_logged = ctx.obj.get("user_id")
@@ -106,6 +107,8 @@ def list_user(ctx, id):
 @click.pass_context
 @has_permission(['management'])
 def create_user(ctx, name, email, role, password):
+    """Create user: -n + "name", -e + 'email', - r + 'role as support client or management', password
+    will automaticly be asked"""
     session = ctx.obj['session']
 
     user_logged = ctx.obj.get("user_id")
@@ -147,6 +150,8 @@ def create_user(ctx, name, email, role, password):
 @click.pass_context
 @has_permission(['management'])
 def modify_user(ctx, id, name, email, role, password):
+    """Modify User: -i + 'id', -n + name, --e + 'email', -r + 'role as support client or management',
+    -P no args password will automaticly be asked"""
     session = ctx.obj['session']
 
     user_logged = ctx.obj.get("user_id")
@@ -156,7 +161,7 @@ def modify_user(ctx, id, name, email, role, password):
 
     user_to_modify = session.scalar(select(User).where(User.id == id))
 
-    if user_to_modify is  None:
+    if user_to_modify is None:
         raise Exception(click.UsageError(user_not_found(id)))
 
     if user_to_modify:
@@ -186,8 +191,8 @@ def modify_user(ctx, id, name, email, role, password):
             "modified_user": user_to_modify,
             "modification_done_by": user_logged})
 
-        capture_message(sentry_user_modification_message(user_logged, user_to_modify))
-
+        capture_message(sentry_user_modification_message(
+            user_logged, user_to_modify))
 
 
 @user.command()
@@ -196,6 +201,7 @@ def modify_user(ctx, id, name, email, role, password):
 @click.pass_context
 @has_permission(['management'])
 def delete_user(ctx, id):
+    """Delete User: -i + 'id' of user you want ot delete. """
     session = ctx.obj['session']
 
     user_logged = ctx.obj.get("user_id")
@@ -212,5 +218,3 @@ def delete_user(ctx, id):
 
     else:
         raise click.UsageError(user_not_found(id))
-
-

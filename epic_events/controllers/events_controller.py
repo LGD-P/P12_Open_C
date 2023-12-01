@@ -30,6 +30,8 @@ def event(ctx):
 @click.pass_context
 @has_permission(['management', 'support', 'commercial'])
 def list_event(ctx, id, no_support, team_support):
+    """List Event : no flag + all, -i + 'id' + 'id-event', -ns = no support team yet, ts = only you as team support 
+    are in charge"""
     session = ctx.obj['session']
     user_logged = ctx.obj.get("user_id")
 
@@ -43,11 +45,13 @@ def list_event(ctx, id, no_support, team_support):
         else:
             events_table([event])
     if no_support:
-        event = session.scalars(select(Event).where(Event.support_contact_id.is_(None))).all()
+        event = session.scalars(select(Event).where(
+            Event.support_contact_id.is_(None))).all()
         raise click.UsageError(events_table(event))
 
     if team_support:
-        event = session.scalars(select(Event).where(Event.support_contact_id == user_logged.id)).all()
+        event = session.scalars(select(Event).where(
+            Event.support_contact_id == user_logged.id)).all()
         return events_table(event)
 
     else:
@@ -73,6 +77,8 @@ def list_event(ctx, id, no_support, team_support):
 @has_permission(['commercial'])
 def create_event(ctx, name, contract, support, starting, ending, location, attendees,
                  notes):
+    """Create Event : -n + 'name', -c + 'contract-ID', -su + 'Support-ID', -sd + 'startind-date', -ed + 'ending-date' 
+    -l + 'location', -a + 'attendees', -nt + 'notes' | date format is:  YYYY-MM-DD - HH:MM"""
     session = ctx.obj['session']
     user_logged = ctx.obj.get("user_id")
 
@@ -95,7 +101,8 @@ def create_event(ctx, name, contract, support, starting, ending, location, atten
         sentry_sdk.capture_exception(end_date_error())
 
     contract_found = find_client_or_contract(ctx, Contract, contract)
-    contract = session.scalar(select(Contract).where(Contract.id == contract_found))
+    contract = session.scalar(
+        select(Contract).where(Contract.id == contract_found))
     if contract.status is not True:
         raise click.UsageError(contract_not_signed(contract.id))
 
@@ -126,13 +133,14 @@ def create_event(ctx, name, contract, support, starting, ending, location, atten
 @has_permission(['management', 'support', 'commercial'])
 def modify_event(ctx, id, name, contract, support, starting, ending,
                  location, attendees, notes):
+    """Modify Event : -i + 'id', -n + 'event-name', -c + 'contract-id', -su + 'support-id' , -sd + 'starting-date'
+    -e + 'ending-date', -l + 'location', - a + 'attentdees', -n + 'notes' | date format is:  YYYY-MM-DD - HH:MM"""
     session = ctx.obj['session']
 
     user_logged = ctx.obj.get("user_id")
 
     if user_logged is None:
         raise Exception(invalid_token())
-
 
     event_to_modify = session.scalar(select(Event).where(Event.id == id))
 
@@ -141,7 +149,8 @@ def modify_event(ctx, id, name, contract, support, starting, ending,
             if event_to_modify.support_contact_id == user_logged.id:
                 pass
             else:
-                raise ValueError(not_in_charge_of_this_event(event_to_modify.id))
+                raise ValueError(
+                    not_in_charge_of_this_event(event_to_modify.id))
 
         if name is not None:
             event_to_modify.name = name
@@ -189,6 +198,7 @@ def modify_event(ctx, id, name, contract, support, starting, ending,
 @click.pass_context
 @has_permission(['management', 'support', 'commercial'])
 def delete_event(ctx, id):
+    """Delete Event : -i + 'id' of the event you want to delete"""
     session = ctx.obj['session']
 
     user_logged = ctx.obj.get("user_id")
@@ -205,5 +215,3 @@ def delete_event(ctx, id):
 
     else:
         raise click.UsageError(event_not_found(id))
-
-

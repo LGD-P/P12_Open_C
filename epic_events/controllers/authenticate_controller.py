@@ -24,7 +24,7 @@ def authenticate(ctx):
               help='Password of the user you want to login', nargs=0)
 @click.pass_context
 def login(ctx, email, password):
-    """User -e to enter your email, password will be asked automatically"""
+    """Login : -e + 'email', your password will automatically be asked"""
     session = ctx.obj['session']
     try:
         user = session.scalar(select(User).where(User.email == email))
@@ -51,7 +51,7 @@ def login(ctx, email, password):
 @authenticate.command()
 @click.pass_context
 def logout(ctx):
-    """You juste have to you 'logout'"""
+    """Logout : You juste have to 'logout'"""
     session = ctx.obj['session']
     try:
         session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
