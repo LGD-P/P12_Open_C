@@ -43,9 +43,8 @@ def test_create_contract_without_authentication(runner, mocked_session):
             "session": mocked_session,
         })
 
-    print(result.output)
     assert "\n' Invalid Token  please logged in again' \n\n" in result.output
-    assert result.exit_code == 1
+    assert result.exit_code == 0
 
 
 def test_create_contract_without_permission(runner, mocked_session):

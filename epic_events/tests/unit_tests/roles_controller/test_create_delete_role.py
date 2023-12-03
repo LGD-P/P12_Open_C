@@ -4,7 +4,7 @@ from epic_events.controllers.roles_controller import create_role
 from epic_events.models.user import User
 
 
-# A VERIFIER POURQUOI L'ID ??
+
 def test_create_roles(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 2))
     result = runner.invoke(create_role, ["-i", "1", '-n', 'support'],

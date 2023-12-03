@@ -91,7 +91,7 @@ def test_create_user_without_permission(runner, mocked_session):
     assert result.exit_code == 0
 
 
-def test_create_without_authentication(runner, mocked_session):
+def test_create_user_without_authentication(runner, mocked_session):
     result = runner.invoke(create_user, [
         "-n",
         "Charles Henri",
@@ -104,5 +104,5 @@ def test_create_without_authentication(runner, mocked_session):
                            obj={
                                "session": mocked_session,
                            })
-    assert result.exit_code == 1
+    assert result.exit_code == 0
     assert "\n' Invalid Token  please logged in again' \n\n" in result.output

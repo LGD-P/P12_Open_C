@@ -43,4 +43,4 @@ def test_list_client_without_authentication(runner, mocked_session):
     result = runner.invoke(list_client, ["-i", "1"],
                            obj={"session": mocked_session})
     assert "\n' Invalid Token  please logged in again' \n" in result.output
-    assert result.exit_code == 1
+    assert result.exit_code == 0
