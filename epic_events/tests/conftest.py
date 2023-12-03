@@ -15,14 +15,13 @@ def runner():
 
 
 @pytest.fixture(scope="function")
-def mocked_create_database():
-    with patch('epic_events.controllers.click_app.create_database', return_value=mocked_session):
-        yield
-
-
-@pytest.fixture(scope="function")
 def sqlalchemy_declarative_base():
     return Base
+
+
+@pytest.fixture(scope='function')
+def mock_db(mocker, mocked_session):
+    mocker.patch('epic_events.controllers.click_app.create_database', return_value=mocked_session)
 
 
 @pytest.fixture(scope="function")
