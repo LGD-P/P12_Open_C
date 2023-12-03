@@ -4,7 +4,7 @@ from epic_events.models.role import Role
 from epic_events.models.client import Client
 from epic_events.views.clients_views import client_not_found
 from epic_events.views.contracts_views import contract_not_found
-from epic_events.views.users_view import not_authorized, user_not_found
+from epic_events.views.users_view import not_authorized, user_not_found, invalid_token
 from sqlalchemy import select
 
 import jwt
@@ -107,7 +107,7 @@ def has_permission(allowed_roles):
                 if user_role.name not in allowed_roles:
                     return not_authorized()
             except KeyError:
-                pass
+                return invalid_token()
             return function(ctx, *args, **kwargs)
 
         return wrapper

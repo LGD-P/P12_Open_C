@@ -1,3 +1,5 @@
+import logging
+
 from epic_events.controllers.click_app import app
 
 import sentry_sdk
@@ -20,5 +22,13 @@ sentry_sdk.init(
     debug=False
 )
 
+logging.getLogger("sentry_sdk").setLevel(logging.WARNING)
+
 if __name__ == '__main__':
-    application = app()
+    try:
+        app()
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
+        raise e
+
+
