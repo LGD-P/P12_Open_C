@@ -46,7 +46,7 @@ def users_table(users):
 
 
 def user_not_found(id):
-    Console().print(
+    return Console().print(
         f"\n[blue] User with ID '[bold red]{id}[/bold red]' is "
         "'[bold red]not found[/bold red]'.\n")
 
@@ -56,8 +56,9 @@ def username_not_found(name):
         f"\n[blue] User with name '[bold red]{name}[/bold red]' is "
         "'[bold red]not found[/bold red]'.\n")
 
+
 def user_email_not_found(email):
-    Console().print(
+    return Console().print(
         f"\n[blue] User with email '[bold red]{email}[/bold red]' is "
         "'[bold red]not found[/bold red]'.\n")
 
@@ -141,7 +142,7 @@ def wrong_confirm_pass():
 
 
 def invalid_token():
-    return Console().print(
+    Console().print(
         "\n[bold green]'[bold red] Invalid Token [/bold red] please logged in "
         "again' \n")
 
