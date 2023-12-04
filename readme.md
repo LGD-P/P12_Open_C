@@ -56,14 +56,26 @@ attributions respectives)
     poetry install 
 
 ## Les variables d'environnement : .env
-*Ce projet utilise dotenv il vous faut adapter un certain nombre de paramètres*
+*Ce projet utilise dotenv il vous faut adapter un certain nombre de paramètres.*
+*Dans epic_events*
+```bash
+touch .env
+sudo nano .env
 
-    DATABASE_URL= postgresql://YOURDBNAME:YOURPASSWARD@localhost:5432/DBNAME
-    SECRET_KEY= YOU SECRET KEY TO MANAGE JWT
-    TEMP_TOKEN_PATH = PATH TO STORE YOUR TEMP TOKEN
-    SENTRY_KEY = YOUR SENTRY DNS KEY
-    ADMIN_PASS = CHANGE@ME2023
+DATABASE_URL= postgresql://YOURDBNAME:YOURPASSWARD@localhost:5432/DBNAME
+SECRET_KEY= YOU SECRET KEY TO MANAGE JWT
+TEMP_TOKEN_PATH = PATH TO STORE YOUR TEMP TOKEN
+SENTRY_KEY = YOUR SENTRY DNS KEY
+MANAGER_PASS = $argon2id$v=19$m=65536,t=12,p=4$6V0LgfB+T+kdw/hfCwFgjA$r/+/OEuLdDEdTHvKDn4+mX3Bo3+wLNPcEqvpVxBS3nw
 
+ctrl + X
+
+oui or yes
+
+enter
+```
+
+    
 ## Lancer Docker : 
     
     sudo docker run --name Your_db_name -e POSTGRES_PASSWORD=YourPassWord -d -p 5432:5432 -v"$(pwd)/pgdata:/var/lib/postgresql/data" postgres
@@ -72,10 +84,19 @@ attributions respectives)
 
 ## Première alimentation de la base de données :
 
-    python3 first_commit.py
+    python3 first_migration.py
     
 
-## Il n'y a plus qu'à :  Need Help ?
+## Il n'y a plus qu'à :
+
+```bash
+python3 main.py authenticate login -e 'mallet.gabrielle-management@epicevent.com'
+```
+
+*Le mdp du manager est commenté dans first_migration.py*
+
+
+##   Need Help ?
 
 <p align = center> Comme tout CLI qui se respecte avec --help, vous accéderez au détail des commandes</p>
 
