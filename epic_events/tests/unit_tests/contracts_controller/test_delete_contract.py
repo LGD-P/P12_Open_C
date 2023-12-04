@@ -33,7 +33,7 @@ def test_delete_contrat_without_authentication(runner, mocked_session):
     result = runner.invoke(delete_contract, ["-i", "12"],
                            obj={"session": mocked_session})
 
-    assert result.exit_code == 0
+    assert result.exit_code == 1
     assert "\n' Invalid Token  please logged in again' \n" in result.output
 
 

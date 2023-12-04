@@ -70,5 +70,5 @@ def test_list_user_invalid_token(runner, mocked_session):
                                "session": mocked_session,
                            })
 
-    assert result.exit_code == 0
+    assert result.exit_code == 1
     assert "\n' Invalid Token  please logged in again' \n" in result.output

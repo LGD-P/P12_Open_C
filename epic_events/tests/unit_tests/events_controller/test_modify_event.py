@@ -176,4 +176,4 @@ def test_modify_event_without_authentication(runner, mocked_session):
                                "session": mocked_session,
                            })
     assert "\n' Invalid Token  please logged in again' \n\n" in result.output
-    assert result.exit_code == 0
+    assert result.exit_code == 1

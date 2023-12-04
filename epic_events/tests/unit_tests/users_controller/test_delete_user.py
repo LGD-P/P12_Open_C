@@ -49,5 +49,5 @@ def test_delete_user_without_authentication(runner, mocked_session):
                                "session": mocked_session,
                            })
 
-    assert result.exit_code == 0
+    assert result.exit_code == 1
     assert "\n' Invalid Token  please logged in again' \n\n" in result.output
