@@ -1,4 +1,5 @@
-from epic_events.utils import find_user_type, find_client_or_contract
+from epic_events.utils import find_user_type, find_client_or_contract, \
+    raise_invalid_token_if_user_not_logged_in_session
 from epic_events.models.user import User
 from epic_events.models.event import Event
 from epic_events.models.contract import Contract
@@ -30,13 +31,11 @@ def event(ctx):
 @click.pass_context
 @has_permission(['management', 'support', 'commercial'])
 def list_event(ctx, id, no_support, team_support):
-    """List Event : no flag + all, -i + 'id' + 'id-event', -ns = no support team yet, ts = only you as team support 
+    """List Event : no flag + all, -i + 'id' + 'id-event', -ns = no support team yet, ts = only you as team support
     are in charge"""
     session = ctx.obj['session']
-    user_logged = ctx.obj.get("user_id")
 
-    if user_logged is None:
-        raise Exception(invalid_token())
+    user_logged = raise_invalid_token_if_user_not_logged_in_session(ctx)
 
     if id:
         event = session.scalar(select(Event).where(Event.id == id))
@@ -77,13 +76,11 @@ def list_event(ctx, id, no_support, team_support):
 @has_permission(['commercial'])
 def create_event(ctx, name, contract, support, starting, ending, location, attendees,
                  notes):
-    """Create Event : -n + 'name', -c + 'contract-ID', -su + 'Support-ID', -sd + 'startind-date', -ed + 'ending-date' 
+    """Create Event : -n + 'name', -c + 'contract-ID', -su + 'Support-ID', -sd + 'startind-date', -ed + 'ending-date'
     -l + 'location', -a + 'attendees', -nt + 'notes' | date format is:  YYYY-MM-DD - HH:MM"""
     session = ctx.obj['session']
-    user_logged = ctx.obj.get("user_id")
 
-    if user_logged is None:
-        raise Exception(invalid_token())
+    user_logged = raise_invalid_token_if_user_not_logged_in_session(ctx)
 
     try:
         starting = datetime.strptime(starting, '%Y-%m-%d - %H:%M')
@@ -137,10 +134,7 @@ def modify_event(ctx, id, name, contract, support, starting, ending,
     -e + 'ending-date', -l + 'location', - a + 'attentdees', -n + 'notes' | date format is:  YYYY-MM-DD - HH:MM"""
     session = ctx.obj['session']
 
-    user_logged = ctx.obj.get("user_id")
-
-    if user_logged is None:
-        raise Exception(invalid_token())
+    user_logged = raise_invalid_token_if_user_not_logged_in_session(ctx)
 
     event_to_modify = session.scalar(select(Event).where(Event.id == id))
 
@@ -201,10 +195,7 @@ def delete_event(ctx, id):
     """Delete Event : -i + 'id' of the event you want to delete"""
     session = ctx.obj['session']
 
-    user_logged = ctx.obj.get("user_id")
-
-    if user_logged is None:
-        raise Exception(invalid_token())
+    raise_invalid_token_if_user_not_logged_in_session(ctx)
 
     event_to_delete = session.scalar(select(Event).where(Event.id == id))
 

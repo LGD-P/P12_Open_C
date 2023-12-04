@@ -1,6 +1,6 @@
 from epic_events.models.user import User
 from epic_events.models.role import Role
-from epic_events.utils import has_permission
+from epic_events.utils import has_permission, raise_invalid_token_if_user_not_logged_in_session
 from epic_events.views.users_view import (invalid_token, logged_as,
                                           users_table, created_succes,
                                           deleted_success, user_not_found,
@@ -72,16 +72,13 @@ def list_user(ctx, id):
     """List User: no flag = list all, -i + 'id' for specific user"""
     session = ctx.obj['session']
 
-    user_logged = ctx.obj.get("user_id")
-
-    if user_logged is None:
-        raise Exception(invalid_token())
+    user_logged = raise_invalid_token_if_user_not_logged_in_session(ctx)
 
     if id:
         user = session.scalar(select(User).where(User.id == id))
 
         if user is None:
-            raise click.UsageError(user_not_found(id))
+            raise Exception(user_not_found(id))
         else:
             users_table([user])
     else:
@@ -111,10 +108,7 @@ def create_user(ctx, name, email, role, password):
     will automaticly be asked"""
     session = ctx.obj['session']
 
-    user_logged = ctx.obj.get("user_id")
-
-    if user_logged is None:
-        raise Exception(invalid_token())
+    user_logged = raise_invalid_token_if_user_not_logged_in_session(ctx)
 
     role_to_fill = session.scalars(
         select(Role).where(Role.name == role)).one()
@@ -154,15 +148,12 @@ def modify_user(ctx, id, name, email, role, password):
     -P no args password will automaticly be asked"""
     session = ctx.obj['session']
 
-    user_logged = ctx.obj.get("user_id")
-
-    if user_logged is None:
-        raise Exception(invalid_token())
+    user_logged = raise_invalid_token_if_user_not_logged_in_session(ctx)
 
     user_to_modify = session.scalar(select(User).where(User.id == id))
 
     if user_to_modify is None:
-        raise Exception(click.UsageError(user_not_found(id)))
+        raise Exception(user_not_found(id))
 
     if user_to_modify:
 
@@ -204,10 +195,7 @@ def delete_user(ctx, id):
     """Delete User: -i + 'id' of user you want ot delete. """
     session = ctx.obj['session']
 
-    user_logged = ctx.obj.get("user_id")
-
-    if user_logged is None:
-        raise Exception(invalid_token())
+    raise_invalid_token_if_user_not_logged_in_session(ctx)
 
     user_to_delete = session.scalar(select(User).where(User.id == id))
 
@@ -217,4 +205,4 @@ def delete_user(ctx, id):
         deleted_success(id, user_to_delete)
 
     else:
-        raise click.UsageError(user_not_found(id))
+        raise Exception(user_not_found(id))

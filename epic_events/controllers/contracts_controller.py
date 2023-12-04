@@ -1,7 +1,8 @@
 from epic_events.models.client import Client
 from epic_events.models.user import User
 from epic_events.models.contract import Contract
-from epic_events.utils import find_user_type, find_client_or_contract
+from epic_events.utils import find_user_type, find_client_or_contract, \
+    raise_invalid_token_if_user_not_logged_in_session
 from epic_events.utils import has_permission
 from epic_events.views.users_view import logged_as, invalid_token
 from epic_events.views.contracts_views import (contracts_table, created_succes,
@@ -34,10 +35,8 @@ def list_contract(ctx, id, signed, is_not_signed):
     """List Contract : No flag = all, -i + id for specific contract, for Support-team -s = your signed contract 
     -ns = not signed"""
     session = ctx.obj['session']
-    user_logged = ctx.obj.get("user_id")
 
-    if user_logged is None:
-        raise Exception(invalid_token())
+    user_logged = raise_invalid_token_if_user_not_logged_in_session(ctx)
 
     if id:
         selected_contract = session.scalar(
@@ -77,10 +76,7 @@ def create_contract(ctx, client, management, total, remain, status):
     -r + remaining amount and -s + status True or False for signed or not"""
     session = ctx.obj['session']
 
-    user_logged = ctx.obj.get("user_id")
-
-    if user_logged is None:
-        raise Exception(invalid_token())
+    user_logged = raise_invalid_token_if_user_not_logged_in_session(ctx)
 
     status = True if status.lower() == 'true' else False
 
@@ -118,10 +114,7 @@ def modify_contract(ctx, id, client, management, total, remain, status):
     -r + remaining amount -s + Status as true or false for signed or not"""
     session = ctx.obj['session']
 
-    user_logged = ctx.obj.get("user_id")
-
-    if user_logged is None:
-        raise Exception(invalid_token())
+    user_logged = raise_invalid_token_if_user_not_logged_in_session(ctx)
 
     contract_to_modify = session.scalar(
         select(Contract).where(Contract.id == id))
@@ -175,10 +168,7 @@ def delete_contract(ctx, id):
     """Delete contract: -i '8' to delete contract with id 8"""
     session = ctx.obj['session']
 
-    user_logged = ctx.obj.get("user_id")
-
-    if user_logged is None:
-        raise Exception(invalid_token())
+    raise_invalid_token_if_user_not_logged_in_session(ctx)
 
     session.scalar(select(User).where(User.id == ctx.obj['user_id'].id))
 

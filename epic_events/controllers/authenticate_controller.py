@@ -41,8 +41,8 @@ def login(ctx, email, password):
                 write_token_in_temp(token)
 
         else:
-            user_email_not_found(email)
-            raise click.UsageError("User not found.")
+            error = user_email_not_found(email)
+            raise Exception('User not in DB',error)
 
     except Exception as e:
         sentry_sdk.capture_exception(e)
@@ -68,4 +68,4 @@ def logout(ctx):
 
     except KeyError:
         message = invalid_token()
-        sentry_sdk.capture_exception(message)
+        sentry_sdk.capture_exception("invalid token",message)

@@ -1,6 +1,6 @@
 from epic_events.models.role import Role
 from epic_events.models.user import User
-from epic_events.utils import has_permission
+from epic_events.utils import has_permission, raise_invalid_token_if_user_not_logged_in_session
 from epic_events.views.users_view import invalid_token
 from epic_events.views.roles_views import (
     id_not_found, role_not_found, roles_table, created_succes)
@@ -25,10 +25,7 @@ def list_role(ctx, id):
     """List Role : no flag = list all, -i + 'id' for spécific role"""
     session = ctx.obj['session']
 
-    user_logged = ctx.obj.get('user_id')
-
-    if user_logged is None:
-        raise Exception(invalid_token())
+    user_logged = raise_invalid_token_if_user_not_logged_in_session(ctx)
 
     if id:
         role = session.scalar(select(Role).where(Role.id == id))
@@ -56,9 +53,7 @@ def create_role(ctx, name, id):
     
     session = ctx.obj['session']
 
-    user_logged = ctx.obj.get('user_id')
-    if user_logged is None:
-        raise Exception(invalid_token())
+    raise_invalid_token_if_user_not_logged_in_session(ctx)
 
     is_id = session.scalar(select(User).where(
         User.id == id)) if id is not None else None

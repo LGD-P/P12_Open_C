@@ -1,6 +1,6 @@
 from epic_events.models.user import User
 from epic_events.models.client import Client
-from epic_events.utils import has_permission
+from epic_events.utils import has_permission, raise_invalid_token_if_user_not_logged_in_session
 from epic_events.views.users_view import logged_as, invalid_token
 from epic_events.views.clients_views import (clients_table, created_succes,
                                              deleted_success, client_not_found,
@@ -29,10 +29,7 @@ def list_client(ctx, id):
     """List Client : no flag to = all, -i + '2' to to see specificly client with id 2"""
     session = ctx.obj['session']
 
-    user_logged = ctx.obj.get("user_id")
-
-    if user_logged is None:
-        raise Exception(invalid_token())
+    user_logged = raise_invalid_token_if_user_not_logged_in_session(ctx)
 
     if id:
         client = session.scalar(select(Client).where(Client.id == id))
@@ -63,10 +60,7 @@ def create_client(ctx, name, email, phone, company, comid):
     """Creating client : -e + "email" -ph + "phone-number" -c + "company-name" -ci + "commercial id" """
     session = ctx.obj['session']
 
-    user_logged = ctx.obj.get("user_id")
-
-    if user_logged is None:
-        raise Exception(invalid_token())
+    raise_invalid_token_if_user_not_logged_in_session(ctx)
 
     if comid is not None:
         comid_found = find_user_type(ctx, comid, 'commercial')
@@ -105,10 +99,7 @@ def modify_client(ctx, id, name, email, phone, company, comid):
     and -ci + "commercial id" """
     session = ctx.obj['session']
 
-    user_logged = ctx.obj.get("user_id")
-
-    if user_logged is None:
-        raise Exception(invalid_token())
+    user_logged = raise_invalid_token_if_user_not_logged_in_session(ctx)
 
     client_to_modify = session.scalar(select(Client).where(Client.id == id))
 
@@ -153,10 +144,8 @@ def modify_client(ctx, id, name, email, phone, company, comid):
 def delete_client(ctx, id):
     """Delete clent : -i + "2" to delete client with id 2"""
     session = ctx.obj['session']
-    user_logged = ctx.obj.get("user_id")
 
-    if user_logged is None:
-        raise Exception(invalid_token())
+    raise_invalid_token_if_user_not_logged_in_session(ctx)
 
     client_to_delete = session.scalar(select(Client).where(Client.id == id))
 
