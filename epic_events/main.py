@@ -29,6 +29,6 @@ if __name__ == '__main__':
         app()
     except Exception as e:
         sentry_sdk.capture_exception(e)
-        raise e
+        # raise e
 
 

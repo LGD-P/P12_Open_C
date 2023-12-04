@@ -87,11 +87,18 @@ def check_token_to_get_user(session):
                     select(User).where(User.id == user_id))
                 return user
 
-            except jwt.exceptions.DecodeError:
+            except jwt.exceptions.DecodeError as e:
                 return None
 
             except jwt.exceptions.ExpiredSignatureError:
                 return None
+
+
+def raise_invalid_token_if_user_not_logged_in_session(ctx):
+    user_logged = ctx.obj.get("user_id")
+    if user_logged is None:
+        raise Exception(invalid_token())
+    return user_logged
 
 
 def has_permission(allowed_roles):
@@ -107,9 +114,9 @@ def has_permission(allowed_roles):
                 if user_role.name not in allowed_roles:
                     return not_authorized()
             except KeyError:
-                return invalid_token()
+                pass
             return function(ctx, *args, **kwargs)
-
         return wrapper
-
     return decorator
+
+
