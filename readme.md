@@ -57,7 +57,7 @@ attributions respectives)
 
 ## Les variables d'environnement : .env
 *Ce projet utilise dotenv il vous faut adapter un certain nombre de paramètres.*
-*Dans epic_events*
+*Dans epic_events/.env*
 ```bash
 touch .env
 sudo nano .env
@@ -67,7 +67,8 @@ SECRET_KEY= YOU SECRET KEY TO MANAGE JWT
 TEMP_TOKEN_PATH = PATH TO STORE YOUR TEMP TOKEN
 SENTRY_KEY = YOUR SENTRY DNS KEY
 MANAGER_PASS = $argon2id$v=19$m=65536,t=12,p=4$6V0LgfB+T+kdw/hfCwFgjA$r/+/OEuLdDEdTHvKDn4+mX3Bo3+wLNPcEqvpVxBS3nw
-
+```
+```bash
 ctrl + X
 
 oui or yes
@@ -124,9 +125,17 @@ python3 main.py authenticate login -e 'mallet.gabrielle-management@epicevent.com
 
 
 ## Vérifer la couverture du projet par les tests et la conformité flake8 
-
+```bash
     pytest tests/ --cov=. --cov-report html
+```
+<p align = center>
+<img  src="img/flake8.png" />
+</p>
 
+```bash
     flake8 --format=html --htmldir=flake-report
+```
 
-
+<p align = center>
+<img  src="img/coverage.png" />
+</p>
