@@ -1,7 +1,6 @@
 from epic_events.models.role import Role
 from epic_events.models.user import User
 from epic_events.utils import has_permission, raise_invalid_token_if_user_not_logged_in_session
-from epic_events.views.users_view import invalid_token
 from epic_events.views.roles_views import (
     id_not_found, role_not_found, roles_table, created_succes)
 from epic_events.views.users_view import logged_as
@@ -41,7 +40,6 @@ def list_role(ctx, id):
         logged_as(user_logged.name, user_logged.role.name)
 
 
-
 @role.command()
 @click.option('--name', '-n',
               help='Must be "support" "commercial" or "manager"',
@@ -50,7 +48,6 @@ def list_role(ctx, id):
 @click.pass_context
 @has_permission(['management'])
 def create_role(ctx, name, id):
-    
     session = ctx.obj['session']
 
     raise_invalid_token_if_user_not_logged_in_session(ctx)
@@ -67,4 +64,3 @@ def create_role(ctx, name, id):
             created_succes(new_role)
         else:
             raise click.UsageError(id_not_found(id))
-

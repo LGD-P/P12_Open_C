@@ -1,7 +1,6 @@
-from epic_events.models.user import User
 from epic_events.models.client import Client
 from epic_events.utils import has_permission, raise_invalid_token_if_user_not_logged_in_session
-from epic_events.views.users_view import logged_as, invalid_token
+from epic_events.views.users_view import logged_as
 from epic_events.views.clients_views import (clients_table, created_succes,
                                              deleted_success, client_not_found,
                                              modification_done, not_in_charge_of_this_client
@@ -11,7 +10,6 @@ from epic_events.utils import find_user_type
 from datetime import datetime
 import rich_click as click
 from sqlalchemy import select
-import sentry_sdk
 
 
 @click.group()
@@ -89,7 +87,7 @@ def create_client(ctx, name, email, phone, company, comid):
               required=True)
 @click.option('--name', '-n', help='Full name for the new object')
 @click.option('--email', '-e', help='Email for the new object')
-@click.option('--phone', '-ph', help='Phone nummber')
+@click.option('--phone', '-ph', help='Phone number')
 @click.option('--company', '-c', help='Company name')
 @click.option('--comid', '-ci', help='User id of your commercial')
 @click.pass_context
@@ -142,7 +140,7 @@ def modify_client(ctx, id, name, email, phone, company, comid):
 @click.pass_context
 @has_permission(['management', 'commercial'])
 def delete_client(ctx, id):
-    """Delete clent : -i + "2" to delete client with id 2"""
+    """Delete client : -i + "2" to delete client with id 2"""
     session = ctx.obj['session']
 
     raise_invalid_token_if_user_not_logged_in_session(ctx)

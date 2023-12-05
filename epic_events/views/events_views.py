@@ -91,13 +91,12 @@ def table_not_found(table):
 def date_param():
     Console().print(
         "\n[blue] '[bold red]Date[/bold red]'[blue], must be written like this"
-        " ==> '[bold red]YYYY-MM-DD - HH:MM [/bold red]'\n")
+        " ==> '[bold red]YYYY-MM-DD - HH:MM[/bold red]'\n")
 
 
 def end_date_error():
-    Console().print("\n[blue] Unfortunatly you can't go back in time "
-                    "'[bold red]Ending Date[/bold red]' must be"
-                    " after '[bold red]Starting Date[/bold red]'\n")
+    return Console().print("\n[blue] Unfortunatly you can't go back in time '[bold red]Ending Date[/bold red]' must be"
+                           " after '[bold red]Starting Date[/bold red]'\n")
 
 
 def created_succes(event):

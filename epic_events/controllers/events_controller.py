@@ -1,10 +1,9 @@
 from epic_events.utils import find_user_type, find_client_or_contract, \
     raise_invalid_token_if_user_not_logged_in_session
-from epic_events.models.user import User
 from epic_events.models.event import Event
 from epic_events.models.contract import Contract
 from epic_events.utils import has_permission
-from epic_events.views.users_view import logged_as, invalid_token
+from epic_events.views.users_view import logged_as
 from epic_events.views.events_views import (end_date_error, events_table,
                                             created_succes, deleted_success,
                                             event_not_found, modification_done,
@@ -14,7 +13,6 @@ from epic_events.views.contracts_views import contract_not_signed
 from datetime import datetime
 import rich_click as click
 from sqlalchemy import select
-import sentry_sdk
 
 
 @click.group()
@@ -76,30 +74,29 @@ def list_event(ctx, id, no_support, team_support):
 @has_permission(['commercial'])
 def create_event(ctx, name, contract, support, starting, ending, location, attendees,
                  notes):
-    """Create Event : -n + 'name', -c + 'contract-ID', -su + 'Support-ID', -sd + 'startind-date', -ed + 'ending-date'
+    """Create Event : -n + 'name', -c + 'contract-ID', -su + 'Support-ID', -sd + 'starting-date', -ed + 'ending-date'
     -l + 'location', -a + 'attendees', -nt + 'notes' | date format is:  YYYY-MM-DD - HH:MM"""
     session = ctx.obj['session']
 
-    user_logged = raise_invalid_token_if_user_not_logged_in_session(ctx)
+    raise_invalid_token_if_user_not_logged_in_session(ctx)
 
-    try:
+    if not datetime.strptime(starting, '%Y-%m-%d - %H:%M'):
+        raise Exception('date format', date_param())
+    else:
         starting = datetime.strptime(starting, '%Y-%m-%d - %H:%M')
-    except ValueError:
-        sentry_sdk.capture_exception(date_param())
 
-    try:
+    if not datetime.strptime(ending, '%Y-%m-%d - %H:%M'):
+        raise Exception('date format', date_param())
+    else:
         ending = datetime.strptime(ending, '%Y-%m-%d - %H:%M')
-    except ValueError:
-        sentry_sdk.capture_exception(date_param())
 
-    try:
-        ending < starting
-    except ValueError:
-        sentry_sdk.capture_exception(end_date_error())
+    if not ending > starting:
+        raise Exception('end date error', end_date_error())
 
     contract_found = find_client_or_contract(ctx, Contract, contract)
     contract = session.scalar(
         select(Contract).where(Contract.id == contract_found))
+
     if contract.status is not True:
         raise click.UsageError(contract_not_signed(contract.id))
 
@@ -165,11 +162,13 @@ def modify_event(ctx, id, name, contract, support, starting, ending,
                 return date_param()
 
         if ending is not None:
-            try:
-                ending = datetime.strptime(ending, '%Y-%m-%d - %H:%M')
-                event_to_modify.end_date = ending
-            except ValueError:
-                return date_param()
+            if not datetime.strptime(ending, '%Y-%m-%d - %H:%M'):
+                raise Exception('date param', date_param())
+
+            ending = datetime.strptime(ending, '%Y-%m-%d - %H:%M')
+
+            if not ending > event_to_modify.start_date:
+                raise Exception('end date error', end_date_error())
 
         if location is not None:
             event_to_modify.location = location
@@ -179,7 +178,6 @@ def modify_event(ctx, id, name, contract, support, starting, ending,
 
         if notes is not None:
             event_to_modify.notes = notes
-
         session.commit()
         modification_done(event_to_modify)
     else:

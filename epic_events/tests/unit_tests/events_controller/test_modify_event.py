@@ -101,7 +101,7 @@ def test_modify_event_start_date_with_wrong_format_args(runner, mocked_session):
                                "user_id": user_logged
                            })
 
-    assert "'Date', must be written like this ==> 'YYYY-MM-DD - HH:MM '" in result.output
+    assert "'Date', must be written like this ==> 'YYYY-MM-DD - HH:MM'" in result.output
     assert result.exit_code == 0
 
 
@@ -134,7 +134,7 @@ def test_modify_event_end_date_wrong_format_args(runner, mocked_session):
                                "user_id": user_logged
                            })
 
-    assert "'Date', must be written like this ==> 'YYYY-MM-DD - HH:MM '" in result.output
+    assert "'Date', must be written like this ==> 'YYYY-MM-DD - HH:MM'" in result.output
     assert result.exit_code == 0
 
 

@@ -17,6 +17,7 @@ def test_create_event(runner, mocked_session):
                                "user_id": user_logged
                            })
     new_event = mocked_session.scalar(select(Event).where(Event.id == 4))
+    print(new_event)
     assert new_event is not None
     assert result.exit_code == 0
     assert "\n ID N° 'N°4' Event 'John-Event'created successfully.\n\n" in result.output

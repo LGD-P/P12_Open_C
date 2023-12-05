@@ -1,8 +1,7 @@
 from epic_events.models.user import User
 from epic_events.models.role import Role
 from epic_events.utils import has_permission, raise_invalid_token_if_user_not_logged_in_session
-from epic_events.views.users_view import (invalid_token, logged_as,
-                                          users_table, created_succes,
+from epic_events.views.users_view import (logged_as, users_table, created_succes,
                                           deleted_success, user_not_found,
                                           modification_done, wrong_pass,
                                           new_pass, invalid_pass,
@@ -105,7 +104,7 @@ def list_user(ctx, id):
 @has_permission(['management'])
 def create_user(ctx, name, email, role, password):
     """Create user: -n + "name", -e + 'email', - r + 'role as support client or management', password
-    will automaticly be asked"""
+    will automatically be asked"""
     session = ctx.obj['session']
 
     user_logged = raise_invalid_token_if_user_not_logged_in_session(ctx)
@@ -145,7 +144,7 @@ def create_user(ctx, name, email, role, password):
 @has_permission(['management'])
 def modify_user(ctx, id, name, email, role, password):
     """Modify User: -i + 'id', -n + name, --e + 'email', -r + 'role as support client or management',
-    -P no args password will automaticly be asked"""
+    -P no args password will automatically be asked"""
     session = ctx.obj['session']
 
     user_logged = raise_invalid_token_if_user_not_logged_in_session(ctx)

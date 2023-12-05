@@ -7,7 +7,6 @@ from epic_events.controllers.events_controller import event
 from epic_events.controllers.roles_controller import role
 from epic_events.controllers.authenticate_controller import authenticate
 from epic_events.utils import check_token_to_get_user
-from epic_events.views.users_view import invalid_token
 
 click.rich_click.COMMAND_GROUPS = {
     "cli": [

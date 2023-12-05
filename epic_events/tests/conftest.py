@@ -1,11 +1,8 @@
-import pytest
-from click.testing import CliRunner
-from pytest_sqlalchemy_mock.base import mocked_session
-
 from epic_events.models.base import Base
 from epic_events.tests.fake_datas import (generate_user, generate_roles)
-from unittest.mock import patch
 
+import pytest
+from click.testing import CliRunner
 from datetime import datetime
 
 

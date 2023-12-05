@@ -4,7 +4,7 @@ from epic_events.models.contract import Contract
 from epic_events.utils import find_user_type, find_client_or_contract, \
     raise_invalid_token_if_user_not_logged_in_session
 from epic_events.utils import has_permission
-from epic_events.views.users_view import logged_as, invalid_token
+from epic_events.views.users_view import logged_as
 from epic_events.views.contracts_views import (contracts_table, created_succes,
                                                deleted_success, contract_not_found,
                                                modification_done, not_in_charge_of_this_client_contract,
@@ -32,7 +32,7 @@ def contract(ctx):
 @click.pass_context
 @has_permission(['management', 'commercial'])
 def list_contract(ctx, id, signed, is_not_signed):
-    """List Contract : No flag = all, -i + id for specific contract, for Support-team -s = your signed contract 
+    """List Contract : No flag = all, -i + id for specific contract, for Support-team -s = your signed contract
     -ns = not signed"""
     session = ctx.obj['session']
 
@@ -72,7 +72,7 @@ def list_contract(ctx, id, signed, is_not_signed):
 @click.pass_context
 @has_permission(['management'])
 def create_contract(ctx, client, management, total, remain, status):
-    """Creating contract : -c + related client id -m + commercial in charge, -ta + total amount 
+    """Creating contract : -c + related client id -m + commercial in charge, -ta + total amount
     -r + remaining amount and -s + status True or False for signed or not"""
     session = ctx.obj['session']
 

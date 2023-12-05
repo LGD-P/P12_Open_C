@@ -1,12 +1,12 @@
-from functools import wraps
 from epic_events.models.user import User
 from epic_events.models.role import Role
 from epic_events.models.client import Client
 from epic_events.views.clients_views import client_not_found
 from epic_events.views.contracts_views import contract_not_found
 from epic_events.views.users_view import not_authorized, user_not_found, invalid_token
-from sqlalchemy import select
 
+from sqlalchemy import select
+from functools import wraps
 import jwt
 import os
 from dotenv import load_dotenv
@@ -87,7 +87,7 @@ def check_token_to_get_user(session):
                     select(User).where(User.id == user_id))
                 return user
 
-            except jwt.exceptions.DecodeError as e:
+            except jwt.exceptions.DecodeError:
                 return None
 
             except jwt.exceptions.ExpiredSignatureError:
@@ -118,5 +118,3 @@ def has_permission(allowed_roles):
             return function(ctx, *args, **kwargs)
         return wrapper
     return decorator
-
-

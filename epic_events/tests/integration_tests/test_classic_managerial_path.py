@@ -16,13 +16,13 @@ def test_classic_managerial_path(runner, mocked_session):
         with patch(
                 "epic_events.controllers.authenticate_controller.User.confirm_pass",
                 return_value=True):
-            result = runner.invoke(app, ['authenticate', 'login', '-e', manager.email], obj={"session": mocked_session})
+            result = runner.invoke(
+                app, ['authenticate', 'login', '-e', manager.email], obj={"session": mocked_session})
 
             assert result.exit_code == 0
             assert "\n Welcome 'Gabrielle Mallet' you're logged.\n\n" in result.output
 
             # Check user list:
-
             result = runner.invoke(app, ['user', 'list-user'],
                                    obj={
                                        "session": mocked_session,
@@ -40,7 +40,7 @@ def test_classic_managerial_path(runner, mocked_session):
                                        "user_id": manager
                                    })
 
-            # Find client he want
+            # Find client he wants
             assert "│ 2  │   Noël   │ masson.… │   +33   │ Bouvet-… │ 24-10-… │ 10-11-2… │   ❌ " in result.output
             assert result.exit_code == 0
 
@@ -81,7 +81,7 @@ def test_classic_managerial_path(runner, mocked_session):
             assert contract.status is True
             assert result.exit_code == 0
 
-            # Check Events list whitout support yet:
+            # Check Events list without support yet:
             result = runner.invoke(app, ['event', 'list-event', '-ns'],
                                    obj={
                                        "session": mocked_session,
