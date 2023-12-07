@@ -1,8 +1,9 @@
-from datetime import datetime
-from sqlalchemy import select
 from epic_events.models.user import User
 from epic_events.models.event import Event
 from epic_events.controllers.events_controller import modify_event
+
+from datetime import datetime
+from sqlalchemy import select
 
 
 def test_modify_event_name(runner, mocked_session):
@@ -93,16 +94,16 @@ def test_modify_event_start_date(runner, mocked_session):
 def test_modify_event_start_date_with_wrong_format_args(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 2))
     new_date = datetime(2024, 10, 10, 15)
-    new_date_str = new_date.strftime("%Y-%m-%d %H:%M")
-
+    new_date_str = new_date.strftime("%Y %m %d %H %M")
     result = runner.invoke(modify_event, ["-i", "1", "-sd", new_date_str],
                            obj={
                                "session": mocked_session,
                                "user_id": user_logged
                            })
 
+    
     assert "'Date', must be written like this ==> 'YYYY-MM-DD - HH:MM'" in result.output
-    assert result.exit_code == 0
+    assert result.exit_code == 1
 
 
 def test_modify_event_end_date(runner, mocked_session):
@@ -125,8 +126,8 @@ def test_modify_event_end_date(runner, mocked_session):
 
 def test_modify_event_end_date_wrong_format_args(runner, mocked_session):
     user_logged = mocked_session.scalar(select(User).where(User.id == 2))
-    new_date = datetime(2024, 10, 11, 15)
-    new_date_str = new_date.strftime("%Y/%m/%d - %H:%M")
+    new_date = datetime(2024, 10, 11, 20)
+    new_date_str = new_date.strftime("%Y/%m/%d %Hh%M")
 
     result = runner.invoke(modify_event, ["-i", "1", "-sd", new_date_str],
                            obj={
@@ -135,7 +136,7 @@ def test_modify_event_end_date_wrong_format_args(runner, mocked_session):
                            })
 
     assert "'Date', must be written like this ==> 'YYYY-MM-DD - HH:MM'" in result.output
-    assert result.exit_code == 0
+    assert result.exit_code == 1
 
 
 def test_modify_event_location(runner, mocked_session):

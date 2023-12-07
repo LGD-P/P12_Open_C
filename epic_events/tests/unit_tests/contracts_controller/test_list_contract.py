@@ -62,6 +62,7 @@ def test_list_single_contract_wrong_id(runner, mocked_session):
                                "user_id": user_logged
                            })
 
+    print(result.output)
     assert "\n Contract with ID '13' is 'not found'.\n" in result.output
     assert result.exit_code == 1
 
