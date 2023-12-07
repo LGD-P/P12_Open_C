@@ -36,7 +36,7 @@ def test_classic_commercial_path(runner, mocked_session, mock_db):
         result = runner.invoke(app, ['client', 'modify-client', "-i", "4", "-ph", "+33 7 58 41 00 50"],
                                obj={
                                    "user_id": commercial
-        })
+                                   })
 
         client_modified = mocked_session.scalar(
             select(Client).where(Client.id == 4))
@@ -50,7 +50,7 @@ def test_classic_commercial_path(runner, mocked_session, mock_db):
         result = runner.invoke(app, ['client', 'modify-client', "-i", "1", "-e", "Adrien.ldc@epicevents.com"],
                                obj={
                                    "user_id": commercial
-        })
+                                   })
 
         assert "\n As commercial you are 'not in charge' of Client : ID '1'. You're 'not allowed' "
         "\nto modify this client.\n\n" in result.output
@@ -59,7 +59,7 @@ def test_classic_commercial_path(runner, mocked_session, mock_db):
         # logout
         result = runner.invoke(app, ['authenticate', 'logout'], obj={
             "user_id": commercial
-        })
+            })
 
         assert result.exit_code == 0
         assert "\n' You have been successfully logout out'\n" in result.output
