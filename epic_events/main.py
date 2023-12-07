@@ -1,5 +1,7 @@
 import logging
 
+from sentry_sdk import Hub
+
 from epic_events.controllers.click_app import app
 
 import sentry_sdk
@@ -17,16 +19,21 @@ functions_to_trace = [
 
 sentry_sdk.init(
     dsn=os.getenv("SENTRY_KEY"),
-    enable_tracing=True,
-    shutdown_timeout=5,
-    debug=False
+    enable_tracing=False,
+    debug=False,
 )
 
-logging.getLogger("sentry_sdk").setLevel(logging.WARNING)
+
+def close_sentry():
+    client = Hub.current.client
+    client.flush(5)
+    client.close()
+
 
 if __name__ == '__main__':
     try:
         app()
     except Exception as e:
         sentry_sdk.capture_exception(e)
-        # raise e
+    finally:
+        close_sentry()
