@@ -77,7 +77,8 @@ def list_user(ctx, id):
         user = session.scalar(select(User).where(User.id == id))
 
         if user is None:
-            raise Exception(user_not_found(id))
+            user_not_found(id)
+            raise ValueError("User ID not found")
         else:
             users_table([user])
     else:
@@ -152,7 +153,8 @@ def modify_user(ctx, id, name, email, role, password):
     user_to_modify = session.scalar(select(User).where(User.id == id))
 
     if user_to_modify is None:
-        raise Exception(user_not_found(id))
+        user_not_found(id)
+        raise ValueError("User ID not found")
 
     if user_to_modify:
 
@@ -204,4 +206,5 @@ def delete_user(ctx, id):
         deleted_success(id, user_to_delete)
 
     else:
-        raise Exception(user_not_found(id))
+        user_not_found(id)
+        raise ValueError("User ID not found")

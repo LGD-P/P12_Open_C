@@ -43,7 +43,8 @@ def list_contract(ctx, id, signed, is_not_signed):
             select(Contract).where(Contract.id == id))
 
         if selected_contract is None:
-            raise click.UsageError(contract_not_found(id))
+            contract_not_found(id)
+            raise ValueError("Contract id not found")
         else:
             contracts_table([selected_contract])
     if is_not_signed:
@@ -124,8 +125,8 @@ def modify_contract(ctx, id, client, management, total, remain, status):
             if contract_to_modify.total_amount == user_logged.id:
                 pass
             else:
-                raise ValueError(not_in_charge_of_this_client_contract(
-                    contract_to_modify.client_id))
+                not_in_charge_of_this_client_contract(contract_to_modify.client_id)
+                raise ValueError("Commercial not in charge of this client")
 
         if client is not None:
             client_found = find_client_or_contract(ctx, Client, client)
@@ -156,7 +157,8 @@ def modify_contract(ctx, id, client, management, total, remain, status):
         modification_done(contract_to_modify)
 
     else:
-        raise click.UsageError(contract_not_found(id))
+        contract_not_found(id)
+        raise click.UsageError("Contract id not found")
 
 
 @contract.command()
@@ -181,4 +183,5 @@ def delete_contract(ctx, id):
         deleted_success(id, contract_to_delete)
 
     else:
-        raise click.UsageError(contract_not_found(id))
+        contract_not_found(id)
+        raise ValueError("Contract id not found")

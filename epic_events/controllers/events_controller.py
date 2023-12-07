@@ -38,13 +38,14 @@ def list_event(ctx, id, no_support, team_support):
     if id:
         event = session.scalar(select(Event).where(Event.id == id))
         if event is None:
-            raise click.UsageError(event_not_found(id))
+            event_not_found(id)
+            raise ValueError("Event ID not found")
         else:
             events_table([event])
     if no_support:
         event = session.scalars(select(Event).where(
             Event.support_contact_id.is_(None))).all()
-        raise click.UsageError(events_table(event))
+        return events_table(event)
 
     if team_support:
         event = session.scalars(select(Event).where(
@@ -71,7 +72,7 @@ def list_event(ctx, id, no_support, team_support):
 @click.option('--attendees', '-a', help='Attendees', required=True)
 @click.option('--notes', '-nt', help='Notes')
 @click.pass_context
-@has_permission(['commercial'])
+@has_permission(['management', 'commercial'])
 def create_event(ctx, name, contract, support, starting, ending, location, attendees,
                  notes):
     """Create Event : -n + 'name', -c + 'contract-ID', -su + 'Support-ID', -sd + 'starting-date', -ed + 'ending-date'
@@ -80,25 +81,29 @@ def create_event(ctx, name, contract, support, starting, ending, location, atten
 
     raise_invalid_token_if_user_not_logged_in_session(ctx)
 
-    if not datetime.strptime(starting, '%Y-%m-%d - %H:%M'):
-        raise Exception('date format', date_param())
-    else:
+    try:
         starting = datetime.strptime(starting, '%Y-%m-%d - %H:%M')
+    except ValueError:
+        date_param()
+        raise ValueError('date format')
 
-    if not datetime.strptime(ending, '%Y-%m-%d - %H:%M'):
-        raise Exception('date format', date_param())
-    else:
+    try:
         ending = datetime.strptime(ending, '%Y-%m-%d - %H:%M')
+    except ValueError:
+        date_param()
+        raise ValueError('date format')
 
     if not ending > starting:
-        raise Exception('end date error', end_date_error())
+        end_date_error()
+        raise Exception('end date error')
 
     contract_found = find_client_or_contract(ctx, Contract, contract)
     contract = session.scalar(
         select(Contract).where(Contract.id == contract_found))
 
     if contract.status is not True:
-        raise click.UsageError(contract_not_signed(contract.id))
+        contract_not_signed(contract.id)
+        raise ValueError("Contract must be signe to create event")
 
     support_found = find_user_type(ctx, support, 'support')
 
@@ -140,8 +145,8 @@ def modify_event(ctx, id, name, contract, support, starting, ending,
             if event_to_modify.support_contact_id == user_logged.id:
                 pass
             else:
-                raise ValueError(
-                    not_in_charge_of_this_event(event_to_modify.id))
+                not_in_charge_of_this_event(event_to_modify.id)
+                raise ValueError("User not in charge of this event")
 
         if name is not None:
             event_to_modify.name = name
@@ -159,16 +164,20 @@ def modify_event(ctx, id, name, contract, support, starting, ending,
                 starting = datetime.strptime(starting, '%Y-%m-%d - %H:%M')
                 event_to_modify.start_date = starting
             except ValueError:
-                return date_param()
+                date_param()
+                raise ValueError('date param')
 
         if ending is not None:
-            if not datetime.strptime(ending, '%Y-%m-%d - %H:%M'):
-                raise Exception('date param', date_param())
-
-            ending = datetime.strptime(ending, '%Y-%m-%d - %H:%M')
+            try:
+                ending = datetime.strptime(ending, '%Y-%m-%d - %H:%M')
+            except ValueError:
+                date_param()
+                raise ValueError('date param')
 
             if not ending > event_to_modify.start_date:
                 raise Exception('end date error', end_date_error())
+            else:
+                event_to_modify.end_date = ending
 
         if location is not None:
             event_to_modify.location = location
@@ -181,7 +190,8 @@ def modify_event(ctx, id, name, contract, support, starting, ending,
         session.commit()
         modification_done(event_to_modify)
     else:
-        raise click.UsageError(event_not_found(id))
+        event_not_found(id)
+        raise ValueError("Event ID not found")
 
 
 @event.command()
@@ -203,4 +213,5 @@ def delete_event(ctx, id):
         deleted_success(id, event_to_delete)
 
     else:
-        raise click.UsageError(event_not_found(id))
+        event_not_found(id)
+        raise ValueError("Event ID not found")

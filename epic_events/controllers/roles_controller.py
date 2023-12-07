@@ -29,7 +29,8 @@ def list_role(ctx, id):
     if id:
         role = session.scalar(select(Role).where(Role.id == id))
         if role is None:
-            raise click.UsageError(role_not_found(id))
+            role_not_found(id)
+            raise ValueError("Role ID not found")
         else:
             roles_table([role])
     else:
@@ -63,4 +64,5 @@ def create_role(ctx, name, id):
             session.commit()
             created_succes(new_role)
         else:
-            raise click.UsageError(id_not_found(id))
+            role_not_found(id)
+            raise ValueError("Role ID not found")

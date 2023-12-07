@@ -32,7 +32,8 @@ def list_client(ctx, id):
     if id:
         client = session.scalar(select(Client).where(Client.id == id))
         if client is None:
-            raise click.UsageError(client_not_found(id))
+            client_not_found(id)
+            raise ValueError("Client ID not found")
         else:
             clients_table([client])
     else:
@@ -106,8 +107,8 @@ def modify_client(ctx, id, name, email, phone, company, comid):
             if client_to_modify.commercial_contact_id == user_logged.id:
                 pass
             else:
-                raise ValueError(
-                    not_in_charge_of_this_client(client_to_modify.id))
+                not_in_charge_of_this_client(client_to_modify.id)
+                raise ValueError("User not in charge of this client")
 
         if name is not None:
             client_to_modify.full_name = name
@@ -129,7 +130,8 @@ def modify_client(ctx, id, name, email, phone, company, comid):
         session.commit()
         modification_done(client_to_modify)
     else:
-        raise click.UsageError(client_not_found(id))
+        client_not_found(id)
+        raise ValueError("Client ID not found")
 
 
 @client.command()
@@ -153,4 +155,5 @@ def delete_client(ctx, id):
         deleted_success(id, client_to_delete)
 
     else:
-        raise click.UsageError(client_not_found(id))
+        client_not_found(id)
+        raise ValueError("Client ID not found")
