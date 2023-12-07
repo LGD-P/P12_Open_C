@@ -8,7 +8,7 @@ class Contract(Base):
     __tablename__ = 'contracts'
     id = Column(Integer, primary_key=True)
     uuid = Column(String, unique=True)
-    client_id = Column(Integer, ForeignKey('clients.id'))
+    client_id = Column(Integer, ForeignKey('clients.id', ondelete="CASCADE"))
     management_contact_id = Column(Integer, ForeignKey('users.id'))
     total_amount = Column(Integer, nullable=False)
     remaining_amount = Column(Integer, nullable=False)
