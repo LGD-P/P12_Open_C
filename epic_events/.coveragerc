@@ -1,6 +1,6 @@
 [run]
-omit =.venv/*, __init__.py*, main.py, first_migration.py, tests/*
+omit =.venv/*, __init__.py*, main.py, first_migration.py, data_set.py, tests/*
 
 [report]
-exclude_lines = venv/*, __init__.py*, main.py, first_migration.py, tests/*
+exclude_lines = venv/*, __init__.py*, main.py, first_migration.py, data_set.py, tests/*
 
