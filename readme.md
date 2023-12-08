@@ -62,7 +62,7 @@ attributions respectives)
 touch .env
 sudo nano .env
 
-DATABASE_URL= postgresql://YOURDBNAME:YOURPASSWARD@localhost:5432/DBNAME
+DATABASE_URL= postgresql://YOURDBNAME:YOURPASSWARD@localhost:5432/postgres
 SECRET_KEY= YOU SECRET KEY TO MANAGE JWT
 TEMP_TOKEN_PATH = PATH TO STORE YOUR TEMP TOKEN
 SENTRY_KEY = YOUR SENTRY DNS KEY
@@ -79,14 +79,13 @@ enter
     
 ## Lancer Docker : 
     
-    sudo docker run --name Your_db_name -e POSTGRES_PASSWORD=YourPassWord -d -p 5432:5432 -v"$(pwd)/pgdata:/var/lib/postgresql/data" postgres
+    sudo docker run --name YOURDBNAME -e POSTGRES_PASSWORD=YOURPASSWARD -d -p 5432:5432 postgres
 
     # avec sudo lsof -i :5432 vous devriez voir la base de données sur votre port 5432. 
 
 ## Première alimentation de la base de données :
 
     python3 first_migration.py
-    
 
 ## Il n'y a plus qu'à :
 
@@ -129,13 +128,14 @@ python3 main.py authenticate login -e 'mallet.gabrielle-management@epicevent.com
     pytest tests/ --cov=. --cov-report html
 ```
 <p align = center>
-<img  src="img/flake8.png" />
+<img  src="img/coverage.png" />
 </p>
+
 
 ```bash
     flake8 --format=html --htmldir=flake-report
 ```
-
 <p align = center>
-<img  src="img/coverage.png" />
+<img  src="img/flake8.png" />
 </p>
+
