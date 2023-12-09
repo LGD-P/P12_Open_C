@@ -1,0 +1,6 @@
+[virtualenvs]
+in-project = true
+path = ".venv"
+
+[tool.flake8]
+max-line-length = 119
