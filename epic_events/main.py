@@ -1,12 +1,9 @@
-import logging
-
-from sentry_sdk import Hub
-
 from epic_events.controllers.click_app import app
 
 import sentry_sdk
 import os
 from dotenv import load_dotenv
+from sentry_sdk import Hub
 
 load_dotenv()
 

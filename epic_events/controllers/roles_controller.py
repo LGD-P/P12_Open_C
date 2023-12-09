@@ -2,7 +2,7 @@ from epic_events.models.role import Role
 from epic_events.models.user import User
 from epic_events.utils import has_permission, raise_invalid_token_if_user_not_logged_in_session
 from epic_events.views.roles_views import (
-    id_not_found, role_not_found, roles_table, created_succes)
+    role_not_found, roles_table, created_succes)
 from epic_events.views.users_view import logged_as
 
 import rich_click as click

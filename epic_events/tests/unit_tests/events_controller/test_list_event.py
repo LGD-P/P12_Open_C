@@ -41,7 +41,6 @@ def test_list_event_no_support(runner, mocked_session):
                                "user_id": user_logged
                            })
 
-
     assert '│ 2  │ Noël-… │   2    │  None  │ 12-01… │ 13-01-… │ avenue │   204   │ Claire │' in result.output
     assert '│ 3  │ Adrie… │   1    │   4    │ 24-12… │ 02-12-… │  62,   │   117   │  Main  │' not in result.output
     assert result.exit_code == 0

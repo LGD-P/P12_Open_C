@@ -10,8 +10,10 @@ class Event(Base):
     __tablename__ = 'events'
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
-    contract_id = Column(Integer, ForeignKey('contracts.id', ondelete="CASCADE"))
-    support_contact_id = Column(Integer, ForeignKey('users.id', ondelete="CASCADE"))
+    contract_id = Column(Integer, ForeignKey(
+        'contracts.id', ondelete="CASCADE"))
+    support_contact_id = Column(
+        Integer, ForeignKey('users.id', ondelete="CASCADE"))
     start_date = Column(DateTime, nullable=False)
     end_date = Column(DateTime, nullable=False)
     location = Column(String(250), nullable=False)
