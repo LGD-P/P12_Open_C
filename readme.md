@@ -63,9 +63,9 @@ attributions respectives)
 touch .env
 sudo nano .env
 
-DATABASE_URL= postgresql://YOURDBNAME:YOURPASSWORD@localhost:5432/postgres
+DATABASE_URL= postgresql://postgres:YOURPASSWORD@localhost:5432/postgres
 SECRET_KEY= YOU SECRET_KEY_TO_MANAGE_JWT
-TEMP_TOKEN_PATH = PATH/TO_STORE_YOUR_TEMP/TOKEN.txt
+TEMP_TOKEN_PATH = PATH_TO_/epic_events/temp/temporary.txt
 SENTRY_KEY = YOUR SENTRY DNS KEY
 MANAGER_PASS = $argon2id$v=19$m=65536,t=12,p=4$6V0LgfB+T+kdw/hfCwFgjA$r/+/OEuLdDEdTHvKDn4+mX3Bo3+wLNPcEqvpVxBS3nw
 ```
@@ -79,7 +79,7 @@ enter
 
     
 ## Lancer Docker : 
-    
+
     sudo docker run --name YOURDBNAME -e POSTGRES_PASSWORD=YOURPASSWORD -d -p 5432:5432 postgres
 
     # avec sudo lsof -i :5432 vous devriez voir la base de données sur votre port 5432. 
