@@ -43,17 +43,18 @@ attributions respectives)
 ```bash
     git clone https://github.com/LGD-P/P12_Open_C.git
 ```
-## Installer le gestinnaire de dépendances poetry:<img src="https://python-poetry.org/images/logo-origami.svg" width=30>
+## Installer le gestionnaire de dépendances poetry:<img src="https://python-poetry.org/images/logo-origami.svg" width=30>
     
     pip3 install poetry 
 
-## Activer l'environnement virtuel:
+## Activer l'environnement virtuel depuis P12_Open_C/:
 
     poetry shell 
 
 ## Installer les dépendances:
 
     poetry install 
+    poetry update
 
 ## Les variables d'environnement : .env
 *Ce projet utilise dotenv il vous faut adapter un certain nombre de paramètres.*
@@ -62,9 +63,9 @@ attributions respectives)
 touch .env
 sudo nano .env
 
-DATABASE_URL= postgresql://YOURDBNAME:YOURPASSWARD@localhost:5432/postgres
-SECRET_KEY= YOU SECRET KEY TO MANAGE JWT
-TEMP_TOKEN_PATH = PATH TO STORE YOUR TEMP TOKEN
+DATABASE_URL= postgresql://YOURDBNAME:YOURPASSWORD@localhost:5432/postgres
+SECRET_KEY= YOU SECRET_KEY_TO_MANAGE_JWT
+TEMP_TOKEN_PATH = PATH/TO_STORE_YOUR_TEMP/TOKEN.txt
 SENTRY_KEY = YOUR SENTRY DNS KEY
 MANAGER_PASS = $argon2id$v=19$m=65536,t=12,p=4$6V0LgfB+T+kdw/hfCwFgjA$r/+/OEuLdDEdTHvKDn4+mX3Bo3+wLNPcEqvpVxBS3nw
 ```
@@ -79,7 +80,7 @@ enter
     
 ## Lancer Docker : 
     
-    sudo docker run --name YOURDBNAME -e POSTGRES_PASSWORD=YOURPASSWARD -d -p 5432:5432 postgres
+    sudo docker run --name YOURDBNAME -e POSTGRES_PASSWORD=YOURPASSWORD -d -p 5432:5432 postgres
 
     # avec sudo lsof -i :5432 vous devriez voir la base de données sur votre port 5432. 
 
