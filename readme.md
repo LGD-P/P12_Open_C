@@ -59,22 +59,13 @@ attributions respectives)
 ## Les variables d'environnement : .env
 *Ce projet utilise dotenv il vous faut adapter un certain nombre de paramètres.*
 *Dans epic_events/.env*
-```bash
-touch .env
-sudo nano .env
 
+```bash
 DATABASE_URL= postgresql://postgres:YOURPASSWORD@localhost:5432/postgres
 SECRET_KEY= YOU SECRET_KEY_TO_MANAGE_JWT
 TEMP_TOKEN_PATH = PATH_TO_/epic_events/temp/temporary.txt
 SENTRY_KEY = YOUR SENTRY DNS KEY
 MANAGER_PASS = $argon2id$v=19$m=65536,t=12,p=4$6V0LgfB+T+kdw/hfCwFgjA$r/+/OEuLdDEdTHvKDn4+mX3Bo3+wLNPcEqvpVxBS3nw
-```
-```bash
-ctrl + X
-
-oui or yes
-
-enter
 ```
 
     
